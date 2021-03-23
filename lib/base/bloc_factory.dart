@@ -1,3 +1,5 @@
+import 'package:chatapp/signup/signup_bloc.dart';
+import 'package:chatapp/signup/signup_state.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -19,6 +21,8 @@ abstract class BlocFactory {
         return MainBloc(MainState.initial()) as T;
       case LoginBloc:
         return LoginBloc(LoginState.initial()) as T;
+      case SignUpBloc:
+        return SignUpBloc(SignUpState.initial()) as T;
       case CreateChatroomBloc:
         return CreateChatroomBloc(CreateChatroomState.initial()) as T;
       case InstantMessagingBloc:

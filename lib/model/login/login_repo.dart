@@ -60,6 +60,33 @@ class LoginRepo {
     });
   }
 
+  Future<LoginResponse> signInWithEmail(String email, String password) async {
+    final authResult = await _auth.signInWithEmailAndPassword(
+        email: email, password: password);
+    if (authResult != null && authResult.user != null) {
+      final user = authResult.user;
+      final token = await UserRepo.getInstance().getFCMToken();
+      User serializedUser = User(
+        user.uid,
+        user.displayName,
+        user.photoURL,
+        token,
+      );
+      await _firestore
+          .collection(FirestorePaths.USERS_COLLECTION)
+          .doc(user.uid)
+          .set(serializedUser.map, SetOptions(merge: true));
+      return User(
+        user.uid,
+        user.displayName,
+        user.photoURL,
+        token,
+      );
+    } else {
+      return LoginFailedResponse(ErrMessages.NO_USER_FOUND);
+    }
+  }
+
   Future<LoginResponse> signInWithGoogle(GoogleSignInAccount account) async {
     final authentication = await account.authentication;
     final credentials = firebase.GoogleAuthProvider.credential(

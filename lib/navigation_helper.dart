@@ -1,3 +1,4 @@
+import 'package:chatapp/signup/signup_view.dart';
 import 'package:flutter/material.dart';
 
 import 'package:chatapp/login/login_view.dart';
@@ -56,6 +57,23 @@ class NavigationHelper {
     } else {
       Navigator.pushReplacement(context,
           MaterialPageRoute(builder: (context) => CreateChatroomScreen()));
+    }
+  }
+
+  static void navigateToSignUp(
+    BuildContext context, {
+    bool addToBackStack: false,
+    bool Function(Route<dynamic>) removeUntil,
+  }) {
+    if (addToBackStack) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => SignUpScreen()),
+        removeUntil ?? _defaultRule,
+      );
+    } else {
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => SignUpScreen()));
     }
   }
 

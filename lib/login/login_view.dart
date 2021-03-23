@@ -44,6 +44,15 @@ class _LoginState extends State<LoginScreen> {
                       color: Colors.redAccent,
                     ),
                   ),
+                  ButtonTheme(
+                    minWidth: 256.0,
+                    height: 32.0,
+                    child: RaisedButton(
+                        onPressed: () => navigateToSignUp(),
+                        child: Text("Sign up",
+                            style: TextStyle(color: Colors.black)),
+                        color: Colors.white10),
+                  )
                   // ButtonTheme(
                   //   minWidth: 256.0,
                   //   height: 32.0,
@@ -67,5 +76,9 @@ class _LoginState extends State<LoginScreen> {
 
   void navigateToMain() {
     NavigationHelper.navigateToMain(context);
+  }
+
+  void navigateToSignUp() {
+    NavigationHelper.navigateToSignUp(context);
   }
 }
