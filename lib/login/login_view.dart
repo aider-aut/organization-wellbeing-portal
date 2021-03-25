@@ -38,7 +38,7 @@ class _LoginState extends State<LoginScreen> {
                       onPressed: () =>
                           BlocProvider.of<LoginBloc>(context).onLoginGoogle(),
                       child: Text(
-                        "Login with Google",
+                        "Continue with Google",
                         style: TextStyle(color: Colors.white),
                       ),
                       color: Colors.redAccent,
@@ -51,12 +51,13 @@ class _LoginState extends State<LoginScreen> {
                       onPressed: () =>
                           BlocProvider.of<LoginBloc>(context).onLoginFacebook(),
                       child: Text(
-                        "Login with Facebook",
+                        "Continue with Facebook",
                         style: TextStyle(color: Colors.white),
                       ),
                       color: Colors.blueAccent,
                     ),
                   ),
+                  Text("or"),
                   ButtonTheme(
                     minWidth: 256.0,
                     height: 32.0,
@@ -65,7 +66,12 @@ class _LoginState extends State<LoginScreen> {
                         child: Text("Sign up",
                             style: TextStyle(color: Colors.black)),
                         color: Colors.white10),
-                  )
+                  ),
+                  Text("Have an account? "),
+                  new FlatButton(
+                      onPressed: () => navigateToLogInWithEmail(),
+                      child: new Text("Log in",
+                          style: TextStyle(color: Colors.blue)))
                 ],
               ),
             );
@@ -81,5 +87,9 @@ class _LoginState extends State<LoginScreen> {
 
   void navigateToSignUp() {
     NavigationHelper.navigateToSignUp(context);
+  }
+
+  void navigateToLogInWithEmail() {
+    NavigationHelper.navigateToLogInWithEmail(context);
   }
 }

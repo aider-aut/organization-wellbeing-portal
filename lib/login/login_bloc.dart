@@ -37,6 +37,11 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     }
   }
 
+  void onLoginWithEmail(String email, String password) async {
+    add(LoginEventInProgress());
+    LoginRepo.getInstance().signInWithEmail(email, password);
+  }
+
   void onLogout() async {
     add(LoginEventInProgress());
     bool result = await LoginRepo.getInstance().signOut();

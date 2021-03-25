@@ -1,18 +1,18 @@
 import 'package:chatapp/base/bloc_widget.dart';
-import 'package:chatapp/signup/signup_bloc.dart';
-import 'package:chatapp/signup/signup_event.dart';
-import 'package:chatapp/signup/signup_state.dart';
+import 'package:chatapp/login/login_bloc.dart';
+import 'package:chatapp/login/login_event.dart';
+import 'package:chatapp/login/login_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class SignUpScreen extends StatefulWidget {
-  SignUpScreen({Key key}) : super(key: key);
+class LoginEmailScreen extends StatefulWidget {
+  LoginEmailScreen({Key key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _SignUpState();
+  State<StatefulWidget> createState() => _LoginEmailState();
 }
 
-class _SignUpState extends State<SignUpScreen> {
+class _LoginEmailState extends State<LoginEmailScreen> {
   final _formKey = new GlobalKey<FormState>();
   String _email, _password;
   bool _obscureText = true;
@@ -28,9 +28,9 @@ class _SignUpState extends State<SignUpScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-            appBar: AppBar(title: Text("Sign Up")),
-            body: BlocWidget<SignUpEvent, SignUpState, SignUpBloc>(
-                builder: (BuildContext context, SignUpState state) {
+            appBar: AppBar(title: Text("Login with Email")),
+            body: BlocWidget<LoginEvent, LoginState, LoginBloc>(
+                builder: (BuildContext context, LoginState state) {
               if (state.loading) {
                 return Center(
                     child: CircularProgressIndicator(
@@ -83,11 +83,11 @@ class _SignUpState extends State<SignUpScreen> {
                                   final form = _formKey.currentState;
                                   if (form.validate()) {
                                     form.save();
-                                    BlocProvider.of<SignUpBloc>(context)
-                                        .onSignUpWithEmail(_email, _password);
+                                    BlocProvider.of<LoginBloc>(context)
+                                        .onLoginWithEmail(_email, _password);
                                   }
                                 },
-                                child: Text("Sign up",
+                                child: Text("Sign in",
                                     style: TextStyle(color: Colors.black)),
                                 color: Colors.white10),
                           )
