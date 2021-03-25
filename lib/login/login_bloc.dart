@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 import 'package:chatapp/login/login_event.dart';
 import 'package:chatapp/login/login_state.dart';
@@ -21,18 +22,20 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     }
   }
 
-  // void onLoginFacebook() async {
-  //   add(LoginEventInProgress());
-  //   final facebookSignInRepo = FacebookAuth.instance;
-  //   final signInResult = await facebookSignInRepo.login();
-  //   if (signInResult.status == 200) {
-  //     LoginRepo.getInstance().signInWithFacebook(signInResult);
-  //   } else if (signInResult.status == 403) {
-  //     add(LogoutEvent());
-  //   } else {
-  //     add(LoginErrorEvent("An error occurred."));
-  //   }
-  // }
+  void onLoginFacebook() async {
+    add(LoginEventInProgress());
+    final facebookSignInRepo = FacebookAuth.instance;
+    try {
+      final signInResult = await facebookSignInRepo.login();
+      LoginRepo.getInstance().signInWithFacebook(signInResult);
+    } on FacebookAuthException catch (ex) {
+      if (ex.errorCode != 'CANCELLED') {
+        add(LoginErrorEvent("An error occurred. ${ex.message}"));
+      } else {
+        add(LogoutEvent());
+      }
+    }
+  }
 
   void onLogout() async {
     add(LoginEventInProgress());

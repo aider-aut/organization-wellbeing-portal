@@ -48,23 +48,24 @@ class _LoginState extends State<LoginScreen> {
                     minWidth: 256.0,
                     height: 32.0,
                     child: RaisedButton(
+                      onPressed: () =>
+                          BlocProvider.of<LoginBloc>(context).onLoginFacebook(),
+                      child: Text(
+                        "Login with Facebook",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      color: Colors.blueAccent,
+                    ),
+                  ),
+                  ButtonTheme(
+                    minWidth: 256.0,
+                    height: 32.0,
+                    child: RaisedButton(
                         onPressed: () => navigateToSignUp(),
                         child: Text("Sign up",
                             style: TextStyle(color: Colors.black)),
                         color: Colors.white10),
                   )
-                  // ButtonTheme(
-                  //   minWidth: 256.0,
-                  //   height: 32.0,
-                  //   child: RaisedButton(
-                  //     onPressed: () => BlocProvider.of<LoginBloc>(context).onLoginFacebook(),
-                  //     child: Text(
-                  //       "Login with Facebook",
-                  //       style: TextStyle(color: Colors.white),
-                  //     ),
-                  //     color: Colors.blueAccent,
-                  //   ),
-                  // ),
                 ],
               ),
             );
