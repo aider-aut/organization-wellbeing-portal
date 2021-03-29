@@ -75,21 +75,23 @@ class _SignUpState extends State<SignUpScreen> {
                               onPressed: _toggle,
                               child: new Text(_obscureText ? "Show" : "Hide")),
                           SizedBox(height: 15.0),
-                          ButtonTheme(
-                            minWidth: 256.0,
-                            height: 32.0,
-                            child: RaisedButton(
-                                onPressed: () {
-                                  final form = _formKey.currentState;
-                                  if (form.validate()) {
-                                    form.save();
-                                    BlocProvider.of<SignUpBloc>(context)
-                                        .onSignUpWithEmail(_email, _password);
-                                  }
-                                },
-                                child: Text("Sign up",
-                                    style: TextStyle(color: Colors.black)),
-                                color: Colors.white10),
+                          Center(
+                            child: ButtonTheme(
+                              minWidth: 256.0,
+                              height: 32.0,
+                              child: RaisedButton(
+                                  onPressed: () {
+                                    final form = _formKey.currentState;
+                                    if (form.validate()) {
+                                      form.save();
+                                      BlocProvider.of<SignUpBloc>(context)
+                                          .onSignUpWithEmail(_email, _password);
+                                    }
+                                  },
+                                  child: Text("Sign up",
+                                      style: TextStyle(color: Colors.black)),
+                                  color: Colors.white10),
+                            ),
                           )
                         ],
                       ),

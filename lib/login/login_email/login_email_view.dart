@@ -75,7 +75,8 @@ class _LoginEmailState extends State<LoginEmailScreen> {
                               onPressed: _toggle,
                               child: new Text(_obscureText ? "Show" : "Hide")),
                           SizedBox(height: 15.0),
-                          ButtonTheme(
+                          Center(
+                              child: ButtonTheme(
                             minWidth: 256.0,
                             height: 32.0,
                             child: RaisedButton(
@@ -90,7 +91,7 @@ class _LoginEmailState extends State<LoginEmailScreen> {
                                 child: Text("Sign in",
                                     style: TextStyle(color: Colors.black)),
                                 color: Colors.white10),
-                          )
+                          ))
                         ],
                       ),
                     ),

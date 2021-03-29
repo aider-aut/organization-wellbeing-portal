@@ -86,10 +86,10 @@ class _LoginState extends State<LoginScreen> {
   }
 
   void navigateToSignUp() {
-    NavigationHelper.navigateToSignUp(context);
+    NavigationHelper.navigateToSignUp(context, addToBackStack: true);
   }
 
   void navigateToLogInWithEmail() {
-    NavigationHelper.navigateToLogInWithEmail(context);
+    NavigationHelper.navigateToLogInWithEmail(context, addToBackStack: true);
   }
 }
