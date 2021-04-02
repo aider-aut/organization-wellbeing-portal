@@ -31,47 +31,57 @@ class _LoginState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  ButtonTheme(
-                    minWidth: 256.0,
-                    height: 32.0,
-                    child: RaisedButton(
-                      onPressed: () =>
-                          BlocProvider.of<LoginBloc>(context).onLoginGoogle(),
-                      child: Text(
-                        "Continue with Google",
-                        style: TextStyle(color: Colors.white),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ButtonTheme(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              primary: Colors.redAccent, // background
+                              onPrimary: Colors.white, // foreground
+                              padding: EdgeInsets.only(
+                                  left: 20.0,
+                                  right: 30.0,
+                                  top: 10.0,
+                                  bottom: 10.0)),
+                          onPressed: () => BlocProvider.of<LoginBloc>(context)
+                              .onLoginGoogle(),
+                          child: Text(
+                            "Continue with Google",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
                       ),
-                      color: Colors.redAccent,
-                    ),
-                  ),
-                  ButtonTheme(
-                    minWidth: 256.0,
-                    height: 32.0,
-                    child: RaisedButton(
-                      onPressed: () =>
-                          BlocProvider.of<LoginBloc>(context).onLoginFacebook(),
-                      child: Text(
-                        "Continue with Facebook",
-                        style: TextStyle(color: Colors.white),
+                      ButtonTheme(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.blueAccent, // background
+                            onPrimary: Colors.white, // foreground
+                          ),
+                          onPressed: () => BlocProvider.of<LoginBloc>(context)
+                              .onLoginFacebook(),
+                          child: Text(
+                            "Continue with Facebook",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
                       ),
-                      color: Colors.blueAccent,
-                    ),
+                    ],
                   ),
                   Text("or"),
                   ButtonTheme(
-                    minWidth: 256.0,
-                    height: 32.0,
-                    child: RaisedButton(
-                        onPressed: () => navigateToSignUp(),
-                        child: Text("Sign up",
-                            style: TextStyle(color: Colors.black)),
-                        color: Colors.white10),
+                    child: TextButton(
+                      onPressed: () => navigateToSignUp(),
+                      child: Text("Sign up",
+                          style: TextStyle(color: Colors.blueAccent)),
+                    ),
                   ),
                   Text("Have an account? "),
-                  new FlatButton(
-                      onPressed: () => navigateToLogInWithEmail(),
-                      child: new Text("Log in",
-                          style: TextStyle(color: Colors.blue)))
+                  ButtonTheme(
+                      child: TextButton(
+                          onPressed: () => navigateToLogInWithEmail(),
+                          child: new Text("Log in",
+                              style: TextStyle(color: Colors.blue))))
                 ],
               ),
             );

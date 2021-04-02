@@ -16,7 +16,12 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         signInOption: SignInOption.standard, scopes: ["profile", "email"]);
     final account = await googleSignInRepo.signIn();
     if (account != null) {
-      LoginRepo.getInstance().signInWithGoogle(account);
+      try {
+        LoginRepo.getInstance().signInWithGoogle(account);
+        add(LoginWithGoogleEvent());
+      } on Exception catch (ex) {
+        add(LoginErrorEvent("Could not log in with Google: ${ex.toString()}"));
+      }
     } else {
       add(LogoutEvent());
     }
@@ -28,6 +33,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     try {
       final signInResult = await facebookSignInRepo.login();
       LoginRepo.getInstance().signInWithFacebook(signInResult);
+      add(LoginWithFacebookEvent());
     } on FacebookAuthException catch (ex) {
       if (ex.errorCode != 'CANCELLED') {
         add(LoginErrorEvent("An error occurred. ${ex.message}"));

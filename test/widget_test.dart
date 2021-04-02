@@ -1,29 +1,32 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility that Flutter provides. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-//import 'package:flutter/material.dart';
-//import 'package:flutter_test/flutter_test.dart';
-import 'package:test/test.dart';
-
-import 'package:chatapp/util/util.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
+import 'package:google_sign_in_mocks/google_sign_in_mocks.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group("Util", () {
-    test('.swapElementsInList() swaps correct elements', () {
-      List<int> intList = List.from([1, 2, 3, 4]);
-      Util.swapElementsInList(intList, 2, 3);
-      expect(intList[2], 4);
-      expect(intList[3], 3);
-    });
-    test('.swapElementsInList() swaps correct elements in pairs', () {
-      List<int> intPair = List.from([-1, 1]);
-      Util.swapElementsInList(intPair, 0, 1);
-      expect(intPair[0], 1);
-      expect(intPair[1], -1);
-    });
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  test('Login test', () async {
+    //testing google sign in
+    final googleSignIn = MockGoogleSignIn();
+    final signinAccount = await googleSignIn.signIn();
+    final googleAuth = await signinAccount.authentication;
+    final AuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    // testing email sign in
+    final user = MockUser(
+      isAnonymous: false,
+      uid: 'someuid',
+      email: 'bob@somedomain.com',
+      displayName: 'Bob',
+    );
+    final auth = MockFirebaseAuth(mockUser: user);
+    final result = await auth.signInWithCredential(credential);
+    final testUser = await result.user;
+    print(testUser.displayName);
+    expect(user.displayName, testUser.displayName);
   });
 }

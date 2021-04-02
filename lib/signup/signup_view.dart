@@ -71,7 +71,7 @@ class _SignUpState extends State<SignUpScreen> {
                             decoration: const InputDecoration(
                                 icon: Icon(Icons.lock), hintText: "Password"),
                           ),
-                          new FlatButton(
+                          new ElevatedButton(
                               onPressed: _toggle,
                               child: new Text(_obscureText ? "Show" : "Hide")),
                           SizedBox(height: 15.0),
@@ -79,18 +79,22 @@ class _SignUpState extends State<SignUpScreen> {
                             child: ButtonTheme(
                               minWidth: 256.0,
                               height: 32.0,
-                              child: RaisedButton(
-                                  onPressed: () {
-                                    final form = _formKey.currentState;
-                                    if (form.validate()) {
-                                      form.save();
-                                      BlocProvider.of<SignUpBloc>(context)
-                                          .onSignUpWithEmail(_email, _password);
-                                    }
-                                  },
-                                  child: Text("Sign up",
-                                      style: TextStyle(color: Colors.black)),
-                                  color: Colors.white10),
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  primary: Colors.white10, // background
+                                  onPrimary: Colors.white, // foreground
+                                ),
+                                onPressed: () {
+                                  final form = _formKey.currentState;
+                                  if (form.validate()) {
+                                    form.save();
+                                    BlocProvider.of<SignUpBloc>(context)
+                                        .onSignUpWithEmail(_email, _password);
+                                  }
+                                },
+                                child: Text("Sign up",
+                                    style: TextStyle(color: Colors.black)),
+                              ),
                             ),
                           )
                         ],
