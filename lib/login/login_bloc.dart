@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:chatapp/login/login_event.dart';
 import 'package:chatapp/login/login_state.dart';
@@ -45,7 +46,13 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
   void onLoginWithEmail(String email, String password) async {
     add(LoginEventInProgress());
-    LoginRepo.getInstance().signInWithEmail(email, password);
+    try {
+      await LoginRepo.getInstance().signInWithEmail(email, password);
+    } on FirebaseAuthException catch (ex) {
+      print("Failed with error code: ${ex.code}");
+      print(ex.message);
+      add(LogoutEvent());
+    }
   }
 
   void onLogout() async {

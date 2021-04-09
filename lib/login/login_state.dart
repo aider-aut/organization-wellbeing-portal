@@ -1,8 +1,7 @@
-import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
 @immutable
-class LoginState extends Equatable {
+class LoginState {
   bool loading;
 
   @override
