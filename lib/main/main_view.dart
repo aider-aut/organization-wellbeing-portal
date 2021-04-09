@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:chatapp/base/bloc_widget.dart';
 import 'package:chatapp/main/main_event.dart';
+import 'package:gradient_bottom_navigation_bar/gradient_bottom_navigation_bar.dart';
 
 import 'main_bloc.dart';
 import 'main_state.dart';
@@ -18,6 +19,16 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainState extends State<MainScreen> {
+  int _selectedIndex = 0;
+  static const TextStyle optionStyle =
+      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocWidget<MainEvent, MainState, MainBloc>(
@@ -69,6 +80,41 @@ class _MainState extends State<MainScreen> {
             }
             return _wrapContentWithFab(context, content);
           },
+        ),
+        bottomNavigationBar: GradientBottomNavigationBar(
+          backgroundColorStart: Colors.purple,
+          backgroundColorEnd: Colors.deepOrange,
+          items: <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+                icon: _selectedIndex != 0
+                    ? new Image.asset(
+                        'assets/icons/user.png',
+                      )
+                    : new Image.asset(
+                        'assets/icons/selected-user.png',
+                      ),
+                title: Text("")),
+            BottomNavigationBarItem(
+                icon: _selectedIndex != 1
+                    ? new Image.asset(
+                        'assets/icons/chatbot.png',
+                      )
+                    : new Image.asset(
+                        'assets/icons/selected-chatbot.png',
+                      ),
+                title: Text("")),
+            BottomNavigationBarItem(
+                icon: _selectedIndex != 2
+                    ? new Image.asset(
+                        'assets/icons/settings.png',
+                      )
+                    : new Image.asset(
+                        'assets/icons/selected-settings.png',
+                      ),
+                title: Text("")),
+          ],
+          currentIndex: _selectedIndex,
+          onTap: _onItemTapped,
         ),
       ),
     );
