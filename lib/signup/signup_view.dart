@@ -91,7 +91,7 @@ class _SignUpState extends State<SignUpScreen> {
                                     icon: Icon(Icons.lock), hintText: "Password"),
                               ),
                                 new Positioned(
-                                  left: 220.0,
+                                  left: (MediaQuery.of(context).size.width-150.0),
                                   child: new TextButton(
                                       onPressed: _toggle,
                                       child: new Text(_obscureText ? "Show" : "Hide"))

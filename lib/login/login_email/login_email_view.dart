@@ -92,7 +92,7 @@ class _LoginEmailState extends State<LoginEmailScreen> {
                                     icon: Icon(Icons.lock), hintText: "Password"),
                               ),
                               Positioned(
-                                left: 220.0,
+                                left: (MediaQuery.of(context).size.width-150.0),
                                 child: TextButton(
                                     onPressed: _toggle,
                                     child: new Text(_obscureText ? "Show" : "Hide"))
