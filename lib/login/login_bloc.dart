@@ -48,10 +48,18 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     add(LoginEventInProgress());
     try {
       await LoginRepo.getInstance().signInWithEmail(email, password);
+      add(LoginWithEmailEvent());
     } on FirebaseAuthException catch (ex) {
+      if(ex.code == "user-not-found") {
+        add(LoginErrorEvent({'code': ex.code, 'message':"Please sign up first!"}));
+      } else if (ex.code == 'invalid-email') {
+        add(LoginErrorEvent({'code': ex.code, 'message': "Please enter a valid email"}));
+      } else {
+        add(LoginErrorEvent({'code': ex.code, 'message':"ERR: ${ex.code}"}));
+      }
+
       print("Failed with error code: ${ex.code}");
       print(ex.message);
-      add(LogoutEvent());
     }
   }
 
@@ -67,10 +75,17 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   Stream<LoginState> mapEventToState(LoginEvent event) async* {
     if (event is LoginWithGoogleEvent) {
       yield LoginState.loading(false);
+    } else if (event is LoginWithFacebookEvent) {
+      yield LoginState.loading(false);
+    } else if (event is LoginWithEmailEvent) {
+      yield LoginState.loading(false);
     } else if (event is LogoutEvent) {
       yield LoginState.loading(false);
     } else if (event is LoginEventInProgress) {
       yield LoginState.loading(true);
-    } else if (event is LoginErrorEvent) {}
+    } else if (event is LoginErrorEvent) {
+      yield LoginState.loading(false);
+      yield LoginState.error(event.error);
+    }
   }
 }

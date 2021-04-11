@@ -30,7 +30,7 @@ class _MyAppState extends State<MyApp> {
         }
         if (snapshot.connectionState == ConnectionState.done) {
           return MaterialApp(
-            title: 'Toptal Chat',
+            title: 'Wellbeing Portal',
             theme: ThemeData(
               primarySwatch: Colors.blue,
             ),

@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:chatapp/login/login_event.dart';
 import 'package:chatapp/model/login/login_repo.dart';
 import 'package:chatapp/signup/signup_event.dart';
 import 'package:chatapp/signup/signup_state.dart';
@@ -16,16 +15,17 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
       UserCredential credential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
       LoginRepo.getInstance().signInWithEmail(email, password);
+      add(SignUpWithEmailEvent());
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
-        add(SignUpErrorEvent('The password provided is too weak.'));
+        add(SignUpErrorEvent({'code':e.code, 'message':'The password provided is too weak.'}));
       } else if (e.code == 'email-already-in-use') {
-        add(SignUpErrorEvent('The account already exists for that email.'));
+        add(SignUpErrorEvent({'code':e.code, 'message':'The account already exists for that email.'}));
       }
     } catch (e) {
-      print(e);
+      print("Error: ${e}");
+      add(SignUpErrorEvent({'code':e, 'message':'Unexpected Error'}));
     }
-    add(SignUpWithEmailEvent());
   }
 
   @override
@@ -36,6 +36,9 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
       yield SignUpState.loading(false);
     } else if (event is SignUpEventInProgress) {
       yield SignUpState.loading(true);
-    } else if (event is LoginErrorEvent) {}
+    } else if (event is SignUpErrorEvent) {
+      yield SignUpState.loading(false);
+      yield SignUpState.error(event.error);
+    }
   }
 }

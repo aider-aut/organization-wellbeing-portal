@@ -4,6 +4,8 @@ class LoginWithGoogleEvent extends LoginEvent {}
 
 class LoginWithFacebookEvent extends LoginEvent {}
 
+class LoginWithEmailEvent extends LoginEvent {}
+
 class LogoutEvent extends LoginEvent {}
 
 class LoginEventInProgress extends LoginEvent {}
