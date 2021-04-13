@@ -32,7 +32,7 @@ class _LoginEmailState extends State<LoginEmailScreen> {
             appBar: AppBar(title: Text("Login with Email")),
             body: BlocWidget<LoginEvent, LoginState, LoginBloc>(
                 builder: (BuildContext context, LoginState state) {
-              if (state.error != null && state.error['code'].isNotEmpty) {
+              if (state.error != null && state.error['message'].isNotEmpty) {
                 return AlertDialog(
                   title: Text("Login Failure"),
                   content: Text(state.error['message']),
@@ -67,7 +67,8 @@ class _LoginEmailState extends State<LoginEmailScreen> {
                             TextFormField(
                               autofocus: false,
                               validator: (String value) {
-                                return (value != null && value.contains('@'))
+                                bool emailValid = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(value);
+                                return (emailValid)
                                     ? null
                                     : "Please enter valid email";
                               },

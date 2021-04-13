@@ -13,9 +13,8 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
   void onSignUpWithEmail(String email, String password) async {
     add(SignUpEventInProgress());
     try {
-      UserCredential credential = await FirebaseAuth.instance
+      await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
-      LoginRepo.getInstance().signInWithEmail(email, password);
       add(SignUpWithEmailEvent());
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
@@ -27,9 +26,17 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
       } else {
         add(SignUpErrorEvent({'code':e.code, 'message':'There was an error creating your account. Please try again.'}));
       }
-    } on PlatformException catch (e) {
+    } catch (e) {
       print("Error: ${e}");
       add(SignUpErrorEvent({'code':e, 'message':'Unexpected Error'}));
+    }
+
+    try {
+      await LoginRepo.getInstance().signInWithEmail(email, password);
+    } on FirebaseAuthException catch (ex) {
+      add(SignUpErrorEvent({'code': ex.code, 'message':"ERR: ${ex.code}"}));
+      print("SIGNIN ERROR - Failed with error code: ${ex.code}");
+      print(ex.message);
     }
   }
 
@@ -43,7 +50,6 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
       yield SignUpState.loading(true);
     } else if (event is SignUpErrorEvent) {
       yield SignUpState.loading(false);
-      print(event.error);
       yield SignUpState.error(event.error);
     }
   }

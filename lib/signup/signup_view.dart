@@ -66,7 +66,8 @@ class _SignUpState extends State<SignUpScreen> {
                             TextFormField(
                               autofocus: false,
                               validator: (String value) {
-                                return (value != null && value.contains('@'))
+                                bool emailValid = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(value);
+                                return (emailValid)
                                     ? null
                                     : "Please enter valid email";
                               },
