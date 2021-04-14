@@ -32,28 +32,22 @@ class _SignUpState extends State<SignUpScreen> {
             appBar: AppBar(title: Text("Sign Up")),
             body: BlocWidget<SignUpEvent, SignUpState, SignUpBloc>(
                 builder: (BuildContext context, SignUpState state) {
-                  if (state.error != null && state.error['code'].isNotEmpty) {
+                  if (state.loading) {
+                    return Center(
+                        child: CircularProgressIndicator(
+                          strokeWidth: 4.0,
+                        ));
+                  } else if (state.error != null && state.error['message'].isNotEmpty) {
                     return AlertDialog(
                       title: Text("Signup Failure"),
                       content: Text(state.error['message']),
                       actions: [
                         TextButton(
                           child: Text("OK"),
-                          onPressed: () => {
-                            if (state.error['code'] == 'email-already-in-use') {
-                                navigateToLogin()
-                            } else {
-                                navigateToSignUp()
-                            }
-                          }),
+                          onPressed: () => navigateToSignUp()),
                       ],
                     );
-                  } else if (state.loading) {
-                return Center(
-                    child: CircularProgressIndicator(
-                  strokeWidth: 4.0,
-                ));
-              } else {
+                  } else {
                 return Center(
                   child: SingleChildScrollView(
                     child: Container(
@@ -133,9 +127,8 @@ class _SignUpState extends State<SignUpScreen> {
   }
 
   void navigateToLogin() {
-    NavigationHelper.navigateToLogin(context);
+    NavigationHelper.navigateToLogInWithEmail(context);
   }
-
   void navigateToSignUp() {
     NavigationHelper.navigateToSignUp(context);
   }

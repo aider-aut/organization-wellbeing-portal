@@ -28,6 +28,7 @@ class AuthObserver extends NavigatorObserver {
           } else {
             // TODO analytics call for facebook login provider
           }
+          print("USER: ${user}");
           NavigationHelper.navigateToMain(navigator.context,
               removeUntil: (_) => false);
         } else {
@@ -35,6 +36,7 @@ class AuthObserver extends NavigatorObserver {
               removeUntil: (_) => false);
         }
       }, onError: (error) {
+            print("ERROR HAPPENED IN AUTH OBSERVER: ${error}");
         NavigationHelper.navigateToLogin(navigator.context,
             removeUntil: (_) => false);
       });

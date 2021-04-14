@@ -84,7 +84,6 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     } else if (event is LoginEventInProgress) {
       yield LoginState.loading(true);
     } else if (event is LoginErrorEvent) {
-      yield LoginState.loading(false);
       yield LoginState.error(event.error);
     }
   }
