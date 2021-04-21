@@ -1,12 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'package:chatapp/model/chat/chatroom.dart';
 import 'package:chatapp/model/message/message.dart';
 import 'package:chatapp/model/user/user.dart';
 
 class Deserializer {
   static List<User> deserializeUserFromReference(
-      List<DocumentReference> refs, List<User> users) {
+      List<dynamic> refs, List<User> users) {
     return users.where((el) => refs.any((ref) => ref.id == el.uid)).toList();
   }
 
@@ -29,10 +28,10 @@ class Deserializer {
   }
 
   static Chatroom deserializeChatroom(DocumentSnapshot doc, List<User> users) {
-    List<DocumentReference> participantRefs = doc.data()['participants'];
+    List<dynamic> participantRefs = doc.data()['participants'];
     return Chatroom(
         deserializeUserFromReference(participantRefs, users).toList(),
-        List<Message>());
+        new List<Message>.empty(growable: true));
   }
 
   static Message deserializeMessage(
@@ -42,8 +41,10 @@ class Deserializer {
     return Message(author, doc['timestamp'], doc['value']);
   }
 
+
   static List<Message> deserializeMessages(
       List<dynamic> messages, List<User> users) {
+    print("MESSAGES: ${messages.toString()}");
     return messages.map((data) {
       return deserializeMessage(Map<String, dynamic>.from(data), users);
     }).toList();
@@ -51,10 +52,10 @@ class Deserializer {
 
   static Chatroom deserializeChatroomMessages(
       DocumentSnapshot doc, List<User> users) {
-    List<DocumentReference> participantRefs = doc.data()['participants'];
+    List<dynamic> participantRefs = doc.data()['participants'];
     Chatroom chatroom = Chatroom(
         deserializeUserFromReference(participantRefs, users).toList(),
-        List<Message>());
+        new List<Message>.empty(growable: true));
     chatroom.messages
         .addAll(deserializeMessages(doc.data()['messages'], users));
     return chatroom;

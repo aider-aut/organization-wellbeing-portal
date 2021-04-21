@@ -9,13 +9,13 @@ class InstantMessagingState {
       {this.error = false});
 
   factory InstantMessagingState.initial() =>
-      InstantMessagingState._internal(true, List<Message>(0));
+      InstantMessagingState._internal(true, new List<Message>.empty(growable: true));
 
   factory InstantMessagingState.messages(List<Message> messages) =>
       InstantMessagingState._internal(false, messages);
 
   factory InstantMessagingState.uploading() =>
-      InstantMessagingState._internal(true, List<Message>(0));
+      InstantMessagingState._internal(true, new List<Message>.empty(growable: true));
 
   factory InstantMessagingState.error(InstantMessagingState state) =>
       InstantMessagingState._internal(state.isLoading, state.messages,

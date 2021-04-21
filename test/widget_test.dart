@@ -16,6 +16,8 @@ void main() {
       idToken: googleAuth.idToken,
     );
 
+    //TODO testing facebook sign in
+
     // testing email sign in
     final user = MockUser(
       isAnonymous: false,

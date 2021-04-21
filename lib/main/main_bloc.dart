@@ -43,12 +43,19 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     }
   }
 
+  void retrieveChatroomForChatBotConversation(Function(SelectedChatroom) onChatBotConversationProcessed) async {
+    final currentUser = await UserRepo.getInstance().getCurrentUser();
+    ChatRepo.getInstance().startConversationWithChatBot(currentUser).then((chatroom) {
+      onChatBotConversationProcessed(chatroom);
+    });
+  }
+
   void retrieveChatroomForParticipant(
       User user, Function(SelectedChatroom) onChatroomProcessed) async {
     final currentUser = await UserRepo.getInstance().getCurrentUser();
-    List<User> users = List<User>(2);
-    users[0] = user;
-    users[1] = currentUser;
+    List<User> users = new List<User>.empty(growable: true);
+    users.add(user);
+    users.add(currentUser);
     ChatRepo.getInstance().startChatroomForUsers(users).then((chatroom) {
       onChatroomProcessed(chatroom);
     });

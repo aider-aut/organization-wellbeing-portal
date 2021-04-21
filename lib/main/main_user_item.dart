@@ -16,11 +16,11 @@ class UserItem extends StatelessWidget {
               horizontal: 0, vertical: UIConstants.SMALL_PADDING),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(48.0),
-            child: Image.network(
+            child: user.imgURL != null ? Image.network(
               user.imgURL,
               height: 96,
               width: 96,
-            ),
+            ) : null,
           )),
       Expanded(
         child: Container(

@@ -48,8 +48,13 @@ class InstantMessagingBloc
 
   void send(String text) async {
     final User user = await UserRepo.getInstance().getCurrentUser();
-    final bool success = await ChatRepo.getInstance()
-        .sendMessageToChatroom(chatroomId, user, text);
+    final isChatBot = await ChatRepo.getInstance().isOtherUserChatBot();
+    bool success = false;
+    if(isChatBot) {
+      success = await ChatRepo.getInstance().sendMessageToChatbot(chatroomId, text);
+    } else {
+      success = await ChatRepo.getInstance().sendMessageToChatroom(chatroomId, user, text);
+    }
     if (!success) {
       add(MessageSendErrorEvent());
     }
@@ -88,8 +93,4 @@ class InstantMessagingBloc
     }
     return super.close();
   }
-
-  @override
-  // TODO: implement initialState
-  InstantMessagingState get initialState => null;
 }

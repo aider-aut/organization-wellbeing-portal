@@ -23,14 +23,14 @@ class _MainState extends State<MainScreen> {
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
+    void _onItemTapped(int index) {
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
     return BlocWidget<MainEvent, MainState, MainBloc>(
       builder: (BuildContext context, MainState state) => Scaffold(
         appBar: AppBar(
@@ -96,9 +96,13 @@ class _MainState extends State<MainScreen> {
                 title: Text("")),
             BottomNavigationBarItem(
                 icon: _selectedIndex != 1
-                    ? new Image.asset(
+                    ? new IconButton(
+                      onPressed: () => {
+                        BlocProvider.of<MainBloc>(context).retrieveChatroomForChatBotConversation(navigateToChatroom)
+                      },
+                      icon: new Image.asset(
                         'assets/icons/chatbot.png',
-                      )
+                      ))
                     : new Image.asset(
                         'assets/icons/selected-chatbot.png',
                       ),

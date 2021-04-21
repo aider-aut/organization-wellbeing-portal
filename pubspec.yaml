@@ -32,6 +32,7 @@ dependencies:
   rxdart: 0.25.0
   gradient_bottom_navigation_bar: ^1.0.0+4
   equatable: 1.2.6
+  http: ^0.12.2
 
 dev_dependencies:
   test: ^1.5.3

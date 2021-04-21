@@ -40,9 +40,9 @@ class CreateChatroomBloc
     add(CreateChatroomRequestedEvent());
     assert(currentUser != null);
     assert(currentUser != user);
-    List<User> chatroomUsers = List<User>(2);
-    chatroomUsers[0] = user;
-    chatroomUsers[1] = currentUser;
+    List<User> chatroomUsers = new List<User>.empty(growable: true);
+    chatroomUsers.add(user);
+    chatroomUsers.add(currentUser);
     ChatRepo.getInstance()
         .startChatroomForUsers(chatroomUsers)
         .then((chatroom) {
@@ -68,8 +68,4 @@ class CreateChatroomBloc
     }
     return super.close();
   }
-
-  @override
-  // TODO: implement initialState
-  CreateChatroomState get initialState => null;
 }

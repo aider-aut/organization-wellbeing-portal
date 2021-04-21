@@ -16,7 +16,7 @@ class CreateChatroomState {
   CreateChatroomState._internal(this.users, this.isLoading, {this.action});
 
   factory CreateChatroomState.initial() =>
-      CreateChatroomState._internal(List<User>(0), true);
+      CreateChatroomState._internal(new List<User>.empty(growable: true), true);
 
   factory CreateChatroomState.isLoading(
           bool isLoading, CreateChatroomState state) =>
