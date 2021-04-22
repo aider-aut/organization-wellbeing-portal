@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:chatapp/model/login/login_repo.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -28,8 +29,14 @@ class AuthObserver extends NavigatorObserver {
           } else {
             // TODO analytics call for facebook login provider
           }
-          NavigationHelper.navigateToMain(navigator.context,
-              removeUntil: (_) => false);
+          if(LoginRepo.getInstance().isNewUser()){
+            NavigationHelper.navigateToWelcome(navigator.context,
+                removeUntil: (_) => false);
+          } else {
+            NavigationHelper.navigateToMain(navigator.context,
+                removeUntil: (_) => false);
+          }
+
         } else {
           NavigationHelper.navigateToLogin(navigator.context,
               removeUntil: (_) => false);

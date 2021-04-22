@@ -44,7 +44,6 @@ class Deserializer {
 
   static List<Message> deserializeMessages(
       List<dynamic> messages, List<User> users) {
-    print("MESSAGES: ${messages.toString()}");
     return messages.map((data) {
       return deserializeMessage(Map<String, dynamic>.from(data), users);
     }).toList();

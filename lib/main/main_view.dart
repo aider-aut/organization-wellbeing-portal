@@ -1,3 +1,5 @@
+import 'package:chatapp/main/welcome_view.dart';
+import 'package:chatapp/model/login/login_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:chatapp/base/bloc_widget.dart';
@@ -30,6 +32,9 @@ class _MainState extends State<MainScreen> {
       setState(() {
         _selectedIndex = index;
       });
+    }
+    if(LoginRepo.getInstance().isNewUser()){
+      return WelcomeScreen();
     }
     return BlocWidget<MainEvent, MainState, MainBloc>(
       builder: (BuildContext context, MainState state) => Scaffold(

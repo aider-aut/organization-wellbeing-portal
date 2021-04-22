@@ -1,4 +1,5 @@
 import 'package:chatapp/login/login_email/login_email_view.dart';
+import 'package:chatapp/main/welcome_view.dart';
 import 'package:chatapp/signup/signup_view.dart';
 import 'package:flutter/material.dart';
 
@@ -41,6 +42,23 @@ class NavigationHelper {
     } else {
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => MainScreen()));
+    }
+  }
+
+  static void navigateToWelcome(
+      BuildContext context, {
+        bool addToBackStack: false,
+        bool Function(Route<dynamic>) removeUntil,
+      }) {
+    if (addToBackStack) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => WelcomeScreen()),
+        removeUntil ?? _defaultRule,
+      );
+    } else {
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => WelcomeScreen()));
     }
   }
 

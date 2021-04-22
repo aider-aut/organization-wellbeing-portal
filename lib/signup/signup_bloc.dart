@@ -13,6 +13,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
   void onSignUpWithEmail(String email, String password) async {
     add(SignUpEventInProgress());
     try {
+      LoginRepo.getInstance().setIsNewUser(true);
       await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
       await LoginRepo.getInstance().signInWithEmail(email, password);
       add(SignUpStatusUpdate({'state': true, 'email': email, 'password': password}));

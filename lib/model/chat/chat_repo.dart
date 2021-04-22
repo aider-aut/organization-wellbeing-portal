@@ -70,7 +70,6 @@ class ChatRepo {
   Stream<List<Chatroom>> getChatroomsForUser(User user) {
     DocumentReference userRef =
         _firestore.doc(FirestorePaths.USERS_COLLECTION + "/" + user.uid);
-    print("chatsubject: ${_chatUsersSubject.value.toString()}");
     return _firestore
         .collection(FirestorePaths.CHATROOMS_COLLECTION)
         .where(

@@ -15,6 +15,7 @@ class LoginRepo {
   static LoginRepo _instance;
   final firebase.FirebaseAuth _auth = firebase.FirebaseAuth.instance;
   final FirebaseFirestore _firestore;
+  bool _isFirstUser = false;
 
   LoginRepo._internal(this._firestore);
 
@@ -25,8 +26,16 @@ class LoginRepo {
     return _instance;
   }
 
+  void setIsNewUser(bool isNewUser) {
+    _isFirstUser = isNewUser;
+  }
+  bool isNewUser() {
+    return _isFirstUser;
+  }
+
   Future<LoginResponse> _signIn(firebase.AuthCredential credentials) async {
     final authResult = await _auth.signInWithCredential(credentials);
+    setIsNewUser(authResult.additionalUserInfo.isNewUser);
     if (authResult != null && authResult.user != null) {
       final user = authResult.user;
       final token = await UserRepo.getInstance().getFCMToken();
@@ -64,6 +73,7 @@ class LoginRepo {
     final authResult = await _auth.signInWithEmailAndPassword(
         email: email, password: password);
     if (authResult != null && authResult.user != null) {
+      setIsNewUser(authResult.additionalUserInfo.isNewUser);
       final user = authResult.user;
       final token = await UserRepo.getInstance().getFCMToken();
       User serializedUser = User(
