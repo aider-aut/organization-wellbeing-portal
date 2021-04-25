@@ -38,7 +38,7 @@ class Deserializer {
       Map<String, dynamic> doc, List<User> users) {
     DocumentReference authorReference = doc['author'];
     User author = users.firstWhere((user) => user.uid == authorReference.id);
-    return Message(author, doc['timestamp'], doc['value']);
+    return Message(author, doc['timestamp'], doc['value'], option: doc['option']);
   }
 
 
@@ -55,8 +55,9 @@ class Deserializer {
     Chatroom chatroom = Chatroom(
         deserializeUserFromReference(participantRefs, users).toList(),
         new List<Message>.empty(growable: true));
-    chatroom.messages
-        .addAll(deserializeMessages(doc.data()['messages'], users));
+    if(chatroom.messages != null)
+      chatroom.messages
+          .addAll(deserializeMessages(doc.data()['messages'], users));
     return chatroom;
   }
 }

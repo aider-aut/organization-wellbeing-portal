@@ -34,10 +34,10 @@ class InstantMessagingBloc
             final String downloadUri =
                 await StorageRepo.getInstance().decodeUri(uri);
             return Message(message.author, message.timestamp,
-                "_uri:$downloadUri", message.author.uid == user.uid);
+                "_uri:$downloadUri", option: message.option, outgoing: message.author.uid == user.uid);
           }
-          return Message(message.author, message.timestamp, message.value,
-              message.author.uid == user.uid);
+          return Message(message.author, message.timestamp, message.value, option: message.option,
+              outgoing: message.author.uid == user.uid);
         });
         final List<Message> processedMessages =
             await processedMessagesStream.toList();

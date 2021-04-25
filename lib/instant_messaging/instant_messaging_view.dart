@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:chatapp/model/chat/chat_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -100,7 +101,7 @@ class _InstantMessagingState extends State<InstantMessagingScreen> {
                         horizontal: UIConstants.SMALL_PADDING,
                         vertical: UIConstants.SMALL_PADDING,
                       ),
-                      itemBuilder: (context, index) => _buildMessageItem(
+                      itemBuilder: (context, index) => _buildMessageItem(context,
                           state.messages[state.messages.length - 1 - index]),
                       itemCount: state.messages.length,
                       reverse: true,
@@ -116,7 +117,7 @@ class _InstantMessagingState extends State<InstantMessagingScreen> {
     );
   }
 
-  Widget _buildMessageItem(Message message) {
+  Widget _buildMessageItem(BuildContext context, Message message) {
     if (message.value.startsWith("_uri:")) {
       final String url = message.value.substring("_uri:".length);
       if (message.outgoing) {
@@ -156,6 +157,29 @@ class _InstantMessagingState extends State<InstantMessagingScreen> {
         ),
       );
     } else {
+      if (message.option) {
+        return Container(
+          child: ButtonTheme(
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  primary: Colors.greenAccent, // background
+                  onPrimary: Colors.white, // foreground
+                  padding: EdgeInsets.all(UIConstants.SMALL_PADDING)),
+              onPressed: () {
+                ChatRepo.getInstance().deleteMessageAfterSelected(message).whenComplete(() => _send(context, message.value));
+              },
+              child: Text(
+                message.value,
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ),
+          margin: EdgeInsets.only(
+            top: UIConstants.SMALL_PADDING,
+            right: UIConstants.LARGE_PADDING,
+          ),
+        );
+      }
       return Container(
         child: Text(
           message.value,

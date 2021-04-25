@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:chatapp/model/message/message.dart';
 import 'package:http/http.dart' as http;
 import 'package:chatapp/model/user/user_repo.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -17,6 +18,7 @@ class ChatRepo {
   final FirebaseFirestore _firestore;
   bool _isChatBot = false;
   final _chatUsersSubject = BehaviorSubject<List<User>>();
+  String _chatBotId;
 
   ChatRepo._internal(this._firestore);
 
@@ -150,6 +152,7 @@ class ChatRepo {
   }
 
   Future<bool> sendMessageToChatbot(String chatBotId, String message) async {
+    _chatBotId = chatBotId;
     User currentUser = await UserRepo.getInstance().getCurrentUser();
     DocumentReference authorRef = _firestore.collection(
         FirestorePaths.USERS_COLLECTION).doc(currentUser.uid);
@@ -161,7 +164,8 @@ class ChatRepo {
       Map<String, dynamic> serializedMessage = {
         "author": authorRef,
         "timestamp": DateTime.now(),
-        "value": message
+        "value": message,
+        "option": false
       };
       chatHistoryRef.update({
         "messages": FieldValue.arrayUnion([serializedMessage])
@@ -171,7 +175,7 @@ class ChatRepo {
     }
     try {
       final response = await http.post(
-        'https://74d06224c295.ngrok.io/webhooks/rest/webhook',
+        'https://499067bc350c.ngrok.io/webhooks/rest/webhook',
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -183,27 +187,64 @@ class ChatRepo {
       if(response.statusCode == 200 ){
 
         List<dynamic> temp = jsonDecode(response.body);
-        Map<String, dynamic> res = temp[0];
-        print("BOTRES: ${res.toString()}");
-        if(res['text'] != null) {
-          Map<String, dynamic> serializedMessage = {
-            "author": chatbotRef,
-            "timestamp": DateTime.now(),
-            "value": res['text']
-          };
-          chatHistoryRef.update({
-            "messages": FieldValue.arrayUnion([serializedMessage])
-          });
-        }
+
+          for(var i = 0; i < temp.length; i++){
+            Map<String, dynamic> res = temp[i];
+            print("BOTRES: ${res.toString()}");
+            if(res['text'] != null) {
+              Map<String, dynamic> serializedMessage = {
+                "author": chatbotRef,
+                "timestamp": DateTime.now(),
+                "value": res['text'],
+                "option": false
+              };
+              chatHistoryRef.update({
+                "messages": FieldValue.arrayUnion([serializedMessage])
+              });
+            }
+            if (res['buttons'] != null) {
+              List<dynamic> buttons_arr = res['buttons'];
+              // print("BUTTONS: ${res['buttons']}");
+              for(var i = 0; i < buttons_arr.length; i++) {
+                Map<String, dynamic> res = buttons_arr[i];
+                if (res['title'] != null) {
+                  Map<String, dynamic> serializedMessage = {
+                    "author": chatbotRef,
+                    "timestamp": DateTime.now(),
+                    "value": res['title'],
+                    "option": true
+                  };
+                  chatHistoryRef.update({
+                    "messages": FieldValue.arrayUnion([serializedMessage])
+                  });
+                }
+              }
+            }
+          }
         return true;
       } else {
-        print("CHATBOT: Failed at receiving data from RASA");
+        print("CHATBOT: Failed at receiving data from RASA: status code - ${response.statusCode}");
         return false;
       }
     } catch (e) {
       print("CHATBOT: something went wrong at POST request: ${e.toString()}");
       return false;
     }
+  }
+
+  Future<void> deleteMessageAfterSelected(Message sentMessage) {
+    WriteBatch batch = _firestore.batch();
+    DocumentReference chatHistoryRef = _firestore.collection(
+        FirestorePaths.CHATROOMS_COLLECTION).doc(_chatBotId);
+    return chatHistoryRef.get().then((data) {
+      if (data.data()['messages'] != null) {
+        Map<String, dynamic> temp = data.data();
+        temp['messages'].removeWhere((item) => item['option'] == true);
+        batch.update(data.reference, temp);
+      }
+      return batch.commit();
+    });
+
   }
 
   Future<bool> sendMessageToChatroom(
