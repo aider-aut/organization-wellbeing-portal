@@ -19,8 +19,17 @@ class AuthObserver extends NavigatorObserver {
   Future<void> _setup() async {
     await Firebase.initializeApp();
     if (_authStateListener == null) {
+      final actionCodeSettings = firebase.ActionCodeSettings(
+          url: "https://chatapp-2dfea.firebaseapp.com/",
+          handleCodeInApp: true,
+          iOSBundleId: "com.example.ios",
+          androidPackageName: "com.example.android");
       _authStateListener =
           firebase.FirebaseAuth.instance.authStateChanges().listen((user) {
+        //print("this is a user ${user.email}");
+        firebase.FirebaseAuth.instance.sendSignInLinkToEmail(email: user.email, actionCodeSettings: actionCodeSettings).whenComplete()
+        
+
         if (user != null) {
           final loginProvider = user.providerData.first.providerId;
           UserRepo.getInstance().setCurrentUser(User.fromFirebaseUser(user));
@@ -29,14 +38,13 @@ class AuthObserver extends NavigatorObserver {
           } else {
             // TODO analytics call for facebook login provider
           }
-          if(LoginRepo.getInstance().isNewUser()){
+          if (LoginRepo.getInstance().isNewUser()) {
             NavigationHelper.navigateToWelcome(navigator.context,
                 removeUntil: (_) => false);
           } else {
             NavigationHelper.navigateToMain(navigator.context,
                 removeUntil: (_) => false);
           }
-
         } else {
           NavigationHelper.navigateToLogin(navigator.context,
               removeUntil: (_) => false);
