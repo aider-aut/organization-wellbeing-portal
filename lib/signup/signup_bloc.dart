@@ -9,27 +9,40 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
   SignUpBloc(SignUpState initialState) : super(initialState);
 
-
   void onSignUpWithEmail(String email, String password) async {
     add(SignUpEventInProgress());
     try {
       LoginRepo.getInstance().setIsNewUser(true);
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
+
+      print("this is test for ${LoginRepo.getInstance().toString()}");
+
+      await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
       await LoginRepo.getInstance().signInWithEmail(email, password);
-      add(SignUpStatusUpdate({'state': true, 'email': email, 'password': password}));
+
+      add(SignUpStatusUpdate(
+          {'state': true, 'email': email, 'password': password}));
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
-        add(SignUpErrorEvent({'code':e.code, 'message':'The password provided is too weak.'}));
+        add(SignUpErrorEvent(
+            {'code': e.code, 'message': 'The password provided is too weak.'}));
       } else if (e.code == 'email-already-in-use') {
-        add(SignUpErrorEvent({'code':e.code, 'message':'The account already exists for that email.'}));
+        add(SignUpErrorEvent({
+          'code': e.code,
+          'message': 'The account already exists for that email.'
+        }));
       } else if (e.code == 'invalid-email') {
-        add(SignUpErrorEvent({'code':e.code, 'message':'Invalid Email'}));
+        add(SignUpErrorEvent({'code': e.code, 'message': 'Invalid Email'}));
       } else {
-        add(SignUpErrorEvent({'code':e.code, 'message':'There was an error creating your account. Please try again.'}));
+        add(SignUpErrorEvent({
+          'code': e.code,
+          'message':
+              'There was an error creating your account. Please try again.'
+        }));
       }
     } catch (e) {
       print("Error: ${e}");
-      add(SignUpErrorEvent({'code':e, 'message':'Unexpected Error'}));
+      add(SignUpErrorEvent({'code': e, 'message': 'Unexpected Error'}));
     }
   }
 

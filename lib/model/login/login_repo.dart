@@ -29,6 +29,7 @@ class LoginRepo {
   void setIsNewUser(bool isNewUser) {
     _isFirstUser = isNewUser;
   }
+
   bool isNewUser() {
     return _isFirstUser;
   }
@@ -82,6 +83,12 @@ class LoginRepo {
         user.photoURL,
         token,
       );
+
+      if (!firebase.FirebaseAuth.instance.currentUser.emailVerified) {
+        await user.sendEmailVerification();
+      }
+      //print(firebase.FirebaseAuth.instance.currentUser);
+
       await _firestore
           .collection(FirestorePaths.USERS_COLLECTION)
           .doc(user.uid)
