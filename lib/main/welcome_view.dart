@@ -1,22 +1,28 @@
+import 'package:chatapp/login/login_view.dart';
 import 'package:chatapp/main/main_view.dart';
 import 'package:chatapp/model/login/login_repo.dart';
+import 'package:chatapp/navigation_helper.dart';
 import 'package:flutter/material.dart';
 
 class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    void navigateToLogin() {
+      NavigationHelper.navigateToLogin(context, addToBackStack: false);
+    }
     return Scaffold(
-          appBar: AppBar(
-            elevation: 0,
-            title: Text(
-              'Welcome to Aider',
-              style: TextStyle(
-                  fontSize: 20.0,
-                  color: Colors.grey[600],
-                  backgroundColor: Colors.white),
-            ),
-          ),
-          body: Column(
+          body: !LoginRepo.getInstance().isEmailVerified() ? (
+              AlertDialog(
+                title: Text("Verify Email"),
+                content: Text("Please Verify your email before continuing"),
+                actions: [
+                  TextButton(
+                      child: Text("OK"),
+                      onPressed: () => navigateToLogin()
+                  ),
+                ],
+              )
+          ) : Column(
             children: [
               Container(
                 width: 250,
@@ -120,9 +126,9 @@ class WelcomeScreen extends StatelessWidget {
                                 builder: (context) => MainScreen()));
                       },
                       textColor: Colors.white,
-                      color: Colors.blue,
+                      color: LoginRepo.getInstance().isNewUser() ? Colors.grey : Colors.blue,
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15))))
+                          borderRadius: BorderRadius.circular(15)))),
             ],
           ),
         );

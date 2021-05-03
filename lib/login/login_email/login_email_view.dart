@@ -2,6 +2,7 @@ import 'package:chatapp/base/bloc_widget.dart';
 import 'package:chatapp/login/login_bloc.dart';
 import 'package:chatapp/login/login_event.dart';
 import 'package:chatapp/login/login_state.dart';
+import 'package:chatapp/model/user/user_repo.dart';
 import 'package:chatapp/navigation_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -84,7 +85,7 @@ class _LoginEmailState extends State<LoginEmailScreen> {
                               TextFormField(
                                 autofocus: false,
                                 validator: (val) =>
-                                val.length < 6 ? 'Password too short.' : null,
+                                val.length < 6 ? 'Password too short (it has to be longer than 6 characters).' : null,
                                 onSaved: (String value) {
                                   _password = value;
                                 },
@@ -107,6 +108,9 @@ class _LoginEmailState extends State<LoginEmailScreen> {
                                   height: 32.0,
                                   child: RaisedButton(
                                       onPressed: () {
+                                        if(UserRepo.getInstance().getCurrentUser() != null){
+                                          NavigationHelper.navigateToWelcome(context,addToBackStack: false);
+                                        }
                                         final form = _formKey.currentState;
                                         if (form.validate()) {
                                           form.save();
@@ -128,9 +132,9 @@ class _LoginEmailState extends State<LoginEmailScreen> {
             })));
   }
   void navigateToSignUp() {
-    NavigationHelper.navigateToSignUp(context);
+    NavigationHelper.navigateToSignUp(context, addToBackStack: false);
   }
   void navigateToLogInWithEmail() {
-    NavigationHelper.navigateToLogInWithEmail(context, addToBackStack: true);
+    NavigationHelper.navigateToLogInWithEmail(context, addToBackStack: false);
   }
 }

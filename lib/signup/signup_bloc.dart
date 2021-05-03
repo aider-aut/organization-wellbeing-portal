@@ -21,7 +21,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
       if (e.code == 'weak-password') {
         add(SignUpErrorEvent({'code':e.code, 'message':'The password provided is too weak.'}));
       } else if (e.code == 'email-already-in-use') {
-        add(SignUpErrorEvent({'code':e.code, 'message':'The account already exists for that email.'}));
+        add(SignUpErrorEvent({'code':e.code, 'message':'The account already exists with that email. Please sign up with a different email'}));
       } else if (e.code == 'invalid-email') {
         add(SignUpErrorEvent({'code':e.code, 'message':'Invalid Email'}));
       } else {

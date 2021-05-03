@@ -33,6 +33,10 @@ class LoginRepo {
     return _isFirstUser;
   }
 
+  bool isEmailVerified() {
+    return _auth.currentUser.emailVerified;
+  }
+
   Future<LoginResponse> _signIn(firebase.AuthCredential credentials) async {
     final authResult = await _auth.signInWithCredential(credentials);
     setIsNewUser(authResult.additionalUserInfo.isNewUser);
@@ -70,6 +74,7 @@ class LoginRepo {
   }
 
   Future<LoginResponse> signInWithEmail(String email, String password) async {
+
     final authResult = await _auth.signInWithEmailAndPassword(
         email: email, password: password);
     if (authResult != null && authResult.user != null) {
@@ -82,6 +87,9 @@ class LoginRepo {
         user.photoURL,
         token,
       );
+      if (!user.emailVerified) {
+        await user.sendEmailVerification();
+      }
       await _firestore
           .collection(FirestorePaths.USERS_COLLECTION)
           .doc(user.uid)

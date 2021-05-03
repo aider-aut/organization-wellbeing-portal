@@ -29,7 +29,7 @@ class AuthObserver extends NavigatorObserver {
           } else {
             // TODO analytics call for facebook login provider
           }
-          if(LoginRepo.getInstance().isNewUser()){
+          if(!LoginRepo.getInstance().isEmailVerified() || LoginRepo.getInstance().isNewUser()){
             NavigationHelper.navigateToWelcome(navigator.context,
                 removeUntil: (_) => false);
           } else {
