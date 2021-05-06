@@ -116,7 +116,7 @@ class WelcomeScreen extends StatelessWidget {
               ),
               SizedBox(
                   width: 180,
-                  child: RaisedButton(
+                  child: ElevatedButton(
                       child: Text("Next"),
                       onPressed: () {
                         LoginRepo.getInstance().setIsNewUser(false);
@@ -125,11 +125,13 @@ class WelcomeScreen extends StatelessWidget {
                             MaterialPageRoute(
                                 builder: (context) => MainScreen()));
                       },
-                      textColor: Colors.white,
-                      color: LoginRepo.getInstance().isNewUser() ? Colors.grey : Colors.blue,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15)))),
-            ],
+                      style: ElevatedButton.styleFrom(
+                          primary: LoginRepo.getInstance().isNewUser() ? Colors.grey : Colors.blue, // background
+                          shape:RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15)))
+                         ),
+              )
+            ]
           ),
         );
   }

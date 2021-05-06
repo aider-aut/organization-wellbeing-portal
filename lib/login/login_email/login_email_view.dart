@@ -106,7 +106,7 @@ class _LoginEmailState extends State<LoginEmailScreen> {
                                 child: ButtonTheme(
                                   minWidth: 256.0,
                                   height: 32.0,
-                                  child: RaisedButton(
+                                  child: ElevatedButton(
                                       onPressed: () {
                                         if(UserRepo.getInstance().getCurrentUser() != null){
                                           NavigationHelper.navigateToWelcome(context,addToBackStack: false);
@@ -120,7 +120,9 @@ class _LoginEmailState extends State<LoginEmailScreen> {
                                       },
                                       child: Text("Sign in",
                                           style: TextStyle(color: Colors.black)),
-                                      color: Colors.white10),
+                                      style: ElevatedButton.styleFrom(
+                                        primary: Colors.white10
+                                      )),
                                 ))
                           ],
                         ),
