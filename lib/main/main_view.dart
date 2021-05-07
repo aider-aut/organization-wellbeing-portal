@@ -12,6 +12,7 @@ import 'main_user_item.dart';
 import '../util/constants.dart';
 import '../navigation_helper.dart';
 import '../model/chat/chatroom.dart';
+import 'package:chatapp/main/pages/profile_screen.dart';
 
 class MainScreen extends StatefulWidget {
   MainScreen({Key key}) : super(key: key);
@@ -25,7 +26,6 @@ class _MainState extends State<MainScreen> {
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
 
-
   @override
   Widget build(BuildContext context) {
     void _onItemTapped(int index) {
@@ -33,7 +33,8 @@ class _MainState extends State<MainScreen> {
         _selectedIndex = index;
       });
     }
-    if(LoginRepo.getInstance().isNewUser()){
+
+    if (LoginRepo.getInstance().isNewUser()) {
       return WelcomeScreen();
     }
     return BlocWidget<MainEvent, MainState, MainBloc>(
@@ -60,10 +61,11 @@ class _MainState extends State<MainScreen> {
               );
             } else if (state.chatrooms.isEmpty) {
               content = Center(
-                child: Text(
-                  "Looks like you don't have any active chatrooms\nLet's start one right now!",
-                  textAlign: TextAlign.center,
-                ),
+                // child: Text(
+                //   "Looks like you don't have any active chatrooms\nLet's start one right now!",
+                //   textAlign: TextAlign.center,
+                // ),
+                child: Profile(),
               );
             } else {
               content = ListView.builder(
@@ -102,12 +104,14 @@ class _MainState extends State<MainScreen> {
             BottomNavigationBarItem(
                 icon: _selectedIndex != 1
                     ? new IconButton(
-                      onPressed: () => {
-                        BlocProvider.of<MainBloc>(context).retrieveChatroomForChatBotConversation(navigateToChatroom)
-                      },
-                      icon: new Image.asset(
-                        'assets/icons/chatbot.png',
-                      ))
+                        onPressed: () => {
+                              BlocProvider.of<MainBloc>(context)
+                                  .retrieveChatroomForChatBotConversation(
+                                      navigateToChatroom)
+                            },
+                        icon: new Image.asset(
+                          'assets/icons/chatbot.png',
+                        ))
                     : new Image.asset(
                         'assets/icons/selected-chatbot.png',
                       ),
