@@ -11,6 +11,7 @@ import 'main_user_item.dart';
 import '../util/constants.dart';
 import '../navigation_helper.dart';
 import '../model/chat/chatroom.dart';
+import 'package:chatapp/main/pages/profile_screen.dart';
 
 class MainScreen extends StatefulWidget {
   MainScreen({Key key}) : super(key: key);
@@ -63,10 +64,11 @@ class _MainState extends State<MainScreen> {
               );
             } else if (state.chatrooms.isEmpty) {
               content = Center(
-                child: Text(
-                  "Looks like you don't have any active chatrooms\nLet's start one right now!",
-                  textAlign: TextAlign.center,
-                ),
+                // child: Text(
+                //   "Looks like you don't have any active chatrooms\nLet's start one right now!",
+                //   textAlign: TextAlign.center,
+                // ),
+                child: Profile(),
               );
             } else {
               content = Center(child: Text("HELLO"));
