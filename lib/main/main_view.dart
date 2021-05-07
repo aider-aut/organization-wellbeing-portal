@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:chatapp/base/bloc_widget.dart';
 import 'package:chatapp/main/main_event.dart';
-import 'package:gradient_bottom_navigation_bar/gradient_bottom_navigation_bar.dart';
 
 import 'main_bloc.dart';
 import 'main_state.dart';
@@ -23,6 +22,9 @@ class MainScreen extends StatefulWidget {
 
 class _MainState extends State<MainScreen> {
   int _selectedIndex = 0;
+  Image _profileIcon = new Image.asset(
+    'assets/icons/user.png',
+  );
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
 
@@ -41,6 +43,7 @@ class _MainState extends State<MainScreen> {
       builder: (BuildContext context, MainState state) => Scaffold(
         appBar: AppBar(
           title: Text('ChatApp'),
+          backgroundColor: Colors.lightGreen,
           actions: <Widget>[
             IconButton(
               icon: Icon(Icons.lock_open),
@@ -68,63 +71,51 @@ class _MainState extends State<MainScreen> {
                 child: Profile(),
               );
             } else {
-              content = ListView.builder(
-                padding: EdgeInsets.all(UIConstants.SMALL_PADDING),
-                itemBuilder: (context, index) {
-                  return InkWell(
-                    child: _buildItem(state.chatrooms[index]),
-                    onTap: () {
-                      BlocProvider.of<MainBloc>(context)
-                          .retrieveChatroomForParticipant(
-                        state.chatrooms[index].participants.first,
-                        navigateToChatroom,
-                      );
-                    },
-                  );
-                },
-                itemCount: state.chatrooms.length,
-              );
+              content = Center(child: Text("HELLO"));
             }
             return _wrapContentWithFab(context, content);
           },
         ),
-        bottomNavigationBar: GradientBottomNavigationBar(
-          backgroundColorStart: Colors.purple,
-          backgroundColorEnd: Colors.deepOrange,
+        bottomNavigationBar: BottomNavigationBar(
           items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-                icon: _selectedIndex != 0
-                    ? new Image.asset(
-                        'assets/icons/user.png',
-                      )
-                    : new Image.asset(
-                        'assets/icons/selected-user.png',
-                      ),
-                title: Text("")),
+                icon: SizedBox(
+                    child: Image.asset(
+                      'assets/icons/user.png',
+                    ),
+                    height: 40),
+                activeIcon: SizedBox(
+                    child: Image.asset(
+                      'assets/icons/selected-user.png',
+                    ),
+                    height: 40),
+                label: _selectedIndex == 0 ? 'Profile' : ''),
             BottomNavigationBarItem(
-                icon: _selectedIndex != 1
-                    ? new IconButton(
-                        onPressed: () => {
-                              BlocProvider.of<MainBloc>(context)
-                                  .retrieveChatroomForChatBotConversation(
-                                      navigateToChatroom)
-                            },
-                        icon: new Image.asset(
-                          'assets/icons/chatbot.png',
-                        ))
-                    : new Image.asset(
-                        'assets/icons/selected-chatbot.png',
-                      ),
-                title: Text("")),
+                icon: SizedBox(
+                    child: InkWell(
+                        onTap: () => BlocProvider.of<MainBloc>(context)
+                            .retrieveChatroomForChatBotConversation(
+                                navigateToChatroom),
+                        child: Image.asset('assets/icons/chatbot.png')),
+                    height: 40),
+                activeIcon: SizedBox(
+                    child: Image.asset('assets/icons/selected-chatbot.png'),
+                    height: 40),
+                label: _selectedIndex == 1 ? 'Chatbot' : '',
+                backgroundColor: Colors.red),
             BottomNavigationBarItem(
-                icon: _selectedIndex != 2
-                    ? new Image.asset(
-                        'assets/icons/settings.png',
-                      )
-                    : new Image.asset(
-                        'assets/icons/selected-settings.png',
-                      ),
-                title: Text("")),
+                icon: SizedBox(
+                    child: Image.asset(
+                      'assets/icons/settings.png',
+                    ),
+                    height: 40),
+                activeIcon: SizedBox(
+                    child: Image.asset(
+                      'assets/icons/selected-settings.png',
+                    ),
+                    height: 40),
+                label: _selectedIndex == 2 ? 'Settings' : '',
+                backgroundColor: Colors.purple),
           ],
           currentIndex: _selectedIndex,
           onTap: _onItemTapped,

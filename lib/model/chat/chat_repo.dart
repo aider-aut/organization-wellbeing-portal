@@ -11,6 +11,7 @@ import 'package:chatapp/util/serialization_util.dart';
 import 'package:chatapp/model/chat/chatroom.dart';
 import 'package:chatapp/model/storage/firebase_repo.dart';
 import 'package:chatapp/model/user/user.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ChatRepo {
   static ChatRepo _instance;
@@ -175,7 +176,7 @@ class ChatRepo {
     }
     try {
       final response = await http.post(
-        'https://499067bc350c.ngrok.io/webhooks/rest/webhook',
+        env['CHATBOT_ENDPOINT'],
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },

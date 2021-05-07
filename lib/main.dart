@@ -5,8 +5,12 @@ import 'package:chatapp/auth_observer.dart';
 import 'package:chatapp/login/login_view.dart';
 import 'package:chatapp/model/chat/chat_repo.dart';
 import 'package:chatapp/push_notifications/push_notifications_handler.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
 
-void main() => runApp(MyApp());
+Future main() async  {
+  await DotEnv.load(fileName: '.env-local');
+  runApp(MyApp());
+}
 
 class MyApp extends StatefulWidget {
   @override
@@ -32,6 +36,7 @@ class _MyAppState extends State<MyApp> {
           return MaterialApp(
             title: 'Wellbeing Portal',
             theme: ThemeData(
+              fontFamily: 'PTSans',
               primarySwatch: Colors.blue,
             ),
             home: LoginScreen(),
