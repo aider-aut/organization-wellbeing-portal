@@ -1,5 +1,6 @@
 class ErrMessages {
   static const String NO_USER_FOUND = "Login Failure: No user has been found";
+  static const String EMAIL_NOT_VERIFIED = 'Login Failure: The user must verify the email';
 }
 
 class StorageKeys {
@@ -7,6 +8,8 @@ class StorageKeys {
   static const String USER_NAME_KEY = "user_name_key";
   static const String USER_IMG_URL_KEY = "user_img_url_key";
   static const String FCM_TOKEN = "fcmToken";
+  static const String TENANT_ID = 'tenantId';
+  static const String EMOTION = 'emotion';
 }
 
 class UIConstants {
@@ -28,5 +31,6 @@ class FirestorePaths {
   static const String ROOT_PATH = "";
   static const String USERS_COLLECTION = ROOT_PATH + 'users';
   static const String CHATROOMS_COLLECTION = ROOT_PATH + 'chatrooms';
+  static const String WELLBEING_COLLECTION = ROOT_PATH + 'wellbeing';
   static const String USER_DOCUMENT = USERS_COLLECTION + '/{user_id}';
 }

@@ -1,29 +1,27 @@
-import 'package:chatapp/login/login_view.dart';
 import 'package:chatapp/main/main_view.dart';
 import 'package:chatapp/model/login/login_repo.dart';
 import 'package:chatapp/navigation_helper.dart';
 import 'package:flutter/material.dart';
 
 class WelcomeScreen extends StatelessWidget {
+  WelcomeScreen({Key key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     void navigateToLogin() {
       NavigationHelper.navigateToLogin(context, addToBackStack: false);
     }
+
     return Scaffold(
-          body: !LoginRepo.getInstance().isEmailVerified() ? (
-              AlertDialog(
-                title: Text("Verify Email"),
-                content: Text("Please Verify your email before continuing"),
-                actions: [
-                  TextButton(
-                      child: Text("OK"),
-                      onPressed: () => navigateToLogin()
-                  ),
-                ],
-              )
-          ) : Column(
-            children: [
+      body: !LoginRepo.getInstance().isEmailVerified()
+          ? (AlertDialog(
+              title: Text("Verify Email"),
+              content: Text("Please Verify your email before continuing"),
+              actions: [
+                TextButton(
+                    child: Text("OK"), onPressed: () => navigateToLogin()),
+              ],
+            ))
+          : Column(children: [
               Container(
                 width: 250,
                 height: 150,
@@ -42,7 +40,7 @@ class WelcomeScreen extends StatelessWidget {
                   Container(
                     width: 300,
                     child: Text(
-                      "Hi, I'm Aider, your very own digital business assitant.",
+                      "Hi, I'm Aider, your very own digital business assistant.",
                       style: TextStyle(fontSize: 15),
                       overflow: TextOverflow.visible,
                       maxLines: 2,
@@ -84,7 +82,7 @@ class WelcomeScreen extends StatelessWidget {
                   Container(
                     width: 300,
                     child: Text(
-                      "Also, I can update you with specifc news or metrics, that you schedule.",
+                      "Also, I can update you with specific news or metrics, that you schedule.",
                       style: TextStyle(fontSize: 15),
                       overflow: TextOverflow.visible,
                       maxLines: 2,
@@ -105,7 +103,7 @@ class WelcomeScreen extends StatelessWidget {
                   Container(
                     width: 300,
                     child: Text(
-                      "Taking to me is as easy as \"Hello\".",
+                      "Talking to me is as easy as \"Hello\".",
                       style: TextStyle(fontSize: 15),
                       overflow: TextOverflow.visible,
                       maxLines: 2,
@@ -115,24 +113,24 @@ class WelcomeScreen extends StatelessWidget {
                 ],
               ),
               SizedBox(
-                  width: 180,
-                  child: ElevatedButton(
-                      child: Text("Next"),
-                      onPressed: () {
-                        LoginRepo.getInstance().setIsNewUser(false);
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => MainScreen()));
-                      },
-                      style: ElevatedButton.styleFrom(
-                          primary: LoginRepo.getInstance().isNewUser() ? Colors.grey : Colors.blue, // background
-                          shape:RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15)))
-                         ),
+                width: 180,
+                child: ElevatedButton(
+                    child: Text("Next"),
+                    onPressed: () {
+                      LoginRepo.getInstance().setIsNewUser(false);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => MainScreen()));
+                    },
+                    style: ElevatedButton.styleFrom(
+                        primary: LoginRepo.getInstance().isNewUser()
+                            ? Colors.grey
+                            : Colors.blue, // background
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15)))),
               )
-            ]
-          ),
-        );
+            ]),
+    );
   }
 }

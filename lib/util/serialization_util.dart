@@ -19,6 +19,7 @@ class Deserializer {
       doc.data()['name'],
       doc.data()['imgUrl'],
       doc.data()['fcmToken'],
+      doc.data()['tenantId']
     );
   }
 
@@ -44,9 +45,13 @@ class Deserializer {
 
   static List<Message> deserializeMessages(
       List<dynamic> messages, List<User> users) {
-    return messages.map((data) {
-      return deserializeMessage(Map<String, dynamic>.from(data), users);
-    }).toList();
+
+    if(messages != null){
+      return messages.map((data) {
+        return deserializeMessage(Map<String, dynamic>.from(data), users);
+      }).toList();
+    }
+    return [];
   }
 
   static Chatroom deserializeChatroomMessages(

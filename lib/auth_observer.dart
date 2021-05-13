@@ -32,7 +32,10 @@ class AuthObserver extends NavigatorObserver {
           if(!LoginRepo.getInstance().isEmailVerified() || LoginRepo.getInstance().isNewUser()){
             NavigationHelper.navigateToWelcome(navigator.context,
                 removeUntil: (_) => false);
-          } else {
+          } else if (UserRepo.getInstance().getCurrentUser() == null) {
+            NavigationHelper.navigateToLogin(navigator.context,
+                removeUntil: (_) => false);
+          }else {
             NavigationHelper.navigateToMain(navigator.context,
                 removeUntil: (_) => false);
           }

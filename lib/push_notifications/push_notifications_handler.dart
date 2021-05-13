@@ -46,7 +46,7 @@ class PushNotificationsHandler extends NavigatorObserver {
   Future<bool> _handleIncomingNotification(Map<String, dynamic> payload) async {
     Map<dynamic, dynamic> data = payload["data"];
     User otherUser = User(data["other_member_id"], data["other_member_name"],
-        data["other_member_photo_url"], "");
+        data["other_member_photo_url"], "", data['tenantId']);
     User currentUser = await UserRepo.getInstance().getCurrentUser();
     if (currentUser == null) {
       return false;

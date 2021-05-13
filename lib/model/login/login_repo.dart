@@ -14,6 +14,7 @@ import 'package:chatapp/model/user/user_repo.dart';
 class LoginRepo {
   static LoginRepo _instance;
   final firebase.FirebaseAuth _auth = firebase.FirebaseAuth.instance;
+  String _userName;
   final FirebaseFirestore _firestore;
   bool _isFirstUser = false;
 
@@ -29,36 +30,41 @@ class LoginRepo {
   void setIsNewUser(bool isNewUser) {
     _isFirstUser = isNewUser;
   }
+  void setUserName(String name) {
+    _userName = name;
+  }
   bool isNewUser() {
     return _isFirstUser;
   }
 
   bool isEmailVerified() {
+    _auth.userChanges();
+    print("verified: ${_auth.currentUser.emailVerified}");
+
     return _auth.currentUser.emailVerified;
   }
 
   Future<LoginResponse> _signIn(firebase.AuthCredential credentials) async {
     final authResult = await _auth.signInWithCredential(credentials);
-    setIsNewUser(authResult.additionalUserInfo.isNewUser);
+    setIsNewUser(false);
+    if(authResult.user.metadata.creationTime == authResult.user.metadata.lastSignInTime){
+      setIsNewUser(true);
+    }
     if (authResult != null && authResult.user != null) {
       final user = authResult.user;
       final token = await UserRepo.getInstance().getFCMToken();
       User serializedUser = User(
         user.uid,
-        user.displayName,
+        user.displayName != null ? user.displayName : _userName,
         user.photoURL,
         token,
+        user.tenantId
       );
       await _firestore
           .collection(FirestorePaths.USERS_COLLECTION)
           .doc(user.uid)
           .set(serializedUser.map, SetOptions(merge: true));
-      return User(
-        user.uid,
-        user.displayName,
-        user.photoURL,
-        token,
-      );
+      return serializedUser;
     } else {
       return LoginFailedResponse(ErrMessages.NO_USER_FOUND);
     }
@@ -78,28 +84,28 @@ class LoginRepo {
     final authResult = await _auth.signInWithEmailAndPassword(
         email: email, password: password);
     if (authResult != null && authResult.user != null) {
-      setIsNewUser(authResult.additionalUserInfo.isNewUser);
+      setIsNewUser(false);
+      if(authResult.user.metadata.creationTime == authResult.user.metadata.lastSignInTime){
+        setIsNewUser(true);
+      }
       final user = authResult.user;
       final token = await UserRepo.getInstance().getFCMToken();
       User serializedUser = User(
         user.uid,
-        user.displayName,
+        user.displayName != null ? user.displayName : _userName,
         user.photoURL,
         token,
+        user.tenantId
       );
       if (!user.emailVerified) {
         await user.sendEmailVerification();
+        return LoginFailedResponse(ErrMessages.EMAIL_NOT_VERIFIED);
       }
       await _firestore
           .collection(FirestorePaths.USERS_COLLECTION)
           .doc(user.uid)
           .set(serializedUser.map, SetOptions(merge: true));
-      return User(
-        user.uid,
-        user.displayName,
-        user.photoURL,
-        token,
-      );
+      return serializedUser;
     } else {
       return LoginFailedResponse(ErrMessages.NO_USER_FOUND);
     }

@@ -1,3 +1,4 @@
+import 'package:chatapp/main/profile_view.dart';
 import 'package:chatapp/main/welcome_view.dart';
 import 'package:chatapp/model/login/login_repo.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +8,6 @@ import 'package:chatapp/main/main_event.dart';
 
 import 'main_bloc.dart';
 import 'main_state.dart';
-import 'main_user_item.dart';
 import '../util/constants.dart';
 import '../navigation_helper.dart';
 import '../model/chat/chatroom.dart';
@@ -21,11 +21,6 @@ class MainScreen extends StatefulWidget {
 
 class _MainState extends State<MainScreen> {
   int _selectedIndex = 0;
-  Image _profileIcon = new Image.asset(
-    'assets/icons/user.png',
-  );
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
 
   @override
   Widget build(BuildContext context) {
@@ -61,13 +56,11 @@ class _MainState extends State<MainScreen> {
                   strokeWidth: 4.0,
                 ),
               );
-            } else if (state.chatrooms.isEmpty) {
-              content = Center(
-                child: Text(
-                  "Looks like you don't have any active chatrooms\nLet's start one right now!",
-                  textAlign: TextAlign.center,
-                ),
-              );
+            } else if (_selectedIndex == 0) {
+                content = ProfileScreen(
+                  displayName: state.name,
+                  profileImage: state.profileImg,
+                  imageUrls: state.imageUrls);
             } else {
               content = Center(child: Text("HELLO"));
             }
@@ -141,10 +134,6 @@ class _MainState extends State<MainScreen> {
 
   void _clickAddChat() {
     NavigationHelper.navigateToAddChat(context, addToBackStack: true);
-  }
-
-  UserItem _buildItem(Chatroom chatroom) {
-    return UserItem(user: chatroom.participants.first);
   }
 
   void navigateToLogin() {

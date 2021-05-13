@@ -6,8 +6,11 @@ class User extends LoginResponse {
   final String name;
   final String imgURL;
   final String fcmToken;
+  final String tenantId;
+  final String emotion;
 
-  User(this.uid, this.name, this.imgURL, this.fcmToken);
+  User(this.uid, this.name, this.imgURL, this.fcmToken, this.tenantId,
+      {this.emotion = "Happy"});
 
   User.fromFirebaseUser(auth.User firebaseUser)
       : this(
@@ -15,8 +18,9 @@ class User extends LoginResponse {
           firebaseUser.displayName,
           firebaseUser.photoURL,
           "",
+          firebaseUser.tenantId,
         );
   Map<String, dynamic> get map {
-    return {"uid": uid, "name": name, 'imgURL': imgURL, 'fcmToken': fcmToken};
+    return {"uid": uid, "name": name, 'imgURL': imgURL, 'fcmToken': fcmToken, 'tenantId': tenantId, 'emotion': emotion};
   }
 }

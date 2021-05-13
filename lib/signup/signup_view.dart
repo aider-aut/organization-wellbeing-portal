@@ -15,7 +15,7 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpState extends State<SignUpScreen> {
   final _formKey = new GlobalKey<FormState>();
-  String _email, _password;
+  String _email, _password, _name;
   bool _obscureText = true;
 
   // Toggles the password show status
@@ -57,6 +57,21 @@ class _SignUpState extends State<SignUpScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            TextFormField(
+                              autofocus: false,
+                              validator: (String value) {
+                                bool validName = value.isNotEmpty && value.trim().isNotEmpty && value.length > 2;
+                                return (validName)
+                                    ? null
+                                    : "Please enter valid name (must be longer than 2 characters)";
+                              },
+                              onSaved: (String value) {
+                                _name = value;
+                              },
+                              decoration: const InputDecoration(
+                                  icon: Icon(Icons.email), hintText: "Name"),
+                            ),
+                            SizedBox(height: 15.0),
                             TextFormField(
                               autofocus: false,
                               validator: (String value) {
@@ -108,7 +123,7 @@ class _SignUpState extends State<SignUpScreen> {
                                     if (form.validate()) {
                                       form.save();
                                       BlocProvider.of<SignUpBloc>(context)
-                                          .onSignUpWithEmail(_email, _password);
+                                          .onSignUpWithEmail(_name, _email, _password);
                                     }
                                   },
                                   child: Text("Sign up",
