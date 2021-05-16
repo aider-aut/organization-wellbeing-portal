@@ -59,7 +59,8 @@ class _LoginEmailState extends State<LoginEmailScreen> {
                 return Center(
                   child: SingleChildScrollView(
                     child: Container(
-                      padding: EdgeInsetsDirectional.only(start:40.0,end:40.0),
+                      padding:
+                          EdgeInsetsDirectional.only(start: 40.0, end: 40.0),
                       child: Form(
                         key: _formKey,
                         child: Column(
@@ -68,7 +69,9 @@ class _LoginEmailState extends State<LoginEmailScreen> {
                             TextFormField(
                               autofocus: false,
                               validator: (String value) {
-                                bool emailValid = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(value);
+                                bool emailValid = RegExp(
+                                        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                    .hasMatch(value);
                                 return (emailValid)
                                     ? null
                                     : "Please enter valid email";
@@ -81,49 +84,69 @@ class _LoginEmailState extends State<LoginEmailScreen> {
                             ),
                             SizedBox(height: 15.0),
                             Stack(
-                            children: <Widget>[
-                              TextFormField(
-                                autofocus: false,
-                                validator: (val) =>
-                                val.length < 6 ? 'Password too short (it has to be longer than 6 characters).' : null,
-                                onSaved: (String value) {
-                                  _password = value;
-                                },
-                                obscureText: _obscureText,
-                                decoration: const InputDecoration(
-                                    icon: Icon(Icons.lock), hintText: "Password"),
-                              ),
-                              Positioned(
-                                left: (MediaQuery.of(context).size.width-150.0),
-                                child: TextButton(
-                                    onPressed: _toggle,
-                                    child: new Text(_obscureText ? "Show" : "Hide"))
-                              )
-                            ],
+                              children: <Widget>[
+                                TextFormField(
+                                  autofocus: false,
+                                  validator: (val) => val.length < 6
+                                      ? 'Password too short (it has to be longer than 6 characters).'
+                                      : null,
+                                  onSaved: (String value) {
+                                    _password = value;
+                                  },
+                                  obscureText: _obscureText,
+                                  decoration: const InputDecoration(
+                                      icon: Icon(Icons.lock),
+                                      hintText: "Password"),
+                                ),
+                                Positioned(
+                                    left: (MediaQuery.of(context).size.width -
+                                        150.0),
+                                    child: TextButton(
+                                        onPressed: _toggle,
+                                        child: new Text(
+                                            _obscureText ? "Show" : "Hide")))
+                              ],
                             ),
                             SizedBox(height: 15.0),
                             Center(
                                 child: ButtonTheme(
-                                  minWidth: 256.0,
-                                  height: 32.0,
-                                  child: ElevatedButton(
-                                      onPressed: () {
-                                        if(UserRepo.getInstance().getCurrentUser() != null){
-                                          NavigationHelper.navigateToWelcome(context,addToBackStack: false);
-                                        }
-                                        final form = _formKey.currentState;
-                                        if (form.validate()) {
-                                          form.save();
-                                          BlocProvider.of<LoginBloc>(context)
-                                              .onLoginWithEmail(_email, _password);
-                                        }
-                                      },
-                                      child: Text("Sign in",
-                                          style: TextStyle(color: Colors.black)),
-                                      style: ElevatedButton.styleFrom(
-                                        primary: Colors.white10
-                                      )),
-                                ))
+                              minWidth: 256.0,
+                              height: 32.0,
+                              child: ElevatedButton(
+                                  onPressed: () {
+                                    final form = _formKey.currentState;
+                                    if (form.validate()) {
+                                      form.save();
+                                      BlocProvider.of<LoginBloc>(context)
+                                          .onLoginWithEmail(_email, _password);
+                                      bool _isFirstUser = false;
+                                      bool _isEmailVerified = false;
+                                      UserRepo.getInstance()
+                                          .isFirstUser()
+                                          .then((value) {
+                                        _isFirstUser = value;
+                                      });
+                                      UserRepo.getInstance()
+                                          .isEmailVerified()
+                                          .then((value) {
+                                        _isEmailVerified = value;
+                                      });
+
+                                      if (_isFirstUser || !_isEmailVerified) {
+                                        NavigationHelper.navigateToWelcome(
+                                            context,
+                                            addToBackStack: false);
+                                      } else {
+                                        NavigationHelper.navigateToMain(context,
+                                            addToBackStack: false);
+                                      }
+                                    }
+                                  },
+                                  child: Text("Sign in",
+                                      style: TextStyle(color: Colors.black)),
+                                  style: ElevatedButton.styleFrom(
+                                      primary: Colors.white10)),
+                            ))
                           ],
                         ),
                       ),
@@ -133,9 +156,11 @@ class _LoginEmailState extends State<LoginEmailScreen> {
               }
             })));
   }
+
   void navigateToSignUp() {
     NavigationHelper.navigateToSignUp(context, addToBackStack: false);
   }
+
   void navigateToLogInWithEmail() {
     NavigationHelper.navigateToLogInWithEmail(context, addToBackStack: false);
   }

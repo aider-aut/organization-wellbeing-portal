@@ -1,16 +1,15 @@
 import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:chatapp/main/main_event.dart';
 import 'package:chatapp/main/main_state.dart';
+import 'package:chatapp/model/chat/chat_repo.dart';
 import 'package:chatapp/model/chat/chatroom.dart';
 import 'package:chatapp/model/login/login_repo.dart';
 import 'package:chatapp/model/user/user.dart';
 import 'package:chatapp/model/user/user_repo.dart';
-import 'package:chatapp/util/util.dart';
-import 'package:flutter/material.dart';
-import 'package:chatapp/model/chat/chat_repo.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-
+import 'package:flutter/material.dart';
 
 class MainBloc extends Bloc<MainEvent, MainState> {
   MainBloc(MainState initialState) : super(initialState) {
@@ -21,30 +20,44 @@ class MainBloc extends Bloc<MainEvent, MainState> {
   Map<String, String> imageUrls = new Map();
   final _instance = firebase_storage.FirebaseStorage.instance;
   String _emotion;
+  bool _isEmailVerified;
+  bool _isFirstUser;
 
   StreamSubscription<List<Chatroom>> chatroomsSubscription;
 
   void _initialize() async {
     add(MainUpdateEventInProgress());
     _currentUser = await UserRepo.getInstance().getCurrentUser();
-    if (_currentUser != null) {
-      imageUrls = await getImages();
-      _emotion = await UserRepo.getInstance().getEmotion();
-      add(MainUpdateEvent(_currentUser.name, _currentUser.imgURL, imageUrls));
-    }
+    UserRepo.getInstance().isEmailVerified().then((value) {
+      _isEmailVerified = value;
+    });
+    UserRepo.getInstance().isFirstUser().then((value) {
+      _isFirstUser = value;
+    });
+    // if (_currentUser != null) {
+    imageUrls = await getImages();
+    _emotion = await UserRepo.getInstance().getEmotion();
+    add(MainUpdateEvent(_currentUser.name, _currentUser.imgURL, imageUrls));
+    // }
+  }
+
+  bool isEmailVerified() {
+    return _isEmailVerified;
+  }
+
+  bool isFirstUser() {
+    return _isFirstUser;
   }
 
   Future<Map<String, String>> getImages() async {
     final profile_url = await _instance.ref('profile.png').getDownloadURL();
     final love_url = await _instance.ref('love.png').getDownloadURL();
     final barrier_url = await _instance.ref('barrier.png').getDownloadURL();
-    final background_url = await _instance.ref('background.png').getDownloadURL();
 
     imageUrls = {
-      'background' : background_url,
-      'mood' : love_url,
-      'barrier' : barrier_url,
-      'profile' : profile_url,
+      'mood': love_url,
+      'barrier': barrier_url,
+      'profile': profile_url,
     };
 
     return imageUrls;
@@ -70,8 +83,6 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     return _emotion;
   }
 
-
-
   // void retrieveUserChatrooms() async {
   //   add(ClearChatroomsEvent());
   //   final user = await UserRepo.getInstance().getCurrentUser();
@@ -89,9 +100,12 @@ class MainBloc extends Bloc<MainEvent, MainState> {
   //   }
   // }
 
-  void retrieveChatroomForChatBotConversation(Function(SelectedChatroom) onChatBotConversationProcessed) async {
+  void retrieveChatroomForChatBotConversation(
+      Function(SelectedChatroom) onChatBotConversationProcessed) async {
     final currentUser = await UserRepo.getInstance().getCurrentUser();
-    ChatRepo.getInstance().startConversationWithChatBot(currentUser).then((chatroom) {
+    ChatRepo.getInstance()
+        .startConversationWithChatBot(currentUser)
+        .then((chatroom) {
       onChatBotConversationProcessed(chatroom);
     });
   }
@@ -112,11 +126,10 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     if (event is MainUpdateEventInProgress) {
       yield MainState.isLoading(true, state);
     } else if (event is MainUpdateEvent) {
-      yield MainState.update(event.name, event.profileImg, event.imageUrls, state);
+      yield MainState.update(
+          event.name, event.profileImg, event.imageUrls, state);
     } else if (event is MainErrorEvent) {
       yield MainState.isLoading(false, state);
-    } else if (event is MainUserNotFoundEvent){
-
     }
   }
 

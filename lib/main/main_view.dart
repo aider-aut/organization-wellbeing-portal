@@ -1,16 +1,16 @@
-import 'package:chatapp/main/profile_view.dart';
-import 'package:chatapp/main/welcome_view.dart';
-import 'package:chatapp/model/login/login_repo.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:chatapp/base/bloc_widget.dart';
 import 'package:chatapp/main/main_event.dart';
+import 'package:chatapp/main/profile_view.dart';
+import 'package:chatapp/main/welcome_view.dart';
+import 'package:chatapp/model/user/user_repo.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../model/chat/chatroom.dart';
+import '../navigation_helper.dart';
+import '../util/constants.dart';
 import 'main_bloc.dart';
 import 'main_state.dart';
-import '../util/constants.dart';
-import '../navigation_helper.dart';
-import '../model/chat/chatroom.dart';
 
 class MainScreen extends StatefulWidget {
   MainScreen({Key key}) : super(key: key);
@@ -21,6 +21,22 @@ class MainScreen extends StatefulWidget {
 
 class _MainState extends State<MainScreen> {
   int _selectedIndex = 0;
+  bool _isFirstUser = false, _isEmailVerified = false;
+
+  @override
+  void initState() {
+    super.initState();
+    UserRepo.getInstance().isFirstUser().then((value) {
+      setState(() {
+        _isFirstUser = value;
+      });
+    });
+    UserRepo.getInstance().isEmailVerified().then((value) {
+      setState(() {
+        _isEmailVerified = value;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +46,7 @@ class _MainState extends State<MainScreen> {
       });
     }
 
-    if (LoginRepo.getInstance().isNewUser()) {
+    if (_isFirstUser && !_isEmailVerified) {
       return WelcomeScreen();
     }
     return BlocWidget<MainEvent, MainState, MainBloc>(
@@ -57,7 +73,7 @@ class _MainState extends State<MainScreen> {
                 ),
               );
             } else if (_selectedIndex == 0) {
-                content = ProfileScreen(
+              content = ProfileScreen(
                   displayName: state.name,
                   profileImage: state.profileImg,
                   imageUrls: state.imageUrls);

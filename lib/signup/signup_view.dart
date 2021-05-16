@@ -32,26 +32,27 @@ class _SignUpState extends State<SignUpScreen> {
             appBar: AppBar(title: Text("Sign Up")),
             body: BlocWidget<SignUpEvent, SignUpState, SignUpBloc>(
                 builder: (BuildContext context, SignUpState state) {
-                  if (state.loading) {
-                    return Center(
-                        child: CircularProgressIndicator(
-                          strokeWidth: 4.0,
-                        ));
-                  } else if (state.error != null && state.error['message'].isNotEmpty) {
-                    return AlertDialog(
-                      title: Text("Signup Failure"),
-                      content: Text(state.error['message']),
-                      actions: [
-                        TextButton(
-                          child: Text("OK"),
-                          onPressed: () => navigateToSignUp()),
-                      ],
-                    );
-                  } else {
+              if (state.loading) {
+                return Center(
+                    child: CircularProgressIndicator(
+                  strokeWidth: 4.0,
+                ));
+              } else if (state.error != null &&
+                  state.error['message'].isNotEmpty) {
+                return AlertDialog(
+                  title: Text("Signup Failure"),
+                  content: Text(state.error['message']),
+                  actions: [
+                    TextButton(
+                        child: Text("OK"), onPressed: () => navigateToSignUp()),
+                  ],
+                );
+              } else {
                 return Center(
                   child: SingleChildScrollView(
                     child: Container(
-                      padding: EdgeInsetsDirectional.only(start:40.0,end:40.0),
+                      padding:
+                          EdgeInsetsDirectional.only(start: 40.0, end: 40.0),
                       child: Form(
                         key: _formKey,
                         child: Column(
@@ -60,7 +61,9 @@ class _SignUpState extends State<SignUpScreen> {
                             TextFormField(
                               autofocus: false,
                               validator: (String value) {
-                                bool validName = value.isNotEmpty && value.trim().isNotEmpty && value.length > 2;
+                                bool validName = value.isNotEmpty &&
+                                    value.trim().isNotEmpty &&
+                                    value.length > 2;
                                 return (validName)
                                     ? null
                                     : "Please enter valid name (must be longer than 2 characters)";
@@ -69,13 +72,16 @@ class _SignUpState extends State<SignUpScreen> {
                                 _name = value;
                               },
                               decoration: const InputDecoration(
-                                  icon: Icon(Icons.email), hintText: "Name"),
+                                  icon: Icon(Icons.account_box_rounded),
+                                  hintText: "Name"),
                             ),
                             SizedBox(height: 15.0),
                             TextFormField(
                               autofocus: false,
                               validator: (String value) {
-                                bool emailValid = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(value);
+                                bool emailValid = RegExp(
+                                        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                    .hasMatch(value);
                                 return (emailValid)
                                     ? null
                                     : "Please enter valid email";
@@ -90,22 +96,25 @@ class _SignUpState extends State<SignUpScreen> {
                             Stack(
                               children: <Widget>[
                                 TextFormField(
-                                autofocus: false,
-                                validator: (val) =>
-                                val.length < 6 ? 'Password too short.' : null,
-                                onSaved: (String value) {
-                                  _password = value;
-                                },
-                                obscureText: _obscureText,
-                                decoration: const InputDecoration(
-                                    icon: Icon(Icons.lock), hintText: "Password"),
-                              ),
-                                new Positioned(
-                                  left: (MediaQuery.of(context).size.width-150.0),
-                                  child: new TextButton(
-                                      onPressed: _toggle,
-                                      child: new Text(_obscureText ? "Show" : "Hide"))
+                                  autofocus: false,
+                                  validator: (val) => val.length < 6
+                                      ? 'Password too short.'
+                                      : null,
+                                  onSaved: (String value) {
+                                    _password = value;
+                                  },
+                                  obscureText: _obscureText,
+                                  decoration: const InputDecoration(
+                                      icon: Icon(Icons.lock),
+                                      hintText: "Password"),
                                 ),
+                                new Positioned(
+                                    left: (MediaQuery.of(context).size.width -
+                                        150.0),
+                                    child: new TextButton(
+                                        onPressed: _toggle,
+                                        child: new Text(
+                                            _obscureText ? "Show" : "Hide"))),
                               ],
                             ),
                             SizedBox(height: 15.0),
@@ -123,7 +132,8 @@ class _SignUpState extends State<SignUpScreen> {
                                     if (form.validate()) {
                                       form.save();
                                       BlocProvider.of<SignUpBloc>(context)
-                                          .onSignUpWithEmail(_name, _email, _password);
+                                          .onSignUpWithEmail(
+                                              _name, _email, _password);
                                     }
                                   },
                                   child: Text("Sign up",
@@ -144,6 +154,7 @@ class _SignUpState extends State<SignUpScreen> {
   void navigateToLogin() {
     NavigationHelper.navigateToLogInWithEmail(context);
   }
+
   void navigateToSignUp() {
     NavigationHelper.navigateToSignUp(context);
   }

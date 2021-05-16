@@ -1,3 +1,4 @@
+import 'package:chatapp/demographics/demographics_view.dart';
 import 'package:chatapp/login/login_email/login_email_view.dart';
 import 'package:chatapp/main/welcome_view.dart';
 import 'package:chatapp/signup/signup_view.dart';
@@ -44,6 +45,24 @@ class NavigationHelper {
           context, MaterialPageRoute(builder: (context) => MainScreen()));
     }
   }
+
+  static void navigateToDemographics(
+      BuildContext context, {
+        bool addToBackStack: false,
+        bool Function(Route<dynamic>) removeUntil,
+      }) {
+    if (addToBackStack) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => DemographicScreen()),
+        removeUntil ?? _defaultRule,
+      );
+    } else {
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => DemographicScreen()));
+    }
+  }
+
 
   static void navigateToWelcome(
       BuildContext context, {

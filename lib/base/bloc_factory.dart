@@ -1,23 +1,21 @@
-import 'package:chatapp/demographics/demographics_bloc.dart';
-import 'package:chatapp/demographics/demographics_state.dart';
-import 'package:chatapp/signup/signup_bloc.dart';
-import 'package:chatapp/signup/signup_state.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:chatapp/create_chatroom/create_chatroom_bloc.dart';
 import 'package:chatapp/create_chatroom/create_chatroom_state.dart';
+import 'package:chatapp/demographics/demographics_bloc.dart';
+import 'package:chatapp/demographics/demographics_state.dart';
 import 'package:chatapp/instant_messaging/instant_messaging_bloc.dart';
 import 'package:chatapp/instant_messaging/instant_messaging_state.dart';
 import 'package:chatapp/login/login_bloc.dart';
 import 'package:chatapp/login/login_state.dart';
 import 'package:chatapp/main/main_bloc.dart';
 import 'package:chatapp/main/main_state.dart';
+import 'package:chatapp/signup/signup_bloc.dart';
+import 'package:chatapp/signup/signup_state.dart';
+import 'package:flutter/services.dart';
 
 abstract class BlocFactory {
   static const error = 'BlocFactoryError';
 
-  static T create<T extends Cubit>(Map<String, dynamic> data) {
+  static T create<T>(Map<String, dynamic> data) {
     switch (T) {
       case MainBloc:
         return MainBloc(MainState.initial()) as T;

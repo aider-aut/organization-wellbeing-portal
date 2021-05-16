@@ -1,7 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:chatapp/model/chat/chatroom.dart';
 import 'package:chatapp/model/message/message.dart';
 import 'package:chatapp/model/user/user.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Deserializer {
   static List<User> deserializeUserFromReference(
@@ -14,13 +14,8 @@ class Deserializer {
   }
 
   static User deserializeUser(DocumentSnapshot doc) {
-    return User(
-      doc.data()['uid'],
-      doc.data()['name'],
-      doc.data()['imgUrl'],
-      doc.data()['fcmToken'],
-      doc.data()['tenantId']
-    );
+    return User(doc.get('uid'), doc.get('name'), doc.get('imgUrl'),
+        doc.get('fcmToken'), doc.get('tenantId'));
   }
 
   static List<Chatroom> deserializeChatrooms(
@@ -29,7 +24,7 @@ class Deserializer {
   }
 
   static Chatroom deserializeChatroom(DocumentSnapshot doc, List<User> users) {
-    List<dynamic> participantRefs = doc.data()['participants'];
+    List<dynamic> participantRefs = doc.get('participants');
     return Chatroom(
         deserializeUserFromReference(participantRefs, users).toList(),
         new List<Message>.empty(growable: true));
@@ -39,14 +34,13 @@ class Deserializer {
       Map<String, dynamic> doc, List<User> users) {
     DocumentReference authorReference = doc['author'];
     User author = users.firstWhere((user) => user.uid == authorReference.id);
-    return Message(author, doc['timestamp'], doc['value'], option: doc['option']);
+    return Message(author, doc['timestamp'], doc['value'],
+        option: doc['option']);
   }
-
 
   static List<Message> deserializeMessages(
       List<dynamic> messages, List<User> users) {
-
-    if(messages != null){
+    if (messages != null) {
       return messages.map((data) {
         return deserializeMessage(Map<String, dynamic>.from(data), users);
       }).toList();
@@ -56,13 +50,12 @@ class Deserializer {
 
   static Chatroom deserializeChatroomMessages(
       DocumentSnapshot doc, List<User> users) {
-    List<dynamic> participantRefs = doc.data()['participants'];
+    List<dynamic> participantRefs = doc.get('participants');
     Chatroom chatroom = Chatroom(
         deserializeUserFromReference(participantRefs, users).toList(),
         new List<Message>.empty(growable: true));
-    if(chatroom.messages != null)
-      chatroom.messages
-          .addAll(deserializeMessages(doc.data()['messages'], users));
+    if (chatroom.messages != null)
+      chatroom.messages.addAll(deserializeMessages(doc.get('messages'), users));
     return chatroom;
   }
 }

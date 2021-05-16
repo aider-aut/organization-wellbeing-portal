@@ -1,7 +1,6 @@
+import 'package:chatapp/base/bloc_factory.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'package:chatapp/base/bloc_factory.dart';
 
 class BlocWidget<E, S, B extends Bloc<E, S>> extends StatefulWidget {
   const BlocWidget({
@@ -33,7 +32,7 @@ class _BlocWidgetState<E, S, B extends Bloc<E, S>>
       lazy: false,
       child: BlocConsumer<Bloc<E, S>, S>(
         builder: widget.builder,
-        cubit: _bloc,
+        bloc: _bloc,
         listener: widget.listener ?? (_, __) {},
       ),
     );

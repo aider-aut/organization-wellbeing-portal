@@ -1,17 +1,17 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:chatapp/model/message/message.dart';
-import 'package:http/http.dart' as http;
-import 'package:chatapp/model/user/user_repo.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:rxdart/rxdart.dart';
 
-import 'package:chatapp/util/constants.dart';
-import 'package:chatapp/util/serialization_util.dart';
 import 'package:chatapp/model/chat/chatroom.dart';
+import 'package:chatapp/model/message/message.dart';
 import 'package:chatapp/model/storage/firebase_repo.dart';
 import 'package:chatapp/model/user/user.dart';
+import 'package:chatapp/model/user/user_repo.dart';
+import 'package:chatapp/util/constants.dart';
+import 'package:chatapp/util/serialization_util.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart' as http;
+import 'package:rxdart/rxdart.dart';
 
 class ChatRepo {
   static ChatRepo _instance;
@@ -38,10 +38,9 @@ class ChatRepo {
         .snapshots()
         .map((data) => Deserializer.deserializeUsers(data.docs))
         .listen((users) {
-        _chatUsersSubject.sink.add(users);
+      _chatUsersSubject.sink.add(users);
     });
   }
-
 
   Stream<List<User>> getChatUsers() {
     return _chatUsersSubject.stream;
@@ -97,13 +96,20 @@ class ChatRepo {
       return chatroom;
     });
   }
+
   Future<SelectedChatroom> startConversationWithChatBot(User user) async {
     _isChatBot = true;
-    DocumentReference chatbotRef = _firestore.collection(FirestorePaths.USERS_COLLECTION).doc("7D8rg58JthJzV7vhhZQ4");
-    DocumentReference userRef = _firestore.collection(FirestorePaths.USERS_COLLECTION).doc(user.uid);
-    QuerySnapshot queryResults = await _firestore.collection(FirestorePaths.CHATROOMS_COLLECTION).where("participants",arrayContains: userRef).get();
+    DocumentReference chatbotRef = _firestore
+        .collection(FirestorePaths.USERS_COLLECTION)
+        .doc("7D8rg58JthJzV7vhhZQ4");
+    DocumentReference userRef =
+        _firestore.collection(FirestorePaths.USERS_COLLECTION).doc(user.uid);
+    QuerySnapshot queryResults = await _firestore
+        .collection(FirestorePaths.CHATROOMS_COLLECTION)
+        .where("participants", arrayContains: userRef)
+        .get();
     DocumentSnapshot roomSnapshot = queryResults.docs.firstWhere((room) {
-      return room.data()['participants'].contains(chatbotRef);
+      return room.get('participants').contains(chatbotRef);
     }, orElse: () => null);
     if (roomSnapshot != null) {
       return SelectedChatroom(roomSnapshot.id, "chatbot");
@@ -111,11 +117,14 @@ class ChatRepo {
       //if does not exist
       Map<String, dynamic> chatHistory = Map<String, dynamic>();
       chatHistory['messages'] = new List<String>.empty(growable: true);
-      List<DocumentReference> participants = new List<DocumentReference>.empty(growable: true);
+      List<DocumentReference> participants =
+          new List<DocumentReference>.empty(growable: true);
       participants.add(chatbotRef);
       participants.add(userRef);
       chatHistory['participants'] = participants;
-      DocumentReference ref = await _firestore.collection(FirestorePaths.CHATROOMS_COLLECTION).add(chatHistory);
+      DocumentReference ref = await _firestore
+          .collection(FirestorePaths.CHATROOMS_COLLECTION)
+          .add(chatHistory);
       DocumentSnapshot chatHistorySnapshot = await ref.get();
       return SelectedChatroom(chatHistorySnapshot.id, "chatbot");
     }
@@ -133,14 +142,15 @@ class ChatRepo {
         .collection(FirestorePaths.USERS_COLLECTION)
         .doc(users[0].uid);
     DocumentSnapshot roomSnapshot = queryResults.docs.firstWhere((room) {
-      return room.data()["participants"].contains(otherUserRef);
+      return room.get('participants').contains(otherUserRef);
     }, orElse: () => null);
     if (roomSnapshot != null) {
       return SelectedChatroom(roomSnapshot.id, users[0].name);
     } else {
       Map<String, dynamic> chatroomMap = Map<String, dynamic>();
       chatroomMap["messages"] = new List<String>.empty(growable: true);
-      List<DocumentReference> participants = new List<DocumentReference>.empty(growable: true);
+      List<DocumentReference> participants =
+          new List<DocumentReference>.empty(growable: true);
       participants.add(otherUserRef);
       participants.add(userRef);
       chatroomMap["participants"] = participants;
@@ -155,12 +165,15 @@ class ChatRepo {
   Future<bool> sendMessageToChatbot(String chatBotId, String message) async {
     _chatBotId = chatBotId;
     User currentUser = await UserRepo.getInstance().getCurrentUser();
-    DocumentReference authorRef = _firestore.collection(
-        FirestorePaths.USERS_COLLECTION).doc(currentUser.uid);
-    DocumentReference chatHistoryRef = _firestore.collection(
-        FirestorePaths.CHATROOMS_COLLECTION).doc(chatBotId);
-    DocumentReference chatbotRef = _firestore.collection(
-        FirestorePaths.USERS_COLLECTION).doc("7D8rg58JthJzV7vhhZQ4");
+    DocumentReference authorRef = _firestore
+        .collection(FirestorePaths.USERS_COLLECTION)
+        .doc(currentUser.uid);
+    DocumentReference chatHistoryRef = _firestore
+        .collection(FirestorePaths.CHATROOMS_COLLECTION)
+        .doc(chatBotId);
+    DocumentReference chatbotRef = _firestore
+        .collection(FirestorePaths.USERS_COLLECTION)
+        .doc("7D8rg58JthJzV7vhhZQ4");
     try {
       Map<String, dynamic> serializedMessage = {
         "author": authorRef,
@@ -171,60 +184,58 @@ class ChatRepo {
       chatHistoryRef.update({
         "messages": FieldValue.arrayUnion([serializedMessage])
       });
-    } catch(err) {
+    } catch (err) {
       print("ERROR SENDING: ${err.toString()}");
     }
     try {
       final response = await http.post(
-        env['CHATBOT_ENDPOINT'],
+        Uri.parse(env['CHATBOT_ENDPOINT']),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
-        body: jsonEncode(<String, String>{
-          'sender': currentUser.uid,
-          'message': message
-        }),
+        body: jsonEncode(
+            <String, String>{'sender': currentUser.uid, 'message': message}),
       );
-      if(response.statusCode == 200 ){
-
+      if (response.statusCode == 200) {
         List<dynamic> temp = jsonDecode(response.body);
 
-          for(var i = 0; i < temp.length; i++){
-            Map<String, dynamic> res = temp[i];
-            print("BOTRES: ${res.toString()}");
-            if(res['text'] != null) {
-              Map<String, dynamic> serializedMessage = {
-                "author": chatbotRef,
-                "timestamp": DateTime.now(),
-                "value": res['text'],
-                "option": false
-              };
-              chatHistoryRef.update({
-                "messages": FieldValue.arrayUnion([serializedMessage])
-              });
-            }
-            if (res['buttons'] != null) {
-              List<dynamic> buttons_arr = res['buttons'];
-              // print("BUTTONS: ${res['buttons']}");
-              for(var i = 0; i < buttons_arr.length; i++) {
-                Map<String, dynamic> res = buttons_arr[i];
-                if (res['title'] != null) {
-                  Map<String, dynamic> serializedMessage = {
-                    "author": chatbotRef,
-                    "timestamp": DateTime.now(),
-                    "value": res['title'],
-                    "option": true
-                  };
-                  chatHistoryRef.update({
-                    "messages": FieldValue.arrayUnion([serializedMessage])
-                  });
-                }
+        for (var i = 0; i < temp.length; i++) {
+          Map<String, dynamic> res = temp[i];
+          print("BOTRES: ${res.toString()}");
+          if (res['text'] != null) {
+            Map<String, dynamic> serializedMessage = {
+              "author": chatbotRef,
+              "timestamp": DateTime.now(),
+              "value": res['text'],
+              "option": false
+            };
+            chatHistoryRef.update({
+              "messages": FieldValue.arrayUnion([serializedMessage])
+            });
+          }
+          if (res['buttons'] != null) {
+            List<dynamic> buttons_arr = res['buttons'];
+            // print("BUTTONS: ${res['buttons']}");
+            for (var i = 0; i < buttons_arr.length; i++) {
+              Map<String, dynamic> res = buttons_arr[i];
+              if (res['title'] != null) {
+                Map<String, dynamic> serializedMessage = {
+                  "author": chatbotRef,
+                  "timestamp": DateTime.now(),
+                  "value": res['title'],
+                  "option": true
+                };
+                chatHistoryRef.update({
+                  "messages": FieldValue.arrayUnion([serializedMessage])
+                });
               }
             }
           }
+        }
         return true;
       } else {
-        print("CHATBOT: Failed at receiving data from RASA: status code - ${response.statusCode}");
+        print(
+            "CHATBOT: Failed at receiving data from RASA: status code - ${response.statusCode}");
         return false;
       }
     } catch (e) {
@@ -235,17 +246,17 @@ class ChatRepo {
 
   Future<void> deleteMessageAfterSelected(Message sentMessage) {
     WriteBatch batch = _firestore.batch();
-    DocumentReference chatHistoryRef = _firestore.collection(
-        FirestorePaths.CHATROOMS_COLLECTION).doc(_chatBotId);
+    DocumentReference chatHistoryRef = _firestore
+        .collection(FirestorePaths.CHATROOMS_COLLECTION)
+        .doc(_chatBotId);
     return chatHistoryRef.get().then((data) {
-      if (data.data()['messages'] != null) {
+      if (data.get('messages') != null) {
         Map<String, dynamic> temp = data.data();
         temp['messages'].removeWhere((item) => item['option'] == true);
         batch.update(data.reference, temp);
       }
       return batch.commit();
     });
-
   }
 
   Future<bool> sendMessageToChatroom(

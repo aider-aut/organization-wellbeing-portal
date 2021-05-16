@@ -1,13 +1,11 @@
 import 'dart:async';
 
-import 'package:chatapp/model/login/login_repo.dart';
-import 'package:firebase_auth/firebase_auth.dart' as firebase;
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
-
 import 'package:chatapp/model/user/user.dart';
 import 'package:chatapp/model/user/user_repo.dart';
 import 'package:chatapp/navigation_helper.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase;
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
 
 class AuthObserver extends NavigatorObserver {
   AuthObserver() {
@@ -22,24 +20,25 @@ class AuthObserver extends NavigatorObserver {
       _authStateListener =
           firebase.FirebaseAuth.instance.authStateChanges().listen((user) {
         if (user != null) {
+          print("user: ${user.toString()}");
           final loginProvider = user.providerData.first.providerId;
           UserRepo.getInstance().setCurrentUser(User.fromFirebaseUser(user));
+          UserRepo.getInstance().setFirstUser(
+              user.metadata.creationTime == user.metadata.lastSignInTime);
+          UserRepo.getInstance().setEmailVerified(user.emailVerified);
           if (loginProvider == "google") {
             // TODO analytics call for google login provider
           } else {
             // TODO analytics call for facebook login provider
           }
-          if(!LoginRepo.getInstance().isEmailVerified() || LoginRepo.getInstance().isNewUser()){
+
+          if (!user.emailVerified) {
             NavigationHelper.navigateToWelcome(navigator.context,
                 removeUntil: (_) => false);
-          } else if (UserRepo.getInstance().getCurrentUser() == null) {
-            NavigationHelper.navigateToLogin(navigator.context,
-                removeUntil: (_) => false);
-          }else {
+          } else {
             NavigationHelper.navigateToMain(navigator.context,
                 removeUntil: (_) => false);
           }
-
         } else {
           NavigationHelper.navigateToLogin(navigator.context,
               removeUntil: (_) => false);

@@ -1,12 +1,12 @@
 import 'dart:async';
-import 'package:bloc/bloc.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
+import 'package:bloc/bloc.dart';
 import 'package:chatapp/login/login_event.dart';
 import 'package:chatapp/login/login_state.dart';
 import 'package:chatapp/model/login/login_repo.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   LoginBloc(LoginState initialState) : super(initialState);
@@ -35,12 +35,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       final signInResult = await facebookSignInRepo.login();
       LoginRepo.getInstance().signInWithFacebook(signInResult);
       add(LoginWithFacebookEvent());
-    } on FacebookAuthException catch (ex) {
-      if (ex.errorCode != 'CANCELLED') {
-        add(LoginErrorEvent("An error occurred. ${ex.message}"));
-      } else {
-        add(LogoutEvent());
-      }
+    } on Exception catch (ex) {
+      add(LoginErrorEvent("An error occurred. ${ex.toString()}"));
     }
   }
 
@@ -50,12 +46,14 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       await LoginRepo.getInstance().signInWithEmail(email, password);
       add(LoginWithEmailEvent());
     } on FirebaseAuthException catch (ex) {
-      if(ex.code == "user-not-found") {
-        add(LoginErrorEvent({'code': ex.code, 'message':"Please sign up first!"}));
+      if (ex.code == "user-not-found") {
+        add(LoginErrorEvent(
+            {'code': ex.code, 'message': "Please sign up first!"}));
       } else if (ex.code == 'invalid-email') {
-        add(LoginErrorEvent({'code': ex.code, 'message': "Please enter a valid email"}));
+        add(LoginErrorEvent(
+            {'code': ex.code, 'message': "Please enter a valid email"}));
       } else {
-        add(LoginErrorEvent({'code': ex.code, 'message':"ERR: ${ex.code}"}));
+        add(LoginErrorEvent({'code': ex.code, 'message': "ERR: ${ex.code}"}));
       }
 
       print("Failed with error code: ${ex.code}");

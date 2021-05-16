@@ -18,22 +18,40 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileState extends State<ProfileScreen> {
-
   String currentEmotion;
   var _options = [true, false, false];
 
   @override
   Widget build(BuildContext context) {
     String emotion = BlocProvider.of<MainBloc>(context).getEmotion();
-    String happyUrl = 'assets/icons/emotions/${emotion == "Happy" ? "happy-active.png" : "happy.png"}';
-    String sadUrl = 'assets/icons/emotions/${emotion == "Sad" ? "sad-active.png" : "sad.png"}';
-    String confusedUrl = 'assets/icons/emotions/${emotion == "Confused" ? "confused-active.png" : "confused.png"}';
-    String angryUrl = 'assets/icons/emotions/${emotion == "Angry" ? "angry-active.png" : "angry.png"}';
+    String happyUrl =
+        'assets/icons/emotions/${emotion == "Happy" ? "happy-active.png" : "happy.png"}';
+    String sadUrl =
+        'assets/icons/emotions/${emotion == "Sad" ? "sad-active.png" : "sad.png"}';
+    String confusedUrl =
+        'assets/icons/emotions/${emotion == "Confused" ? "confused-active.png" : "confused.png"}';
+    String angryUrl =
+        'assets/icons/emotions/${emotion == "Angry" ? "angry-active.png" : "angry.png"}';
+
+    void updateEmotions(String value) {
+      setState(() {
+        BlocProvider.of<MainBloc>(context).updateEmotion(value);
+        emotion = BlocProvider.of<MainBloc>(context).getEmotion();
+        happyUrl =
+            'assets/icons/emotions/${value == "Happy" ? "happy-active.png" : "happy.png"}';
+        sadUrl =
+            'assets/icons/emotions/${value == "Sad" ? "sad-active.png" : "sad.png"}';
+        confusedUrl =
+            'assets/icons/emotions/${value == "Confused" ? "confused-active.png" : "confused.png"}';
+        angryUrl =
+            'assets/icons/emotions/${value == "Angry" ? "angry-active.png" : "angry.png"}';
+      });
+    }
 
     return Container(
       decoration: BoxDecoration(
         image: DecorationImage(
-          image: NetworkImage(widget.imageUrls['background']),
+          image: AssetImage('assets/background.png'),
           fit: BoxFit.cover,
         ),
       ),
@@ -52,123 +70,99 @@ class _ProfileState extends State<ProfileScreen> {
               width: 70,
             ),
             radius: 50,
-            backgroundColor: Colors.grey,
+            backgroundColor: Colors.transparent,
           ),
           Center(
-            child: Text(widget.displayName),
+            child: Text(widget.displayName == null ? '' : widget.displayName),
           ),
           SizedBox(height: 50),
           Row(
             children: <Widget>[
               Expanded(
                 child: Container(
-                  height: 20,
+                    height: 20,
                     child: Center(
-                      child:InkWell(
-                        child: Text(
-                          "My History",
-                          style: TextStyle(color: Colors.black),
-                        ),
-                        onTap: () => setState(() {
-                          _options = [true, false, false];
-                        })
-                      )
-                    )
-                ),
+                        child: InkWell(
+                            child: Text(
+                              "My History",
+                              style: TextStyle(color: Colors.black),
+                            ),
+                            onTap: () => setState(() {
+                                  _options = [true, false, false];
+                                })))),
               ),
               Expanded(
                 child: Container(
                     height: 20,
                     child: Center(
                         child: InkWell(
-                          child: Text(
-                            "My Employees",
-                            style: TextStyle(color: Colors.black),
-                          ),
-                          onTap: () => setState((){
-                            _options = [false, true, false];
-                          })
-                        )
-                    )
-                ),
+                            child: Text(
+                              "My Employees",
+                              style: TextStyle(color: Colors.black),
+                            ),
+                            onTap: () => setState(() {
+                                  _options = [false, true, false];
+                                })))),
               ),
               Expanded(
                   child: Container(
                       height: 20,
-                    child:Center(
-                      child: InkWell(
-                        child: Text(
-                          "Notifications",
-                          style: TextStyle(color: Colors.black),
-                        ),
-                        onTap:() => setState((){
-                          _options = [false, false, true];
-                        })
-                      )
-                    )
-                  )
-              ),
+                      child: Center(
+                          child: InkWell(
+                              child: Text(
+                                "Notifications",
+                                style: TextStyle(color: Colors.black),
+                              ),
+                              onTap: () => setState(() {
+                                    _options = [false, false, true];
+                                  }))))),
             ],
           ),
           SizedBox(height: 10),
-          Row(
-            children: [
-                Expanded(
-                  child: Center(
-                    child: InkWell(
-                      child:
-                      Container(
-                        width:100,
-                        padding: EdgeInsets.all(2),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5.0),
-                            color: _options[0] ? Colors.white : Colors.transparent
-                        ),
-                    ),
-                      onTap: () => setState((){
+          Row(children: [
+            Expanded(
+                child: Center(
+              child: InkWell(
+                  child: Container(
+                    width: 100,
+                    padding: EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5.0),
+                        color: _options[0] ? Colors.white : Colors.transparent),
+                  ),
+                  onTap: () => setState(() {
                         _options = [true, false, false];
-                      })
-                    ),
-                  )
-                ),
-              Expanded(
-                  child: Center(
-                    child: InkWell(
-                        child:
-                        Container(
-                          width:100,
-                          padding: EdgeInsets.all(2),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5.0),
-                              color: _options[1] ? Colors.white : Colors.transparent
-                          ),
-                        ),
-                        onTap: () => setState((){
-                          _options = [false, true, false];
-                        })
-                    ),
-                  )
-              ),
-              Expanded(
-                  child: Center(
-                    child: InkWell(
-                        child:
-                        Container(
-                          width:100,
-                          padding: EdgeInsets.all(2),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5.0),
-                              color: _options[2] ? Colors.white : Colors.transparent
-                          ),
-                        ),
-                        onTap: () => setState((){
-                          _options = [false, false, true];
-                        })
-                    ),
-                  )
-              ),
-            ]
-          ),
+                      })),
+            )),
+            Expanded(
+                child: Center(
+              child: InkWell(
+                  child: Container(
+                    width: 100,
+                    padding: EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5.0),
+                        color: _options[1] ? Colors.white : Colors.transparent),
+                  ),
+                  onTap: () => setState(() {
+                        _options = [false, true, false];
+                      })),
+            )),
+            Expanded(
+                child: Center(
+              child: InkWell(
+                  child: Container(
+                    width: 100,
+                    padding: EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5.0),
+                        color: _options[2] ? Colors.white : Colors.transparent),
+                  ),
+                  onTap: () => setState(() {
+                        _options = [false, false, true];
+                      })),
+            )),
+          ]),
           Row(
             children: [
               Container(
@@ -180,80 +174,54 @@ class _ProfileState extends State<ProfileScreen> {
             ],
           ),
           FractionallySizedBox(
-            widthFactor: 0.95,
-            child: Container(
-              height: 70,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10), color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.8),
-                    spreadRadius: 2,
-                    blurRadius: 5,
-                    offset: Offset(4,5), // changes position of shadow
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      child: InkWell(
-                          child: Image.asset(happyUrl),
-                          onTap: () => {
-                          setState(() {
-                            happyUrl = 'assets/icons/emotions/happy-active.png';
-                            sadUrl = 'assets/icons/emotions/sad.png';
-                            confusedUrl = 'assets/icons/emotions/confused.png';
-                            angryUrl ='assets/icons/emotions/angry.png';
-                            BlocProvider.of<MainBloc>(context).updateEmotion("Happy");
-                          })
-                      }),
+              widthFactor: 0.95,
+              child: Container(
+                height: 70,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.8),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset: Offset(4, 5), // changes position of shadow
                     ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      child: InkWell(
-                          child: Image.asset(confusedUrl),
-                          onTap: () => setState(() {
-                            happyUrl = 'assets/icons/emotions/happy.png';
-                            sadUrl = 'assets/icons/emotions/sad.png';
-                            confusedUrl = 'assets/icons/emotions/confused-active.png';
-                            angryUrl ='assets/icons/emotions/angry.png';
-                            BlocProvider.of<MainBloc>(context).updateEmotion("Confused");
-                          })),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        child: InkWell(
+                            child: Image.asset(happyUrl),
+                            onTap: () => {updateEmotions("Happy")}),
+                      ),
                     ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      child: InkWell(
-                          child: Image.asset(sadUrl),
-                          onTap: () => setState(() {
-                            happyUrl = 'assets/icons/emotions/happy.png';
-                            sadUrl = 'assets/icons/emotions/sad-active.png';
-                            confusedUrl = 'assets/icons/emotions/confused.png';
-                            angryUrl ='assets/icons/emotions/angry.png';
-                            BlocProvider.of<MainBloc>(context).updateEmotion("Sad");
-                          })),
+                    Expanded(
+                      child: Container(
+                        child: InkWell(
+                            child: Image.asset(confusedUrl),
+                            onTap: () => {updateEmotions("Confused")}),
+                      ),
                     ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      child: InkWell(
-                          child: Image.asset(angryUrl),
-                          onTap: () => setState(() {
-                            happyUrl = 'assets/icons/emotions/happy.png';
-                            sadUrl = 'assets/icons/emotions/sad.png';
-                            confusedUrl = 'assets/icons/emotions/confused.png';
-                            angryUrl ='assets/icons/emotions/angry-active.png';
-                            BlocProvider.of<MainBloc>(context).updateEmotion("Angry");
-                          })),
+                    Expanded(
+                      child: Container(
+                        child: InkWell(
+                            child: Image.asset(sadUrl),
+                            onTap: () => {updateEmotions("Sad")}),
+                      ),
                     ),
-                  )
-                ],
-              ),
-            )
-          ),
+                    Expanded(
+                      child: Container(
+                        child: InkWell(
+                            child: Image.asset(angryUrl),
+                            onTap: () => {updateEmotions("Angry")}),
+                      ),
+                    )
+                  ],
+                ),
+              )),
           Row(
             children: [
               Container(
@@ -269,13 +237,14 @@ class _ProfileState extends State<ProfileScreen> {
             child: Container(
               height: 70,
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10), color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.white,
                 boxShadow: [
                   BoxShadow(
                     color: Colors.grey.withOpacity(0.8),
                     spreadRadius: 2,
                     blurRadius: 5,
-                    offset: Offset(4,5), // changes position of shadow
+                    offset: Offset(4, 5), // changes position of shadow
                   ),
                 ],
               ),
@@ -283,7 +252,7 @@ class _ProfileState extends State<ProfileScreen> {
                 children: [
                   Expanded(
                     child: Container(
-                      padding: EdgeInsets.only(left:10),
+                      padding: EdgeInsets.only(left: 10),
                       child: Text("· Depression"),
                     ),
                   ),

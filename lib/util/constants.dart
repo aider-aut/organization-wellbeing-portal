@@ -1,6 +1,7 @@
 class ErrMessages {
   static const String NO_USER_FOUND = "Login Failure: No user has been found";
-  static const String EMAIL_NOT_VERIFIED = 'Login Failure: The user must verify the email';
+  static const String EMAIL_NOT_VERIFIED =
+      'Login Failure: The user must verify the email';
 }
 
 class StorageKeys {
@@ -10,6 +11,8 @@ class StorageKeys {
   static const String FCM_TOKEN = "fcmToken";
   static const String TENANT_ID = 'tenantId';
   static const String EMOTION = 'emotion';
+  static const String IS_FIRST_USER = 'isFirstUser';
+  static const String IS_EMAIL_VERIFIED = 'isEmailVerified';
 }
 
 class UIConstants {
