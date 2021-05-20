@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:chatapp/model/login/login_repo.dart';
+import 'package:chatapp/model/user/user_repo.dart';
 import 'package:chatapp/signup/signup_event.dart';
 import 'package:chatapp/signup/signup_state.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -9,27 +10,38 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
   SignUpBloc(SignUpState initialState) : super(initialState);
 
-
-  void onSignUpWithEmail(String name, String email, String password) async {
+  void onSignUpWithEmail(String name, DateTime date, String email, String password) async {
     add(SignUpEventInProgress());
     try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
-      LoginRepo.getInstance().setUserName(name);
+      await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
+      UserRepo.getInstance().setUserName(name);
+      UserRepo.getInstance().setBirthday(date);
       await LoginRepo.getInstance().signInWithEmail(email, password);
-      add(SignUpStatusUpdate({'state': true, 'email': email, 'password': password}));
+      add(SignUpStatusUpdate(
+          {'state': true, 'email': email, 'password': password}));
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
-        add(SignUpErrorEvent({'code':e.code, 'message':'The password provided is too weak.'}));
+        add(SignUpErrorEvent(
+            {'code': e.code, 'message': 'The password provided is too weak.'}));
       } else if (e.code == 'email-already-in-use') {
-        add(SignUpErrorEvent({'code':e.code, 'message':'The account already exists with that email. Please sign up with a different email'}));
+        add(SignUpErrorEvent({
+          'code': e.code,
+          'message':
+              'The account already exists with that email. Please sign up with a different email'
+        }));
       } else if (e.code == 'invalid-email') {
-        add(SignUpErrorEvent({'code':e.code, 'message':'Invalid Email'}));
+        add(SignUpErrorEvent({'code': e.code, 'message': 'Invalid Email'}));
       } else {
-        add(SignUpErrorEvent({'code':e.code, 'message':'There was an error creating your account. Please try again.'}));
+        add(SignUpErrorEvent({
+          'code': e.code,
+          'message':
+              'There was an error creating your account. Please try again.'
+        }));
       }
     } on Exception catch (e) {
       print("Error: ${e}");
-      add(SignUpErrorEvent({'code':e, 'message':'Unexpected Error'}));
+      add(SignUpErrorEvent({'code': e, 'message': 'Unexpected Error'}));
     }
   }
 

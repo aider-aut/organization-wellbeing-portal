@@ -10,11 +10,13 @@ class User extends LoginResponse {
   final String emotion;
   final bool isFirstUser;
   final bool isEmailVerified;
+  final String birthday;
 
   User(this.uid, this.name, this.imgURL, this.fcmToken, this.tenantId,
       {this.emotion = "Happy",
-      this.isFirstUser = false,
-      this.isEmailVerified = false});
+      this.isFirstUser = true,
+      this.isEmailVerified = false,
+      this.birthday = ""});
 
   User.fromFirebaseUser(auth.User firebaseUser)
       : this(
@@ -33,7 +35,8 @@ class User extends LoginResponse {
       'tenantId': tenantId,
       'emotion': emotion,
       'isFirstUser': isFirstUser,
-      'isEmailVerified': isEmailVerified
+      'isEmailVerified': isEmailVerified,
+      'birthday': birthday
     };
   }
 }

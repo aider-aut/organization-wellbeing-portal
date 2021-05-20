@@ -1,6 +1,7 @@
 import 'package:chatapp/demographics/demographics_view.dart';
 import 'package:chatapp/login/login_email/login_email_view.dart';
-import 'package:chatapp/main/welcome_view.dart';
+import 'package:chatapp/settings/setting_view.dart';
+import 'package:chatapp/welcome/welcome_step.dart';
 import 'package:chatapp/signup/signup_view.dart';
 import 'package:flutter/material.dart';
 
@@ -63,7 +64,22 @@ class NavigationHelper {
     }
   }
 
-
+  static void navigateToSettings(
+      BuildContext context, {
+        bool addToBackStack: false,
+        bool Function(Route<dynamic>) removeUntil,
+      }) {
+    if (addToBackStack) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => SettingScreen()),
+        removeUntil ?? _defaultRule,
+      );
+    } else {
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => SettingScreen()));
+    }
+  }
   static void navigateToWelcome(
       BuildContext context, {
         bool addToBackStack: false,
@@ -72,12 +88,12 @@ class NavigationHelper {
     if (addToBackStack) {
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => WelcomeScreen()),
+        MaterialPageRoute(builder: (context) => WelcomeStepScreen()),
         removeUntil ?? _defaultRule,
       );
     } else {
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => WelcomeScreen()));
+          context, MaterialPageRoute(builder: (context) => WelcomeStepScreen()));
     }
   }
 

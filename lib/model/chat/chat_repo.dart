@@ -164,7 +164,7 @@ class ChatRepo {
 
   Future<bool> sendMessageToChatbot(String chatBotId, String message) async {
     _chatBotId = chatBotId;
-    User currentUser = await UserRepo.getInstance().getCurrentUser();
+    User currentUser = UserRepo.getInstance().getCurrentUser();
     DocumentReference authorRef = _firestore
         .collection(FirestorePaths.USERS_COLLECTION)
         .doc(currentUser.uid);

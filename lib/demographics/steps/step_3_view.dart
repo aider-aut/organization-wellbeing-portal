@@ -28,11 +28,7 @@ class _Step3State extends State<Step3Screen>
   @override
   Widget build(BuildContext context) {
     return Container(
-        decoration: BoxDecoration(
-            image: DecorationImage(
-          image: AssetImage('assets/background.png'),
-          fit: BoxFit.cover,
-        )),
+        decoration: BoxDecoration(color: Theme.of(context).backgroundColor),
         child: Padding(
           padding: EdgeInsets.only(top: 50, left: 40, right: 40),
           child: Column(

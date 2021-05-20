@@ -25,8 +25,8 @@ class CreateChatroomBloc
     dispatchCancelEvent();
   }
 
-  void _initialize() async {
-    currentUser = await UserRepo.getInstance().getCurrentUser();
+  void _initialize() {
+    currentUser = UserRepo.getInstance().getCurrentUser();
     chatUserSubscription =
         ChatRepo.getInstance().getChatUsers().listen((users) {
       List<User> processedListOfUsers =

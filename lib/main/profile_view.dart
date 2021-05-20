@@ -1,4 +1,7 @@
+import 'package:chatapp/base/bloc_widget.dart';
 import 'package:chatapp/main/main_bloc.dart';
+import 'package:chatapp/main/main_event.dart';
+import 'package:chatapp/main/main_state.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -48,225 +51,251 @@ class _ProfileState extends State<ProfileScreen> {
       });
     }
 
-    return Container(
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('assets/background.png'),
-          fit: BoxFit.cover,
-        ),
-      ),
-      child: ListView(
-        children: [
-          Container(
-            child: null,
-            height: 20,
-          ),
-          CircleAvatar(
-            child: Image.network(
-              widget.profileImage != null
-                  ? widget.profileImage
-                  : widget.imageUrls['profile'],
-              height: 70,
-              width: 70,
-            ),
-            radius: 50,
-            backgroundColor: Colors.transparent,
-          ),
-          Center(
-            child: Text(widget.displayName == null ? '' : widget.displayName),
-          ),
-          SizedBox(height: 50),
-          Row(
-            children: <Widget>[
-              Expanded(
-                child: Container(
-                    height: 20,
-                    child: Center(
-                        child: InkWell(
-                            child: Text(
-                              "My History",
-                              style: TextStyle(color: Colors.black),
-                            ),
-                            onTap: () => setState(() {
-                                  _options = [true, false, false];
-                                })))),
+    return Scaffold(
+        body: BlocWidget<MainEvent, MainState, MainBloc>(
+            builder: (BuildContext context, MainState state) => Scaffold(
+            body: Builder(
+    builder: (BuildContext context) {
+      Widget content;
+      if (state.isLoading) {
+        content = Container(
+            decoration:
+            BoxDecoration(color: Theme.of(context).backgroundColor),
+            child: Center(
+              child: CircularProgressIndicator(
+                strokeWidth: 4.0,
               ),
-              Expanded(
-                child: Container(
-                    height: 20,
-                    child: Center(
-                        child: InkWell(
-                            child: Text(
-                              "My Employees",
-                              style: TextStyle(color: Colors.black),
-                            ),
-                            onTap: () => setState(() {
-                                  _options = [false, true, false];
-                                })))),
-              ),
-              Expanded(
-                  child: Container(
-                      height: 20,
-                      child: Center(
-                          child: InkWell(
-                              child: Text(
-                                "Notifications",
-                                style: TextStyle(color: Colors.black),
-                              ),
-                              onTap: () => setState(() {
-                                    _options = [false, false, true];
-                                  }))))),
-            ],
-          ),
-          SizedBox(height: 10),
-          Row(children: [
-            Expanded(
-                child: Center(
-              child: InkWell(
-                  child: Container(
-                    width: 100,
-                    padding: EdgeInsets.all(2),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5.0),
-                        color: _options[0] ? Colors.white : Colors.transparent),
-                  ),
-                  onTap: () => setState(() {
-                        _options = [true, false, false];
-                      })),
-            )),
-            Expanded(
-                child: Center(
-              child: InkWell(
-                  child: Container(
-                    width: 100,
-                    padding: EdgeInsets.all(2),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5.0),
-                        color: _options[1] ? Colors.white : Colors.transparent),
-                  ),
-                  onTap: () => setState(() {
-                        _options = [false, true, false];
-                      })),
-            )),
-            Expanded(
-                child: Center(
-              child: InkWell(
-                  child: Container(
-                    width: 100,
-                    padding: EdgeInsets.all(2),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5.0),
-                        color: _options[2] ? Colors.white : Colors.transparent),
-                  ),
-                  onTap: () => setState(() {
-                        _options = [false, false, true];
-                      })),
-            )),
-          ]),
-          Row(
+            ));
+      } else {
+        content = Container(
+          decoration: BoxDecoration(color: Theme
+              .of(context)
+              .backgroundColor),
+          child: ListView(
             children: [
               Container(
-                margin: EdgeInsets.all(5),
-                padding: EdgeInsets.all(15),
-                child: new Image.network(widget.imageUrls['mood']),
+                child: null,
+                height: 20,
               ),
-              Text("My Mood")
-            ],
-          ),
-          FractionallySizedBox(
-              widthFactor: 0.95,
-              child: Container(
-                height: 70,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.8),
-                      spreadRadius: 2,
-                      blurRadius: 5,
-                      offset: Offset(4, 5), // changes position of shadow
-                    ),
-                  ],
+              CircleAvatar(
+                child: Image.network(
+                  widget.profileImage != null
+                      ? widget.profileImage
+                      : widget.imageUrls['profile'],
+                  height: 70,
+                  width: 70,
                 ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        child: InkWell(
-                            child: Image.asset(happyUrl),
-                            onTap: () => {updateEmotions("Happy")}),
-                      ),
-                    ),
-                    Expanded(
-                      child: Container(
-                        child: InkWell(
-                            child: Image.asset(confusedUrl),
-                            onTap: () => {updateEmotions("Confused")}),
-                      ),
-                    ),
-                    Expanded(
-                      child: Container(
-                        child: InkWell(
-                            child: Image.asset(sadUrl),
-                            onTap: () => {updateEmotions("Sad")}),
-                      ),
-                    ),
-                    Expanded(
-                      child: Container(
-                        child: InkWell(
-                            child: Image.asset(angryUrl),
-                            onTap: () => {updateEmotions("Angry")}),
-                      ),
-                    )
-                  ],
-                ),
-              )),
-          Row(
-            children: [
-              Container(
-                margin: EdgeInsets.all(5),
-                padding: EdgeInsets.all(15),
-                child: new Image.network(widget.imageUrls['barrier']),
+                radius: 50,
+                backgroundColor: Colors.transparent,
               ),
-              Text("My Challenges")
-            ],
-          ),
-          FractionallySizedBox(
-            widthFactor: .95,
-            child: Container(
-              height: 70,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.8),
-                    spreadRadius: 2,
-                    blurRadius: 5,
-                    offset: Offset(4, 5), // changes position of shadow
+              Center(
+                child: Text(
+                    widget.displayName == null ? '' : widget.displayName),
+              ),
+              SizedBox(height: 50),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Container(
+                        height: 20,
+                        child: Center(
+                            child: InkWell(
+                                child: Text(
+                                  "My History",
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                                onTap: () =>
+                                    setState(() {
+                                      _options = [true, false, false];
+                                    })))),
                   ),
+                  Expanded(
+                    child: Container(
+                        height: 20,
+                        child: Center(
+                            child: InkWell(
+                                child: Text(
+                                  "My Employees",
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                                onTap: () =>
+                                    setState(() {
+                                      _options = [false, true, false];
+                                    })))),
+                  ),
+                  Expanded(
+                      child: Container(
+                          height: 20,
+                          child: Center(
+                              child: InkWell(
+                                  child: Text(
+                                    "Notifications",
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                  onTap: () =>
+                                      setState(() {
+                                        _options = [false, false, true];
+                                      }))))),
                 ],
               ),
-              child: Row(
+              SizedBox(height: 10),
+              Row(children: [
+                Expanded(
+                    child: Center(
+                      child: InkWell(
+                          child: Container(
+                            width: 100,
+                            padding: EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5.0),
+                                color: _options[0] ? Colors.white : Colors
+                                    .transparent),
+                          ),
+                          onTap: () =>
+                              setState(() {
+                                _options = [true, false, false];
+                              })),
+                    )),
+                Expanded(
+                    child: Center(
+                      child: InkWell(
+                          child: Container(
+                            width: 100,
+                            padding: EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5.0),
+                                color: _options[1] ? Colors.white : Colors
+                                    .transparent),
+                          ),
+                          onTap: () =>
+                              setState(() {
+                                _options = [false, true, false];
+                              })),
+                    )),
+                Expanded(
+                    child: Center(
+                      child: InkWell(
+                          child: Container(
+                            width: 100,
+                            padding: EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5.0),
+                                color: _options[2] ? Colors.white : Colors
+                                    .transparent),
+                          ),
+                          onTap: () =>
+                              setState(() {
+                                _options = [false, false, true];
+                              })),
+                    )),
+              ]),
+              Row(
                 children: [
-                  Expanded(
-                    child: Container(
-                      padding: EdgeInsets.only(left: 10),
-                      child: Text("· Depression"),
-                    ),
+                  Container(
+                    margin: EdgeInsets.all(5),
+                    padding: EdgeInsets.all(15),
+                    child: new Image.network(widget.imageUrls['mood']),
                   ),
-                  Expanded(
-                    child: Container(
-                      child: Text("· Drug use"),
-                    ),
-                  )
+                  Text("My Mood")
                 ],
               ),
-            ),
-          )
-        ],
-      ),
-    );
+              FractionallySizedBox(
+                  widthFactor: 0.95,
+                  child: Container(
+                    height: 70,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.8),
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: Offset(4, 5), // changes position of shadow
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            child: InkWell(
+                                child: Image.asset(happyUrl),
+                                onTap: () => {updateEmotions("Happy")}),
+                          ),
+                        ),
+                        Expanded(
+                          child: Container(
+                            child: InkWell(
+                                child: Image.asset(confusedUrl),
+                                onTap: () => {updateEmotions("Confused")}),
+                          ),
+                        ),
+                        Expanded(
+                          child: Container(
+                            child: InkWell(
+                                child: Image.asset(sadUrl),
+                                onTap: () => {updateEmotions("Sad")}),
+                          ),
+                        ),
+                        Expanded(
+                          child: Container(
+                            child: InkWell(
+                                child: Image.asset(angryUrl),
+                                onTap: () => {updateEmotions("Angry")}),
+                          ),
+                        )
+                      ],
+                    ),
+                  )),
+              Row(
+                children: [
+                  Container(
+                    margin: EdgeInsets.all(5),
+                    padding: EdgeInsets.all(15),
+                    child: new Image.network(widget.imageUrls['barrier']),
+                  ),
+                  Text("My Challenges")
+                ],
+              ),
+              FractionallySizedBox(
+                widthFactor: .95,
+                child: Container(
+                  height: 70,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.8),
+                        spreadRadius: 2,
+                        blurRadius: 5,
+                        offset: Offset(4, 5), // changes position of shadow
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.only(left: 10),
+                          child: Text("· Depression"),
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          child: Text("· Drug use"),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              )
+            ],
+          ),
+        );
+      }
+      return content;
+    }))));
   }
 }

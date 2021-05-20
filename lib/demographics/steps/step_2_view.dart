@@ -28,11 +28,7 @@ class _Step2State extends State<Step2Screen>
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-          image: DecorationImage(
-        image: AssetImage('assets/background.png'),
-        fit: BoxFit.cover,
-      )),
+      decoration: BoxDecoration(color: Theme.of(context).backgroundColor),
       child:
           Column(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
         Padding(

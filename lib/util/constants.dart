@@ -8,6 +8,7 @@ class StorageKeys {
   static const String USER_ID_KEY = "user_id_key";
   static const String USER_NAME_KEY = "user_name_key";
   static const String USER_IMG_URL_KEY = "user_img_url_key";
+  static const String USER_BIRTHDAY = "birthday";
   static const String FCM_TOKEN = "fcmToken";
   static const String TENANT_ID = 'tenantId';
   static const String EMOTION = 'emotion';

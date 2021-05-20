@@ -30,7 +30,14 @@ class _LoginEmailState extends State<LoginEmailScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-            appBar: AppBar(title: Text("Login with Email")),
+            appBar: AppBar(
+              iconTheme: IconThemeData(
+                color: Colors.black, //change your color here
+              ),
+              backgroundColor: Theme.of(context).backgroundColor,
+              foregroundColor: Colors.transparent,
+              shadowColor: Colors.transparent,
+            ),
             body: BlocWidget<LoginEvent, LoginState, LoginBloc>(
                 builder: (BuildContext context, LoginState state) {
               if (state.error != null && state.error['message'].isNotEmpty) {
@@ -51,108 +58,184 @@ class _LoginEmailState extends State<LoginEmailScreen> {
                   ],
                 );
               } else if (state.loading) {
-                return Center(
-                    child: CircularProgressIndicator(
-                  strokeWidth: 4.0,
-                ));
+                return Container(
+                    decoration:
+                        BoxDecoration(color: Theme.of(context).backgroundColor),
+                    child: Center(
+                        child: CircularProgressIndicator(
+                      strokeWidth: 4.0,
+                    )));
               } else {
-                return Center(
-                  child: SingleChildScrollView(
-                    child: Container(
-                      padding:
-                          EdgeInsetsDirectional.only(start: 40.0, end: 40.0),
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            TextFormField(
-                              autofocus: false,
-                              validator: (String value) {
-                                bool emailValid = RegExp(
-                                        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                    .hasMatch(value);
-                                return (emailValid)
-                                    ? null
-                                    : "Please enter valid email";
-                              },
-                              onSaved: (String value) {
-                                _email = value;
-                              },
-                              decoration: const InputDecoration(
-                                  icon: Icon(Icons.email), hintText: "Email"),
-                            ),
-                            SizedBox(height: 15.0),
-                            Stack(
-                              children: <Widget>[
-                                TextFormField(
-                                  autofocus: false,
-                                  validator: (val) => val.length < 6
-                                      ? 'Password too short (it has to be longer than 6 characters).'
-                                      : null,
-                                  onSaved: (String value) {
-                                    _password = value;
-                                  },
-                                  obscureText: _obscureText,
-                                  decoration: const InputDecoration(
-                                      icon: Icon(Icons.lock),
-                                      hintText: "Password"),
-                                ),
-                                Positioned(
-                                    left: (MediaQuery.of(context).size.width -
-                                        150.0),
-                                    child: TextButton(
-                                        onPressed: _toggle,
-                                        child: new Text(
-                                            _obscureText ? "Show" : "Hide")))
-                              ],
-                            ),
-                            SizedBox(height: 15.0),
-                            Center(
-                                child: ButtonTheme(
-                              minWidth: 256.0,
-                              height: 32.0,
-                              child: ElevatedButton(
-                                  onPressed: () {
-                                    final form = _formKey.currentState;
-                                    if (form.validate()) {
-                                      form.save();
-                                      BlocProvider.of<LoginBloc>(context)
-                                          .onLoginWithEmail(_email, _password);
-                                      bool _isFirstUser = false;
-                                      bool _isEmailVerified = false;
-                                      UserRepo.getInstance()
-                                          .isFirstUser()
-                                          .then((value) {
-                                        _isFirstUser = value;
-                                      });
-                                      UserRepo.getInstance()
-                                          .isEmailVerified()
-                                          .then((value) {
-                                        _isEmailVerified = value;
-                                      });
+                return Container(
+                    decoration:
+                        BoxDecoration(color: Theme.of(context).backgroundColor),
+                    child: Column(
+                      children: [
+                        SizedBox(height: 60),
+                        Image.asset("assets/auth-image.png"),
+                        SizedBox(height: 40),
+                        Expanded(
+                          child: Container(
+                            padding: EdgeInsets.only(top: 20),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: Colors.white),
+                            child: SingleChildScrollView(
+                              child: Container(
+                                padding: EdgeInsetsDirectional.only(
+                                    start: 40.0, end: 40.0),
+                                child: Form(
+                                  key: _formKey,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      SizedBox(height: 30),
+                                      Container(
+                                          padding: EdgeInsets.only(
+                                              left: 10, top: 10),
+                                          decoration: new BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              color: Color(0xFFF4F9FE)),
+                                          child: Stack(
+                                            children: [
+                                              Align(
+                                                alignment: Alignment.topLeft,
+                                                child: Text("Email",
+                                                    style: TextStyle(
+                                                      fontSize: 12,
+                                                      color: Color(0xFF3E4347),
+                                                    ),
+                                                    textAlign:
+                                                        TextAlign.center),
+                                              ),
+                                              TextFormField(
+                                                autofocus: false,
+                                                validator: (String value) {
+                                                  bool emailValid = RegExp(
+                                                          r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                                      .hasMatch(value);
+                                                  return (emailValid)
+                                                      ? null
+                                                      : "Please enter valid email";
+                                                },
+                                                onSaved: (String value) {
+                                                  _email = value;
+                                                },
+                                                decoration:
+                                                    const InputDecoration(
+                                                  border: InputBorder.none,
+                                                ),
+                                              ),
+                                            ],
+                                          )),
+                                      SizedBox(height: 15.0),
+                                      Container(
+                                          padding: EdgeInsets.only(
+                                              left: 10, top: 10),
+                                          decoration: new BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              color: Color(0xFFF4F9FE)),
+                                          child: Stack(
+                                            children: <Widget>[
+                                              Align(
+                                                alignment: Alignment.topLeft,
+                                                child: Text("Password",
+                                                    style: TextStyle(
+                                                      fontSize: 12,
+                                                      color: Color(0xFF3E4347),
+                                                    ),
+                                                    textAlign:
+                                                        TextAlign.center),
+                                              ),
+                                              TextFormField(
+                                                autofocus: false,
+                                                validator: (val) => val.length <
+                                                        6
+                                                    ? 'Password too short (it has to be longer than 6 characters).'
+                                                    : null,
+                                                onSaved: (String value) {
+                                                  _password = value;
+                                                },
+                                                obscureText: _obscureText,
+                                                decoration:
+                                                    const InputDecoration(
+                                                  border: InputBorder.none,
+                                                ),
+                                              ),
+                                              Positioned(
+                                                  left: (MediaQuery.of(context)
+                                                          .size
+                                                          .width -
+                                                      150.0),
+                                                  child: TextButton(
+                                                      onPressed: _toggle,
+                                                      child: new Text(
+                                                          _obscureText
+                                                              ? "Show"
+                                                              : "Hide")))
+                                            ],
+                                          )),
+                                      SizedBox(height: 15.0),
+                                      Center(
+                                          child: Container(
+                                              width: 400,
+                                              height: 50,
+                                              child: ButtonTheme(
+                                                child: ElevatedButton(
+                                                    onPressed: () {
+                                                      final form =
+                                                          _formKey.currentState;
+                                                      if (form.validate()) {
+                                                        form.save();
+                                                        BlocProvider.of<LoginBloc>(context).onLoginWithEmail(_email, _password);
+                                                        bool _isFirstUser = UserRepo.getInstance()
+                                                            .isFirstUser();
+                                                        bool _isEmailVerified = UserRepo.getInstance()
+                                                            .isEmailVerified();
 
-                                      if (_isFirstUser || !_isEmailVerified) {
-                                        NavigationHelper.navigateToWelcome(
-                                            context,
-                                            addToBackStack: false);
-                                      } else {
-                                        NavigationHelper.navigateToMain(context,
-                                            addToBackStack: false);
-                                      }
-                                    }
-                                  },
-                                  child: Text("Sign in",
-                                      style: TextStyle(color: Colors.black)),
-                                  style: ElevatedButton.styleFrom(
-                                      primary: Colors.white10)),
-                            ))
-                          ],
+                                                        if (_isFirstUser ||
+                                                            !_isEmailVerified) {
+                                                          NavigationHelper
+                                                              .navigateToWelcome(
+                                                                  context,
+                                                                  addToBackStack:
+                                                                      false);
+                                                        } else {
+                                                          NavigationHelper
+                                                              .navigateToMain(
+                                                                  context,
+                                                                  addToBackStack:
+                                                                      false);
+                                                        }
+                                                      }
+                                                    },
+                                                    child: Text("Log in",
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.white)),
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                            primary:
+                                                                Colors.black,
+                                                            // background
+                                                            shape: RoundedRectangleBorder(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            15)))),
+                                              )))
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
-                );
+                      ],
+                    ));
               }
             })));
   }

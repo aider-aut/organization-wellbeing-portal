@@ -8,8 +8,12 @@ import 'package:chatapp/login/login_bloc.dart';
 import 'package:chatapp/login/login_state.dart';
 import 'package:chatapp/main/main_bloc.dart';
 import 'package:chatapp/main/main_state.dart';
+import 'package:chatapp/settings/setting_bloc.dart';
+import 'package:chatapp/settings/setting_state.dart';
 import 'package:chatapp/signup/signup_bloc.dart';
 import 'package:chatapp/signup/signup_state.dart';
+import 'package:chatapp/welcome/welcome_bloc.dart';
+import 'package:chatapp/welcome/welcome_state.dart';
 import 'package:flutter/services.dart';
 
 abstract class BlocFactory {
@@ -23,6 +27,8 @@ abstract class BlocFactory {
         return LoginBloc(LoginState.initial()) as T;
       case SignUpBloc:
         return SignUpBloc(SignUpState.initial()) as T;
+      case SettingBloc:
+        return SettingBloc(SettingState.initial()) as T;
       case DemographicsBloc:
         return DemographicsBloc(DemographicsState.initial()) as T;
       case CreateChatroomBloc:
@@ -30,6 +36,8 @@ abstract class BlocFactory {
       case InstantMessagingBloc:
         return InstantMessagingBloc(
             InstantMessagingState.initial(), data['chatroomId']) as T;
+      case WelcomeBloc:
+        return WelcomeBloc(WelcomeState.initial()) as T;
       default:
         throw new PlatformException(
             code: BlocFactory.error,

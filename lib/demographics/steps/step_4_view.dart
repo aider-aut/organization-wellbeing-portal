@@ -36,11 +36,7 @@ class _Step4State extends State<Step4Screen>
     String angryUrl =
         'assets/icons/emotions/${_emotion == "Angry" ? "angry-active.png" : "angry.png"}';
     return Container(
-      decoration: BoxDecoration(
-          image: DecorationImage(
-        image: AssetImage('assets/background.png'),
-        fit: BoxFit.cover,
-      )),
+      decoration: BoxDecoration(color: Theme.of(context).backgroundColor),
       child:
           Column(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
         Padding(

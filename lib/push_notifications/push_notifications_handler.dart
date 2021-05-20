@@ -47,7 +47,7 @@ class PushNotificationsHandler extends NavigatorObserver {
     Map<dynamic, dynamic> data = payload["data"];
     User otherUser = User(data["other_member_id"], data["other_member_name"],
         data["other_member_photo_url"], "", data['tenantId']);
-    User currentUser = await UserRepo.getInstance().getCurrentUser();
+    User currentUser = UserRepo.getInstance().getCurrentUser();
     if (currentUser == null) {
       return false;
     }

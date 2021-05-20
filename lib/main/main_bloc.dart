@@ -27,18 +27,12 @@ class MainBloc extends Bloc<MainEvent, MainState> {
 
   void _initialize() async {
     add(MainUpdateEventInProgress());
-    _currentUser = await UserRepo.getInstance().getCurrentUser();
-    UserRepo.getInstance().isEmailVerified().then((value) {
-      _isEmailVerified = value;
-    });
-    UserRepo.getInstance().isFirstUser().then((value) {
-      _isFirstUser = value;
-    });
-    // if (_currentUser != null) {
+    _currentUser = UserRepo.getInstance().getCurrentUser();
+    _isEmailVerified = UserRepo.getInstance().isEmailVerified();
+    _isFirstUser = UserRepo.getInstance().isFirstUser();
     imageUrls = await getImages();
-    _emotion = await UserRepo.getInstance().getEmotion();
+    _emotion = UserRepo.getInstance().getEmotion();
     add(MainUpdateEvent(_currentUser.name, _currentUser.imgURL, imageUrls));
-    // }
   }
 
   bool isEmailVerified() {
@@ -50,14 +44,14 @@ class MainBloc extends Bloc<MainEvent, MainState> {
   }
 
   Future<Map<String, String>> getImages() async {
-    final profile_url = await _instance.ref('profile.png').getDownloadURL();
-    final love_url = await _instance.ref('love.png').getDownloadURL();
-    final barrier_url = await _instance.ref('barrier.png').getDownloadURL();
+    final profileUrl = await _instance.ref('profile.png').getDownloadURL();
+    final loveUrl = await _instance.ref('love.png').getDownloadURL();
+    final barrierUrl = await _instance.ref('barrier.png').getDownloadURL();
 
     imageUrls = {
-      'mood': love_url,
-      'barrier': barrier_url,
-      'profile': profile_url,
+      'mood': loveUrl,
+      'barrier': barrierUrl,
+      'profile': profileUrl,
     };
 
     return imageUrls;
@@ -127,7 +121,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       yield MainState.isLoading(true, state);
     } else if (event is MainUpdateEvent) {
       yield MainState.update(
-          event.name, event.profileImg, event.imageUrls, state);
+          event.name, event.profileImg, event.imageUrls);
     } else if (event is MainErrorEvent) {
       yield MainState.isLoading(false, state);
     }

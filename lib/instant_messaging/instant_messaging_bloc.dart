@@ -22,7 +22,7 @@ class InstantMessagingBloc
   StreamSubscription<Chatroom> chatroomSubscription;
 
   void _retrieveMessagesForThisChatroom() async {
-    final User user = await UserRepo.getInstance().getCurrentUser();
+    final User user = UserRepo.getInstance().getCurrentUser();
     chatroomSubscription = ChatRepo.getInstance()
         .getMessagesForChatroom(chatroomId)
         .listen((chatroom) async {
@@ -46,9 +46,9 @@ class InstantMessagingBloc
     });
   }
 
-  void send(String text) async {
-    final User user = await UserRepo.getInstance().getCurrentUser();
-    final isChatBot = await ChatRepo.getInstance().isOtherUserChatBot();
+  void send(String text) async  {
+    final User user = UserRepo.getInstance().getCurrentUser();
+    final isChatBot = ChatRepo.getInstance().isOtherUserChatBot();
     bool success = false;
     if(isChatBot) {
       success = await ChatRepo.getInstance().sendMessageToChatbot(chatroomId, text);

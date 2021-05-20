@@ -39,12 +39,7 @@ class _Step1State extends State<Step1Screen>
   Widget build(BuildContext context) {
     return Container(
         height: double.infinity,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/background.png'),
-            fit: BoxFit.cover,
-          ),
-        ),
+        decoration: BoxDecoration(color: Theme.of(context).backgroundColor),
         child: SingleChildScrollView(
           child: Padding(
               padding: EdgeInsets.only(top: 50, left: 40, right: 40),

@@ -15,9 +15,9 @@ class MainState {
       this.loggedIn = true,
       this.selected});
 
-  factory MainState.initial() => MainState._internal(false);
+  factory MainState.initial() => MainState._internal(true);
   factory MainState.update(String name, String profileImg,
-          Map<String, String> imageUrls, MainState state) =>
+          Map<String, String> imageUrls) =>
       MainState._internal(false,
           name: name, profileImg: profileImg, imageUrls: imageUrls);
   factory MainState.isLoading(bool isLoading, MainState state) =>

@@ -34,6 +34,9 @@ dependencies:
   rxdart: ^0.27.0
   equatable: ^2.0.0
   http: ^0.13.3
+  dots_indicator: ^2.0.0
+  swipedetector: ^1.2.0
+  flutter_material_pickers: ^2.1.1
 
 dev_dependencies:
   test: 1.16.5
@@ -49,14 +52,14 @@ dev_dependencies:
 # The following section is specific to Flutter.
 flutter:
   fonts:
-    - family: PTSans
+    - family: Lato
       fonts:
-        - asset: fonts/PTSans-Regular.ttf
-        - asset: fonts/PTSans-Bold.ttf
+        - asset: fonts/Lato-Regular.ttf
+        - asset: fonts/Lato-Bold.ttf
           weight: 700
-        - asset: fonts/PTSans-Italic.ttf
+        - asset: fonts/Lato-Italic.ttf
           style: italic
-        - asset: fonts/PTSans-BoldItalic.ttf
+        - asset: fonts/Lato-BoldItalic.ttf
           weight: 700
           style: italic
   # The following line ensures that the Material Icons font is

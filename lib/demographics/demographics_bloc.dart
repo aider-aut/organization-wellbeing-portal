@@ -13,8 +13,8 @@ class DemographicsBloc extends Bloc<DemographicsEvent, DemographicsState> {
   Map<String, dynamic> _data = {};
   User _currentUser;
 
-  void _initialize() async {
-    _currentUser = await UserRepo.getInstance().getCurrentUser();
+  void _initialize() {
+    _currentUser = UserRepo.getInstance().getCurrentUser();
   }
 
   void submitData(Map<String, dynamic> newData) {
