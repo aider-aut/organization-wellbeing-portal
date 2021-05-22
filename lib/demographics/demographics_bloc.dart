@@ -14,25 +14,28 @@ class DemographicsBloc extends Bloc<DemographicsEvent, DemographicsState> {
   User _currentUser;
 
   void _initialize() {
-    _currentUser = UserRepo.getInstance().getCurrentUser();
+    _currentUser = UserRepo().getCurrentUser();
   }
 
   void submitData(Map<String, dynamic> newData) {
+    add(DemographicsEventInProgress());
     _data.addAll(newData);
     if (_data.keys.length == 4) {
-      UserRepo.getInstance().setTenant(_data['tenant']);
-      UserRepo.getInstance().setEmotion(_data['emotion'], update: false);
-      UserRepo.getInstance()
-          .setBusinessWellbeing(_data['wellbeing'].toString());
-      UserRepo.getInstance().setSource(_data['heardFrom']);
+      UserRepo().setTenant(_data['tenant']);
+      UserRepo().setEmotion(_data['emotion']);
+      UserRepo().setBusinessWellbeing(_data['wellbeing'].toString());
+      UserRepo().setSource(_data['heardFrom']);
     }
     print("data: ${_data}");
+    add(DemographicsEventFinished());
   }
 
   @override
   Stream<DemographicsState> mapEventToState(DemographicsEvent event) async* {
     if (event is DemographicsEventInProgress) {
       yield DemographicsState.loading(true);
+    } else if (event is DemographicsEventFinished) {
+      yield DemographicsState.loading(false);
     }
   }
 

@@ -31,7 +31,6 @@ dependencies:
   flutter_facebook_auth: ^3.3.3+1
   shared_preferences: ^2.0.5
   image_picker: ^0.7.5
-  rxdart: ^0.27.0
   equatable: ^2.0.0
   http: ^0.13.3
   dots_indicator: ^2.0.0

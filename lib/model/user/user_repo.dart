@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:chatapp/model/user/user.dart';
 import 'package:chatapp/util/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,14 +13,14 @@ class UserRepo {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   static SharedPreferences _prefs;
 
-  UserRepo._internal();
+  // UserRepo._internal();
 
-  factory UserRepo.getInstance() {
-    if (_instance == null) {
-      _instance = UserRepo._internal();
-    }
-    return _instance;
-  }
+  // factory UserRepo() {
+  //   if (_instance == null) {
+  //     _instance = UserRepo._internal();
+  //   }
+  //   return _instance;
+  // }
 
   void _initialize() async {
     _prefs = await SharedPreferences.getInstance();
@@ -54,8 +52,7 @@ class UserRepo {
             emotion: emotion,
             isFirstUser: isFirstUser,
             isEmailVerified: isEmailVerified,
-            birthday: birthday
-        );
+            birthday: birthday);
         return serializedUser;
       }
     }
@@ -63,25 +60,54 @@ class UserRepo {
         emotion: emotion,
         isFirstUser: isFirstUser,
         isEmailVerified: isEmailVerified,
-        birthday: birthday
-    );
+        birthday: birthday);
   }
-
 
   void setCurrentUser(User firebaseUser) {
     User user = getAdditionalUserDetails(firebaseUser);
-      _prefs
-          .setString(StorageKeys.USER_ID_KEY, user.uid)
-          .then((val) => _prefs.setString(StorageKeys.USER_NAME_KEY, user.name != null ? user.name : ''))
-          .then((val) => _prefs.setString(StorageKeys.USER_IMG_URL_KEY, user.imgURL != null ? user.imgURL : ''))
-          .then((val) =>
-          _prefs.setString(StorageKeys.FCM_TOKEN, user.fcmToken))
-          .then((val) => _prefs.setString(
-          StorageKeys.TENANT_ID, user.tenantId))
-          .then((val) => _prefs.setBool(StorageKeys.IS_EMAIL_VERIFIED, user.isEmailVerified))
-          .then((val) => _prefs.setBool(StorageKeys.IS_FIRST_USER, user.isFirstUser))
-          .then((val) => _prefs.setString(StorageKeys.USER_BIRTHDAY, user.birthday))
-          .then((val) => _prefs.setString(StorageKeys.EMOTION, user.emotion));
+    _prefs.setString(StorageKeys.USER_ID_KEY, user.uid);
+    if (user.name != null) {
+      _prefs.setString(StorageKeys.USER_NAME_KEY, user.name);
+    }
+    if (user.imgURL != null) {
+      _prefs.setString(StorageKeys.USER_IMG_URL_KEY, user.imgURL);
+    }
+    if (user.fcmToken != null) {
+      _prefs.setString(StorageKeys.FCM_TOKEN, user.fcmToken);
+    }
+    if (user.tenantId != null) {
+      _prefs.setString(StorageKeys.TENANT_ID, user.tenantId);
+    }
+    if (user.isEmailVerified != null) {
+      _prefs.setBool(StorageKeys.IS_EMAIL_VERIFIED, user.isEmailVerified);
+    }
+    if (user.isFirstUser != null) {
+      _prefs.setBool(StorageKeys.IS_FIRST_USER, user.isFirstUser);
+    }
+    if (user.birthday != null) {
+      _prefs.setString(StorageKeys.USER_BIRTHDAY, user.birthday);
+    }
+    if (user.emotion != null) {
+      _prefs.setString(StorageKeys.EMOTION, user.emotion);
+    }
+  }
+
+  void setUpDatabase() {
+    String id = getUserId();
+    _firestore.collection(FirestorePaths.USERS_COLLECTION).doc(id).set({
+      'name': '',
+      'imgURL': '',
+      'fcmToken': '',
+      'tenantId': '',
+      'isEmailVerified': false,
+      'isFirstUser': true,
+      'birthday': '',
+      'emotion': ''
+    });
+    _firestore
+        .collection(FirestorePaths.WELLBEING_COLLECTION)
+        .doc(id)
+        .set({'source': null, 'business': null, 'emotion': null});
   }
 
   void clearCurrentUser() async {
@@ -89,39 +115,32 @@ class UserRepo {
   }
 
   bool isFirstUser({userId}) {
-    if(userId == null) {
+    if (userId == null) {
       userId = _prefs.getString(StorageKeys.USER_ID_KEY);
     }
-    _auth.userChanges().forEach((user) {
-      if (userId == user.uid) {
-        _prefs.setBool(StorageKeys.IS_FIRST_USER, user.emailVerified);
-      }
-    });
     return _prefs.getBool(StorageKeys.IS_FIRST_USER);
   }
 
   bool isEmailVerified({userId}) {
-    if(userId == null) {
+    if (userId == null) {
       userId = _prefs.getString(StorageKeys.USER_ID_KEY);
     }
-    _auth.userChanges().forEach((user) {
-      if (userId == user.uid) {
-        _prefs.setBool(StorageKeys.IS_EMAIL_VERIFIED, user.emailVerified);
-      }
-    });
-
     return _prefs.getBool(StorageKeys.IS_EMAIL_VERIFIED);
   }
 
   String getUserName({userId}) {
-    if(userId == null) {
+    if (userId == null) {
       userId = _prefs.getString(StorageKeys.USER_ID_KEY);
     }
     String userName = _prefs.getString(StorageKeys.USER_NAME_KEY);
-    if(userName == null || userName.isEmpty){
-      _firestore.collection(FirestorePaths.USERS_COLLECTION).doc(userId).get().then((DocumentSnapshot snapshot){
-        if(snapshot.data() != null) {
-          if(snapshot.get("name") != null) {
+    if (userName == null || userName.isEmpty) {
+      _firestore
+          .collection(FirestorePaths.USERS_COLLECTION)
+          .doc(userId)
+          .get()
+          .then((DocumentSnapshot snapshot) {
+        if (snapshot.data() != null) {
+          if (snapshot.get("name") != null) {
             return snapshot.get('name');
           }
         }
@@ -139,31 +158,40 @@ class UserRepo {
   }
 
   String getTenant({userId}) {
-    if(userId == null) {
+    if (userId == null) {
       userId = _prefs.getString(StorageKeys.USER_ID_KEY);
     }
     String tenant = _prefs.getString(StorageKeys.TENANT_ID);
-    if(tenant == null || tenant.isEmpty){
-      _firestore.collection(FirestorePaths.USERS_COLLECTION).doc(userId).get().then((DocumentSnapshot snapshot){
-        if(snapshot.data() != null) {
-          if(snapshot.get("tenantId") != null) {
+    if (tenant == null || tenant.isEmpty) {
+      _firestore
+          .collection(FirestorePaths.USERS_COLLECTION)
+          .doc(userId)
+          .get()
+          .then((DocumentSnapshot snapshot) {
+        if (snapshot.data() != null) {
+          if (snapshot.get("tenantId") != null) {
             return snapshot.get('tenantId');
           }
         }
       });
+      return "Employer";
     }
     return tenant;
   }
 
   String getBirthday({userId}) {
-    if(userId == null) {
+    if (userId == null) {
       userId = _prefs.getString(StorageKeys.USER_ID_KEY);
     }
     String birthday = _prefs.getString(StorageKeys.USER_BIRTHDAY);
-    if(birthday == null || birthday.isEmpty){
-      _firestore.collection(FirestorePaths.USERS_COLLECTION).doc(userId).get().then((DocumentSnapshot snapshot){
-        if(snapshot.data() != null) {
-          if(snapshot.get("birthday") != null) {
+    if (birthday == null || birthday.isEmpty) {
+      _firestore
+          .collection(FirestorePaths.USERS_COLLECTION)
+          .doc(userId)
+          .get()
+          .then((DocumentSnapshot snapshot) {
+        if (snapshot.data() != null) {
+          if (snapshot.get("birthday") != null) {
             return snapshot.get('birthday');
           }
         }
@@ -173,50 +201,45 @@ class UserRepo {
   }
 
   String getEmotion({userId}) {
-    if(userId == null)
-      userId = _prefs.getString(StorageKeys.USER_ID_KEY);
+    if (userId == null) userId = _prefs.getString(StorageKeys.USER_ID_KEY);
     String emotion = _prefs.getString(StorageKeys.EMOTION);
-    if(emotion == null || emotion.isEmpty){
+    if (emotion == null || emotion.isEmpty) {
       _firestore
-          .collection(FirestorePaths.WELLBEING_COLLECTION)
+          .collection(FirestorePaths.USERS_COLLECTION)
           .doc(userId)
           .get()
           .then((DocumentSnapshot documentSnapshot) {
         if (documentSnapshot.data() != null) {
           if (documentSnapshot.get('emotion') != null &&
               documentSnapshot.get('emotion').isNotEmpty) {
-            print("latest: ${documentSnapshot.get('emotion').last}");
-            emotion = documentSnapshot.get('emotion').last;
+            print("latest: ${documentSnapshot.get('emotion')}");
+            emotion = documentSnapshot.get('emotion');
             _prefs.setString(StorageKeys.EMOTION, emotion);
             return emotion;
           }
         }
       });
     }
-    return "Happy";
+    return emotion;
   }
 
-  void setBusinessWellbeing(String wellbeing, {update = true}) {
+  void setBusinessWellbeing(String wellbeing) {
     String userId = _prefs.getString(StorageKeys.USER_ID_KEY);
-    if (update) {
-      _firestore
-          .collection(FirestorePaths.WELLBEING_COLLECTION)
-          .doc(userId)
-          .update({
-        'business': {'wellbeing': wellbeing}
-      });
-    } else {
-      _firestore
-          .collection(FirestorePaths.WELLBEING_COLLECTION)
-          .doc(userId)
-          .set({
-        'business': {'wellbeing': wellbeing}
-      });
-    }
+    _firestore
+        .collection(FirestorePaths.WELLBEING_COLLECTION)
+        .doc(userId)
+        .update({
+      'business': {'wellbeing': wellbeing}
+    });
   }
 
   void setUserName(String name) {
+    String userId = _prefs.getString(StorageKeys.USER_ID_KEY);
     _prefs.setString(StorageKeys.USER_NAME_KEY, name);
+    _firestore
+        .collection(FirestorePaths.USERS_COLLECTION)
+        .doc(userId)
+        .update({'name': name});
   }
 
   User getAdditionalUserDetails(User user) {
@@ -228,104 +251,83 @@ class UserRepo {
     String tenant = user.tenantId;
     String userName = user.name;
 
-    if(userName == null || userName.isEmpty){
+    if (userName == null || userName.isEmpty) {
       userName = getUserName(userId: user.uid);
     }
-    if(tenant == null || tenant.isEmpty){
+    if (tenant == null || tenant.isEmpty) {
       tenant = getTenant(userId: user.uid);
     }
-    return User(
-        id,
-        userName,
-        user.imgURL,
-        user.fcmToken,
-        tenant,
+    return User(id, userName, user.imgURL, user.fcmToken, tenant,
         birthday: birthday,
         emotion: emotion,
         isFirstUser: firstUser,
-        isEmailVerified: emailVerified
-    );
-
-
-
-
-
-
-
+        isEmailVerified: emailVerified);
   }
 
-  void setBirthday(DateTime date, {update = true}) {
+  void setUserId(String uid) {
+    _prefs.setString(StorageKeys.USER_ID_KEY, uid);
+  }
+
+  void setBirthday(DateTime date) {
     String userId = _prefs.getString(StorageKeys.USER_ID_KEY);
     String dateToString = date.toString();
-    if(update) {
-      _firestore.collection(FirestorePaths.USERS_COLLECTION).doc(userId).update({'birthday':dateToString});
-    } else {
-      _firestore.collection(FirestorePaths.USERS_COLLECTION).doc(userId).set({'birthday':dateToString});
-    }
+    _firestore
+        .collection(FirestorePaths.USERS_COLLECTION)
+        .doc(userId)
+        .update({'birthday': dateToString});
     _prefs.setString(StorageKeys.USER_BIRTHDAY, dateToString);
   }
 
-  void setSource(String source, {update = true}) {
+  void setSource(String source) {
     String userId = _prefs.getString(StorageKeys.USER_ID_KEY);
-    if (update) {
-      _firestore
-          .collection(FirestorePaths.WELLBEING_COLLECTION)
-          .doc(userId)
-          .update({'source': source});
-    } else {
-      _firestore
-          .collection(FirestorePaths.WELLBEING_COLLECTION)
-          .doc(userId)
-          .set({'source': source});
-    }
+    _firestore
+        .collection(FirestorePaths.WELLBEING_COLLECTION)
+        .doc(userId)
+        .update({'source': source});
   }
 
   void setEmailVerified(bool isVerified) {
+    String userId = _prefs.getString(StorageKeys.USER_ID_KEY);
+    _firestore
+        .collection(FirestorePaths.USERS_COLLECTION)
+        .doc(userId)
+        .update({'isEmailVerified': isVerified});
     _prefs.setBool(StorageKeys.IS_EMAIL_VERIFIED, isVerified);
   }
 
   void setFirstUser(bool isFirstUser) {
+    String userId = _prefs.getString(StorageKeys.USER_ID_KEY);
+    _firestore
+        .collection(FirestorePaths.USERS_COLLECTION)
+        .doc(userId)
+        .update({'isFirstUser': isFirstUser});
     _prefs.setBool(StorageKeys.IS_FIRST_USER, isFirstUser);
   }
 
-  void setEmotion(String emotion, {update = true}) {
+  void setEmotion(String emotion) {
     String userId = _prefs.getString(StorageKeys.USER_ID_KEY);
     var now = DateTime.now().toString();
-    if (update) {
-      _firestore
-          .collection(FirestorePaths.WELLBEING_COLLECTION)
-          .doc(userId)
-          .update({
-        'emotion': FieldValue.arrayUnion([
-          {now: emotion}
-        ])
-      });
-    } else {
-      _firestore
-          .collection(FirestorePaths.WELLBEING_COLLECTION)
-          .doc(userId)
-          .set({
-        'emotion': FieldValue.arrayUnion([
-          {now: emotion}
-        ])
-      });
-    }
+    _firestore
+        .collection(FirestorePaths.USERS_COLLECTION)
+        .doc(userId)
+        .update({'emotion': emotion});
+    _firestore
+        .collection(FirestorePaths.WELLBEING_COLLECTION)
+        .doc(userId)
+        .update({
+      'emotion': FieldValue.arrayUnion([
+        {now: emotion}
+      ])
+    });
     _prefs.setString(StorageKeys.EMOTION, emotion);
   }
 
-  void setTenant(String tenantId, {update = true}) {
+  void setTenant(String tenantId) {
     String userId = _prefs.getString(StorageKeys.USER_ID_KEY);
-    if (update) {
-      _firestore
-          .collection(FirestorePaths.USERS_COLLECTION)
-          .doc(userId)
-          .update({'tenantId': tenantId});
-    } else {
-      _firestore
-          .collection(FirestorePaths.USERS_COLLECTION)
-          .doc(userId)
-          .set({'tenantId': tenantId});
-    }
+    _firestore
+        .collection(FirestorePaths.USERS_COLLECTION)
+        .doc(userId)
+        .update({'tenantId': tenantId});
     _prefs.setString(StorageKeys.TENANT_ID, tenantId);
   }
 

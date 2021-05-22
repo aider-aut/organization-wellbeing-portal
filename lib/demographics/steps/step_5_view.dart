@@ -71,8 +71,7 @@ class _Step5State extends State<Step5Screen>
                                 child: ElevatedButton(
                                     child: Text("Get started"),
                                     onPressed: () {
-                                      UserRepo.getInstance()
-                                          .setFirstUser(false);
+                                      UserRepo().setFirstUser(false);
                                       navigateToMain();
                                     },
                                     style: ElevatedButton.styleFrom(

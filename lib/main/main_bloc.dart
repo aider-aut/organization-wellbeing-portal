@@ -27,11 +27,11 @@ class MainBloc extends Bloc<MainEvent, MainState> {
 
   void _initialize() async {
     add(MainUpdateEventInProgress());
-    _currentUser = UserRepo.getInstance().getCurrentUser();
-    _isEmailVerified = UserRepo.getInstance().isEmailVerified();
-    _isFirstUser = UserRepo.getInstance().isFirstUser();
+    _currentUser = UserRepo().getCurrentUser();
+    _isEmailVerified = UserRepo().isEmailVerified();
+    _isFirstUser = UserRepo().isFirstUser();
     imageUrls = await getImages();
-    _emotion = UserRepo.getInstance().getEmotion();
+    _emotion = UserRepo().getEmotion();
     add(MainUpdateEvent(_currentUser.name, _currentUser.imgURL, imageUrls));
   }
 
@@ -70,7 +70,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
   }
 
   void updateEmotion(String emotion) {
-    UserRepo.getInstance().setEmotion(emotion);
+    UserRepo().setEmotion(emotion);
   }
 
   String getEmotion() {
@@ -79,7 +79,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
 
   // void retrieveUserChatrooms() async {
   //   add(ClearChatroomsEvent());
-  //   final user = await UserRepo.getInstance().getCurrentUser();
+  //   final user = await UserRepo().getCurrentUser();
   //   if (user != null) {
   //     chatroomsSubscription =
   //         ChatRepo.getInstance().getChatroomsForUser(user).listen((chatrooms) {
@@ -96,7 +96,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
 
   void retrieveChatroomForChatBotConversation(
       Function(SelectedChatroom) onChatBotConversationProcessed) async {
-    final currentUser = await UserRepo.getInstance().getCurrentUser();
+    final currentUser = UserRepo().getCurrentUser();
     ChatRepo.getInstance()
         .startConversationWithChatBot(currentUser)
         .then((chatroom) {
@@ -106,7 +106,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
 
   // void retrieveChatroomForParticipant(
   //     User user, Function(SelectedChatroom) onChatroomProcessed) async {
-  //   final currentUser = await UserRepo.getInstance().getCurrentUser();
+  //   final currentUser = await UserRepo().getCurrentUser();
   //   List<User> users = new List<User>.empty(growable: true);
   //   users.add(user);
   //   users.add(currentUser);
@@ -120,8 +120,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     if (event is MainUpdateEventInProgress) {
       yield MainState.isLoading(true, state);
     } else if (event is MainUpdateEvent) {
-      yield MainState.update(
-          event.name, event.profileImg, event.imageUrls);
+      yield MainState.update(event.name, event.profileImg, event.imageUrls);
     } else if (event is MainErrorEvent) {
       yield MainState.isLoading(false, state);
     }

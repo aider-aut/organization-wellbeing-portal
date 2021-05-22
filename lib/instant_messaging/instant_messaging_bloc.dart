@@ -1,15 +1,15 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:bloc/bloc.dart';
 
+import 'package:bloc/bloc.dart';
 import 'package:chatapp/instant_messaging/instant_messaging_event.dart';
 import 'package:chatapp/instant_messaging/instant_messaging_state.dart';
-import 'package:chatapp/model/user/user.dart';
-import 'package:chatapp/model/message/message.dart';
-import 'package:chatapp/model/chat/chatroom.dart';
 import 'package:chatapp/model/chat/chat_repo.dart';
-import 'package:chatapp/model/user/user_repo.dart';
+import 'package:chatapp/model/chat/chatroom.dart';
+import 'package:chatapp/model/message/message.dart';
 import 'package:chatapp/model/storage/storage_repo.dart';
+import 'package:chatapp/model/user/user.dart';
+import 'package:chatapp/model/user/user_repo.dart';
 
 class InstantMessagingBloc
     extends Bloc<InstantMessagingEvent, InstantMessagingState> {
@@ -22,7 +22,7 @@ class InstantMessagingBloc
   StreamSubscription<Chatroom> chatroomSubscription;
 
   void _retrieveMessagesForThisChatroom() async {
-    final User user = UserRepo.getInstance().getCurrentUser();
+    final User user = UserRepo().getCurrentUser();
     chatroomSubscription = ChatRepo.getInstance()
         .getMessagesForChatroom(chatroomId)
         .listen((chatroom) async {
@@ -33,11 +33,13 @@ class InstantMessagingBloc
             final String uri = message.value.substring("_uri:".length);
             final String downloadUri =
                 await StorageRepo.getInstance().decodeUri(uri);
-            return Message(message.author, message.timestamp,
-                "_uri:$downloadUri", option: message.option, outgoing: message.author.uid == user.uid);
+            return Message(
+                message.author, message.timestamp, "_uri:$downloadUri",
+                option: message.option,
+                outgoing: message.author.uid == user.uid);
           }
-          return Message(message.author, message.timestamp, message.value, option: message.option,
-              outgoing: message.author.uid == user.uid);
+          return Message(message.author, message.timestamp, message.value,
+              option: message.option, outgoing: message.author.uid == user.uid);
         });
         final List<Message> processedMessages =
             await processedMessagesStream.toList();
@@ -46,14 +48,16 @@ class InstantMessagingBloc
     });
   }
 
-  void send(String text) async  {
-    final User user = UserRepo.getInstance().getCurrentUser();
+  void send(String text) async {
+    final User user = UserRepo().getCurrentUser();
     final isChatBot = ChatRepo.getInstance().isOtherUserChatBot();
     bool success = false;
-    if(isChatBot) {
-      success = await ChatRepo.getInstance().sendMessageToChatbot(chatroomId, text);
+    if (isChatBot) {
+      success =
+          await ChatRepo.getInstance().sendMessageToChatbot(chatroomId, text);
     } else {
-      success = await ChatRepo.getInstance().sendMessageToChatroom(chatroomId, user, text);
+      success = await ChatRepo.getInstance()
+          .sendMessageToChatroom(chatroomId, user, text);
     }
     if (!success) {
       add(MessageSendErrorEvent());

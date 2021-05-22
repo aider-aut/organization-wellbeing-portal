@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'package:bloc/bloc.dart';
 
+import 'package:bloc/bloc.dart';
 import 'package:chatapp/create_chatroom/create_chatroom_event.dart';
 import 'package:chatapp/create_chatroom/create_chatroom_state.dart';
 import 'package:chatapp/model/chat/chat_repo.dart';
@@ -26,7 +26,7 @@ class CreateChatroomBloc
   }
 
   void _initialize() {
-    currentUser = UserRepo.getInstance().getCurrentUser();
+    currentUser = UserRepo().getCurrentUser();
     chatUserSubscription =
         ChatRepo.getInstance().getChatUsers().listen((users) {
       List<User> processedListOfUsers =

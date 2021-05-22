@@ -1,9 +1,7 @@
 import 'package:chatapp/base/bloc_widget.dart';
 import 'package:chatapp/main/main_event.dart';
 import 'package:chatapp/main/profile_view.dart';
-import 'package:chatapp/model/user/user_repo.dart';
 import 'package:chatapp/settings/setting_view.dart';
-import 'package:chatapp/welcome/welcome_step.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -26,12 +24,12 @@ class _MainState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
-    // UserRepo.getInstance().isFirstUser().then((value) {
+    // UserRepo().isFirstUser().then((value) {
     //   setState(() {
     //     _isFirstUser = value;
     //   });
     // });
-    // UserRepo.getInstance().isEmailVerified().then((value) {
+    // UserRepo().isEmailVerified().then((value) {
     //   setState(() {
     //     _isEmailVerified = value;
     //   });

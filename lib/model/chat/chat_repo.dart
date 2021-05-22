@@ -11,14 +11,15 @@ import 'package:chatapp/util/serialization_util.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
-import 'package:rxdart/rxdart.dart';
 
 class ChatRepo {
   static ChatRepo _instance;
 
   final FirebaseFirestore _firestore;
   bool _isChatBot = false;
-  final _chatUsersSubject = BehaviorSubject<List<User>>();
+  StreamController<List<User>> _controller = StreamController.broadcast();
+  Stream<List<User>> get data => _controller.stream;
+  List<User> _chatUsersSubject;
   String _chatBotId;
 
   ChatRepo._internal(this._firestore);
@@ -38,12 +39,13 @@ class ChatRepo {
         .snapshots()
         .map((data) => Deserializer.deserializeUsers(data.docs))
         .listen((users) {
-      _chatUsersSubject.sink.add(users);
+      _chatUsersSubject = users;
+      _controller.sink.add(_chatUsersSubject);
     });
   }
 
   Stream<List<User>> getChatUsers() {
-    return _chatUsersSubject.stream;
+    return _controller.stream;
   }
 
   bool isOtherUserChatBot() {
@@ -79,8 +81,8 @@ class ChatRepo {
           arrayContains: userRef,
         )
         .snapshots()
-        .map((data) => Deserializer.deserializeChatrooms(
-            data.docs, _chatUsersSubject.value));
+        .map((data) =>
+            Deserializer.deserializeChatrooms(data.docs, _chatUsersSubject));
   }
 
   Stream<Chatroom> getMessagesForChatroom(String chatroomId) {
@@ -89,8 +91,8 @@ class ChatRepo {
         .doc(chatroomId)
         .snapshots()
         .map((data) {
-      Chatroom chatroom = Deserializer.deserializeChatroomMessages(
-          data, _chatUsersSubject.value);
+      Chatroom chatroom =
+          Deserializer.deserializeChatroomMessages(data, _chatUsersSubject);
       chatroom.messages.sort((message1, message2) =>
           message1.timestamp.compareTo(message2.timestamp));
       return chatroom;
@@ -164,7 +166,7 @@ class ChatRepo {
 
   Future<bool> sendMessageToChatbot(String chatBotId, String message) async {
     _chatBotId = chatBotId;
-    User currentUser = UserRepo.getInstance().getCurrentUser();
+    User currentUser = UserRepo().getCurrentUser();
     DocumentReference authorRef = _firestore
         .collection(FirestorePaths.USERS_COLLECTION)
         .doc(currentUser.uid);
@@ -283,6 +285,6 @@ class ChatRepo {
   }
 
   void dismiss() {
-    _chatUsersSubject.close();
+    _controller.close();
   }
 }

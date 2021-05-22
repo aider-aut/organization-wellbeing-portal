@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:chatapp/model/user/user_repo.dart';
 import 'package:chatapp/welcome/welcome_event.dart';
 import 'package:chatapp/welcome/welcome_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,11 +9,7 @@ class WelcomeBloc extends Bloc<WelcomeEvent, WelcomeState> {
     _initialize();
   }
 
-  void _initialize() {
-    add(WelcomeEventInProgress());
-    add(WelcomeStatusUpdate({'verified': UserRepo.getInstance().isEmailVerified()}));
-  }
-
+  void _initialize() {}
 
   @override
   Stream<WelcomeState> mapEventToState(WelcomeEvent event) async* {

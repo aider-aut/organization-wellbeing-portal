@@ -10,13 +10,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
   SignUpBloc(SignUpState initialState) : super(initialState);
 
-  void onSignUpWithEmail(String name, DateTime date, String email, String password) async {
+  void onSignUpWithEmail(
+      String name, DateTime date, String email, String password) async {
     add(SignUpEventInProgress());
     try {
-      await FirebaseAuth.instance
+      final credential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
-      UserRepo.getInstance().setUserName(name);
-      UserRepo.getInstance().setBirthday(date);
+      UserRepo().setUpDatabase();
+      UserRepo().setUserId(credential.user.uid);
+      UserRepo().setUserName(name);
+      UserRepo().setFirstUser(credential.additionalUserInfo.isNewUser);
+      UserRepo().setEmailVerified(credential.user.emailVerified);
+      UserRepo().setBirthday(date);
       await LoginRepo.getInstance().signInWithEmail(email, password);
       add(SignUpStatusUpdate(
           {'state': true, 'email': email, 'password': password}));

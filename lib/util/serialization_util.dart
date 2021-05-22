@@ -14,7 +14,7 @@ class Deserializer {
   }
 
   static User deserializeUser(DocumentSnapshot doc) {
-    return User(doc.get('uid'), doc.get('name'), doc.get('imgUrl'),
+    return User(doc.get('uid'), doc.get('name'), doc.get('imgURL'),
         doc.get('fcmToken'), doc.get('tenantId'));
   }
 

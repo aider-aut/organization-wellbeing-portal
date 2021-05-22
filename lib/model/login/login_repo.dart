@@ -26,12 +26,12 @@ class LoginRepo {
   Future<LoginResponse> _signIn(firebase.AuthCredential credentials) async {
     final authResult = await _auth.signInWithCredential(credentials);
     if (!authResult.additionalUserInfo.isNewUser) {
-      UserRepo.getInstance().setFirstUser(false);
+      UserRepo().setFirstUser(false);
     }
     if (authResult != null && authResult.user != null) {
       final user = authResult.user;
-      UserRepo.getInstance().setCurrentUser(User.fromFirebaseUser(user));
-      User serializedUser = UserRepo.getInstance().getCurrentUser();
+      UserRepo().setCurrentUser(User.fromFirebaseUser(user));
+      User serializedUser = UserRepo().getCurrentUser();
       await _firestore
           .collection(FirestorePaths.USERS_COLLECTION)
           .doc(user.uid)
@@ -56,17 +56,17 @@ class LoginRepo {
         email: email, password: password);
     if (authResult != null && authResult.user != null) {
       if (authResult.additionalUserInfo.isNewUser) {
-        UserRepo.getInstance().setFirstUser(false);
+        UserRepo().setFirstUser(false);
       }
       final user = authResult.user;
-      UserRepo.getInstance().setCurrentUser(User.fromFirebaseUser(user));
-      User serializedUser = UserRepo.getInstance().getCurrentUser();
+      UserRepo().setCurrentUser(User.fromFirebaseUser(user));
+      User serializedUser = UserRepo().getCurrentUser();
       if (!user.emailVerified) {
-        UserRepo.getInstance().setEmailVerified(false);
+        UserRepo().setEmailVerified(false);
         await user.sendEmailVerification();
         return LoginFailedResponse(ErrMessages.EMAIL_NOT_VERIFIED);
       } else {
-        UserRepo.getInstance().setEmailVerified(true);
+        UserRepo().setEmailVerified(true);
       }
       await _firestore
           .collection(FirestorePaths.USERS_COLLECTION)

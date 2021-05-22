@@ -22,10 +22,7 @@ class AuthObserver extends NavigatorObserver {
         if (user != null) {
           print("user: ${user.toString()}");
           final loginProvider = user.providerData.first.providerId;
-          UserRepo.getInstance().setCurrentUser(User.fromFirebaseUser(user));
-          UserRepo.getInstance().setFirstUser(
-              user.metadata.creationTime == user.metadata.lastSignInTime);
-          UserRepo.getInstance().setEmailVerified(user.emailVerified);
+          UserRepo().setCurrentUser(User.fromFirebaseUser(user));
           if (loginProvider == "google") {
             // TODO analytics call for google login provider
           } else {

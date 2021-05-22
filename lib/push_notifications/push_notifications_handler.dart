@@ -1,11 +1,11 @@
 import 'dart:io';
-import 'package:flutter/material.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 
-import 'package:chatapp/model/user/user_repo.dart';
+import 'package:chatapp/instant_messaging/instant_messaging_view.dart';
 import 'package:chatapp/model/chat/chat_repo.dart';
 import 'package:chatapp/model/user/user.dart';
-import 'package:chatapp/instant_messaging/instant_messaging_view.dart';
+import 'package:chatapp/model/user/user_repo.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
 
 class PushNotificationsHandler extends NavigatorObserver {
   PushNotificationsHandler() {
@@ -18,7 +18,7 @@ class PushNotificationsHandler extends NavigatorObserver {
     } else if (Platform.isAndroid) {
       FirebaseMessaging.instance
           .getToken()
-          .then((token) => UserRepo.getInstance().setFCMToken(token));
+          .then((token) => UserRepo().setFCMToken(token));
     }
 
     FirebaseMessaging.onMessage.listen((message) {
@@ -38,7 +38,7 @@ class PushNotificationsHandler extends NavigatorObserver {
       if (result.alert == AppleNotificationSetting.enabled) {
         FirebaseMessaging.instance
             .getToken()
-            .then((token) => UserRepo.getInstance().setFCMToken(token));
+            .then((token) => UserRepo().setFCMToken(token));
       }
     });
   }
@@ -47,7 +47,7 @@ class PushNotificationsHandler extends NavigatorObserver {
     Map<dynamic, dynamic> data = payload["data"];
     User otherUser = User(data["other_member_id"], data["other_member_name"],
         data["other_member_photo_url"], "", data['tenantId']);
-    User currentUser = UserRepo.getInstance().getCurrentUser();
+    User currentUser = UserRepo().getCurrentUser();
     if (currentUser == null) {
       return false;
     }
