@@ -72,7 +72,7 @@ class _Step5State extends State<Step5Screen>
                                     child: Text("Get started"),
                                     onPressed: () {
                                       UserRepo().setFirstUser(false);
-                                      navigateToMain();
+                                      navigateToIndex();
                                     },
                                     style: ElevatedButton.styleFrom(
                                         primary:
@@ -86,7 +86,7 @@ class _Step5State extends State<Step5Screen>
         ));
   }
 
-  void navigateToMain() {
-    NavigationHelper.navigateToMain(context);
+  void navigateToIndex() {
+    NavigationHelper.navigateToIndex(context);
   }
 }

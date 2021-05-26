@@ -1,4 +1,5 @@
 import 'package:chatapp/base/bloc_widget.dart';
+import 'package:chatapp/model/login/login_repo.dart';
 import 'package:chatapp/navigation_helper.dart';
 import 'package:chatapp/settings/setting_bloc.dart';
 import 'package:chatapp/settings/setting_event.dart';
@@ -13,183 +14,192 @@ class SettingScreen extends StatefulWidget {
 }
 
 class _SettingState extends State<SettingScreen> {
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
+            appBar: AppBar(
+              iconTheme: IconThemeData(
+                color: Colors.black, //change your color here
+              ),
+              titleSpacing: 0.0,
+              automaticallyImplyLeading: false,
+              centerTitle: true,
+              title: Container(
+                padding: EdgeInsets.only(top: 50, bottom: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                        flex: 2,
+                        child: Padding(
+                          padding: EdgeInsets.only(left: 125),
+                          child: Text(
+                            'Settings',
+                            style: TextStyle(
+                                fontSize: 20,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        )),
+                    Expanded(
+                        child: Padding(
+                            padding: EdgeInsets.only(left: 20),
+                            child: IconButton(
+                              icon: Icon(Icons.lock_open),
+                              onPressed: () {
+                                LoginRepo.getInstance()
+                                    .signOut()
+                                    .then((success) {
+                                  if (success) {
+                                    navigateToLogin();
+                                  }
+                                });
+                              },
+                            )))
+                  ],
+                ),
+              ),
+              backgroundColor: Theme.of(context).backgroundColor,
+              foregroundColor: Colors.transparent,
+              shadowColor: Colors.transparent,
+            ),
             body: BlocWidget<SettingEvent, SettingState, SettingBloc>(
                 builder: (BuildContext context, SettingState state) {
-                  if (state.loading) {
-                    return Container(
-                        decoration: BoxDecoration(color: Theme.of(context).backgroundColor),
-                        child: Center(
-                          child: CircularProgressIndicator(
-                            strokeWidth: 4.0,
-                          ))
-                    );
-                  } else if (state.error != null &&
-                      state.error['message'].isNotEmpty) {
-                    return AlertDialog(
-                      title: Text("Signup Failure"),
-                      content: Text(state.error['message']),
-                      actions: [
-                        TextButton(
-                            child: Text("OK"), onPressed: () => navigateToLogin()),
-                      ],
-                    );
-                  } else {
-                    return Container(
-                      padding: EdgeInsets.only(top: 50, left: 20, right: 0),
-                      decoration: BoxDecoration(color: Theme.of(context).backgroundColor),
-                      child: Column(
+              Widget content;
+              if (state.loading) {
+                content = Container(
+                    decoration:
+                        BoxDecoration(color: Theme.of(context).backgroundColor),
+                    child: Center(
+                        child: CircularProgressIndicator(
+                      strokeWidth: 4.0,
+                    )));
+              } else if (state.error != null &&
+                  state.error['message'].isNotEmpty) {
+                content = AlertDialog(
+                  title: Text("Something went wrong"),
+                  content: Text(state.error['message']),
+                  actions: [
+                    TextButton(
+                        child: Text("OK"), onPressed: () => navigateToLogin()),
+                  ],
+                );
+              } else {
+                content = Container(
+                    padding: EdgeInsets.only(top: 0, left: 20, right: 0),
+                    decoration:
+                        BoxDecoration(color: Theme.of(context).backgroundColor),
+                    child: Column(
+                      children: [
+                        SizedBox(height: 50),
+                        Container(
+                          height: 50,
+                          child: InkWell(
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                      flex: 1,
+                                      child: Image.asset(
+                                          'assets/icons/account.png')),
+                                  Expanded(
+                                    flex: 4,
+                                    child: Text("Account",
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold)),
+                                  ),
+                                  Expanded(
+                                      flex: 2,
+                                      child: Image.asset(
+                                          'assets/icons/chevron-right.png')),
+                                ],
+                              ),
+                              onTap: () => navigateToAccount()),
+                        ),
+                        Container(
+                          height: 50,
+                          child: Row(
                             children: [
-                              Center(
-                          child: Text("Settings",
-                          style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold
-                      ))),
-                              SizedBox(height: 50),
-                              Container(
-                                height: 50,
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                        flex: 1,
-                                        child: Image.asset('assets/icons/account.png')
-                                    ),
-                                    Expanded(
-                                      flex: 4,
-                                      child: Text("Account", style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold
-                                      )),
-                                    ),
-                                    Expanded(
-                                        flex: 2,
-                                        child: Image.asset('assets/icons/chevron-right.png')
-                                    ),
-                                  ],
-                                ),
+                              Expanded(
+                                  flex: 1,
+                                  child: Image.asset('assets/icons/edit.png')),
+                              Expanded(
+                                flex: 4,
+                                child: Text("Theme",
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold)),
                               ),
-                        Container(
-                          height: 50,
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    flex: 1,
-                                    child: Image.asset('assets/icons/edit.png')
-                                  ),
-                                  Expanded(
-                                    flex: 4,
-                                    child: Text("Manage tasks", style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold
-                                    )),
-                                  ),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Image.asset('assets/icons/chevron-right.png')
-                                  ),
-                                ],
-                              ),
-                        ),
-                        Container(
-                          height: 50,
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    flex: 1,
-                                    child: Image.asset('assets/icons/privacy.png'),
-                                  ),
-                                  Expanded(
-                                    flex: 4,
-                                    child: Text("Privacy and safety", style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold
-                                    ))
-                                  ),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Image.asset('assets/icons/chevron-right.png')
-                                  ),
-                                ],
-                              ),
-                        ),
-                        Container(
-                            height: 50,
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    flex: 1,
-                                    child: Image.asset('assets/icons/notifications.png')
-                                  ),
-                                  Expanded(
-                                    flex: 4,
-                                    child: Text("Notifications", style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold
-                                    ))
-                                  ),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Image.asset('assets/icons/chevron-right.png')
-                                  ),
-                                ],
-                              )),
-                        Container(
-                            height: 50,
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    flex: 1,
-                                    child: Image.asset('assets/icons/icloud.png')
-                                  ),
-                                  Expanded(
-                                    flex: 4,
-                                    child: Text("iCloud sync", style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold
-                                    ))
-                                  ),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Image.asset('assets/icons/chevron-right.png')
-                                  ),
-                                ],
-                              )),
-                        Container(
-                          height: 50,
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    flex: 1,
-                                    child: Image.asset('assets/icons/info.png')
-                                  ),
-                                  Expanded(
-                                    flex: 4,
-                                    child: Text("About AWA", style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold
-                                    ))
-                                  ),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Image.asset('assets/icons/chevron-right.png')
-                                  ),
-                                ],
-                              ),
-                        ),
+                              Expanded(
+                                  flex: 2,
+                                  child: Image.asset(
+                                      'assets/icons/chevron-right.png')),
                             ],
-                          )
-                    );
-                  }
-                })));
+                          ),
+                        ),
+                        Container(
+                            height: 50,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                    flex: 1,
+                                    child: Image.asset(
+                                        'assets/icons/notifications.png')),
+                                Expanded(
+                                    flex: 4,
+                                    child: Text("Notifications",
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold))),
+                                Expanded(
+                                    flex: 2,
+                                    child: Image.asset(
+                                        'assets/icons/chevron-right.png')),
+                              ],
+                            )),
+                        Container(
+                          height: 50,
+                          child: InkWell(
+                            child: Row(
+                              children: [
+                                Expanded(
+                                    flex: 1,
+                                    child:
+                                        Image.asset('assets/icons/info.png')),
+                                Expanded(
+                                    flex: 4,
+                                    child: Text("About AWA",
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold))),
+                                Expanded(
+                                    flex: 2,
+                                    child: Image.asset(
+                                        'assets/icons/chevron-right.png')),
+                              ],
+                            ),
+                            onTap: () => navigateToAbout(),
+                          ),
+                        ),
+                      ],
+                    ));
+              }
+              return content;
+            })));
   }
 
   void navigateToLogin() {
     NavigationHelper.navigateToLogInWithEmail(context);
+  }
+
+  void navigateToAccount() {
+    NavigationHelper.navigateToAccount(context);
+  }
+
+  void navigateToAbout() {
+    NavigationHelper.navigateToAbout(context);
   }
 
   void navigateToSignUp() {

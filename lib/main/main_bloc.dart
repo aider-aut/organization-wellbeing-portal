@@ -22,6 +22,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
   String _emotion;
   bool _isEmailVerified;
   bool _isFirstUser;
+  SelectedChatroom _chatroom;
 
   StreamSubscription<List<Chatroom>> chatroomsSubscription;
 
@@ -32,6 +33,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     _isFirstUser = UserRepo().isFirstUser();
     imageUrls = await getImages();
     _emotion = UserRepo().getEmotion();
+    retrieveChatroomForChatBotConversation();
     add(MainUpdateEvent(_currentUser.name, _currentUser.imgURL, imageUrls));
   }
 
@@ -44,7 +46,11 @@ class MainBloc extends Bloc<MainEvent, MainState> {
   }
 
   Future<Map<String, String>> getImages() async {
-    final profileUrl = await _instance.ref('profile.png').getDownloadURL();
+    final user = UserRepo().getCurrentUser();
+    final profileImage = user.imgURL;
+    final profileUrl = profileImage != null
+        ? profileImage
+        : await _instance.ref('profile.png').getDownloadURL();
     final loveUrl = await _instance.ref('love.png').getDownloadURL();
     final barrierUrl = await _instance.ref('barrier.png').getDownloadURL();
 
@@ -94,13 +100,17 @@ class MainBloc extends Bloc<MainEvent, MainState> {
   //   }
   // }
 
-  void retrieveChatroomForChatBotConversation(
-      Function(SelectedChatroom) onChatBotConversationProcessed) async {
+  SelectedChatroom getChatroom() {
+    return _chatroom;
+  }
+
+  void retrieveChatroomForChatBotConversation() {
     final currentUser = UserRepo().getCurrentUser();
     ChatRepo.getInstance()
         .startConversationWithChatBot(currentUser)
         .then((chatroom) {
-      onChatBotConversationProcessed(chatroom);
+      print("current chatbot: ${chatroom}");
+      _chatroom = chatroom;
     });
   }
 

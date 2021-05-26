@@ -1,15 +1,14 @@
+import 'package:chatapp/base/bloc_widget.dart';
+import 'package:chatapp/create_chatroom/create_chatroom_bloc.dart';
+import 'package:chatapp/create_chatroom/create_chatroom_event.dart';
+import 'package:chatapp/create_chatroom/create_chatroom_state.dart';
+import 'package:chatapp/main/main_user_item.dart';
+import 'package:chatapp/model/chat/chatroom.dart';
+import 'package:chatapp/model/user/user.dart';
+import 'package:chatapp/navigation_helper.dart';
+import 'package:chatapp/util/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'package:chatapp/base/bloc_widget.dart';
-import 'package:chatapp/create_chatroom/create_chatroom_event.dart';
-import 'package:chatapp/util/constants.dart';
-import 'package:chatapp/navigation_helper.dart';
-import 'package:chatapp/model/user/user.dart';
-import 'package:chatapp/model/chat/chatroom.dart';
-import 'package:chatapp/main/main_user_item.dart';
-import 'package:chatapp/create_chatroom/create_chatroom_bloc.dart';
-import 'package:chatapp/create_chatroom/create_chatroom_state.dart';
 
 class CreateChatroomScreen extends StatefulWidget {
   CreateChatroomScreen({Key key}) : super(key: key);

@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:chatapp/model/login/login_repo.dart';
 import 'package:chatapp/model/user/user_repo.dart';
 import 'package:chatapp/signup/signup_event.dart';
 import 'package:chatapp/signup/signup_state.dart';
@@ -11,20 +10,20 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
   SignUpBloc(SignUpState initialState) : super(initialState);
 
   void onSignUpWithEmail(
-      String name, DateTime date, String email, String password) async {
+      String name, String date, String email, String password) async {
     add(SignUpEventInProgress());
     try {
       final credential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
-      UserRepo().setUpDatabase();
+      UserRepo().setUpDatabase(credential.user.uid);
       UserRepo().setUserId(credential.user.uid);
+      UserRepo().setEmail(email);
       UserRepo().setUserName(name);
-      UserRepo().setFirstUser(credential.additionalUserInfo.isNewUser);
+      UserRepo().setFirstUser(true);
       UserRepo().setEmailVerified(credential.user.emailVerified);
       UserRepo().setBirthday(date);
-      await LoginRepo.getInstance().signInWithEmail(email, password);
-      add(SignUpStatusUpdate(
-          {'state': true, 'email': email, 'password': password}));
+      await credential.user.sendEmailVerification();
+      add(SignUpSuccessEvent());
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         add(SignUpErrorEvent(
@@ -54,6 +53,8 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
   Stream<SignUpState> mapEventToState(SignUpEvent event) async* {
     if (event is SignUpEventInProgress) {
       yield SignUpState.loading(true);
+    } else if (event is SignUpSuccessEvent) {
+      yield SignUpState.status({'success': true});
     } else if (event is SignUpStatusUpdate) {
       yield SignUpState.status(event.status);
     } else if (event is SignUpErrorEvent) {

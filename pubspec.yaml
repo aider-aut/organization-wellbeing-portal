@@ -36,7 +36,7 @@ dependencies:
   dots_indicator: ^2.0.0
   swipedetector: ^1.2.0
   flutter_material_pickers: ^2.1.1
-
+  url_launcher: ^6.0.4
 dev_dependencies:
   test: 1.16.5
   flutter_test:

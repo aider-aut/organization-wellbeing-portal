@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:chatapp/model/user/user.dart';
 import 'package:chatapp/model/user/user_repo.dart';
 import 'package:chatapp/navigation_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
@@ -22,18 +21,20 @@ class AuthObserver extends NavigatorObserver {
         if (user != null) {
           print("user: ${user.toString()}");
           final loginProvider = user.providerData.first.providerId;
-          UserRepo().setCurrentUser(User.fromFirebaseUser(user));
+          // UserRepo().setCurrentUser(User.fromFirebaseUser(user));
+          UserRepo().fetchCurrentUser(user.uid);
           if (loginProvider == "google") {
             // TODO analytics call for google login provider
           } else {
             // TODO analytics call for facebook login provider
           }
-
+          //in case the email verified
+          // UserRepo().setEmailVerified(user.emailVerified);
           if (!user.emailVerified) {
             NavigationHelper.navigateToWelcome(navigator.context,
                 removeUntil: (_) => false);
           } else {
-            NavigationHelper.navigateToMain(navigator.context,
+            NavigationHelper.navigateToIndex(navigator.context,
                 removeUntil: (_) => false);
           }
         } else {

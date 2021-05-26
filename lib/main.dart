@@ -1,14 +1,12 @@
-import 'package:chatapp/login/login_view.dart';
-import 'package:chatapp/main/main_view.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
 import 'package:chatapp/auth_observer.dart';
-
+import 'package:chatapp/login/login_view.dart';
 import 'package:chatapp/model/chat/chat_repo.dart';
 import 'package:chatapp/push_notifications/push_notifications_handler.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
 
-Future main() async  {
+Future main() async {
   await DotEnv.load(fileName: '.env-local');
   runApp(MyApp());
 }

@@ -130,8 +130,8 @@ class _LoginState extends State<LoginScreen> {
     );
   }
 
-  void navigateToMain() {
-    NavigationHelper.navigateToMain(context);
+  void navigateToIndex() {
+    NavigationHelper.navigateToIndex(context);
   }
 
   void navigateToSignUp() {

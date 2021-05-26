@@ -7,6 +7,7 @@ class ErrMessages {
 class StorageKeys {
   static const String USER_ID_KEY = "user_id_key";
   static const String USER_NAME_KEY = "user_name_key";
+  static const String USER_EMAIL = 'user_email';
   static const String USER_IMG_URL_KEY = "user_img_url_key";
   static const String USER_BIRTHDAY = "birthday";
   static const String FCM_TOKEN = "fcmToken";
@@ -14,6 +15,7 @@ class StorageKeys {
   static const String EMOTION = 'emotion';
   static const String IS_FIRST_USER = 'isFirstUser';
   static const String IS_EMAIL_VERIFIED = 'isEmailVerified';
+  static const String USER_PHONE_NUMBER = 'phoneNumber';
 }
 
 class UIConstants {

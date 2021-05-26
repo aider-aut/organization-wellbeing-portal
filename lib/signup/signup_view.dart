@@ -67,6 +67,15 @@ class _SignUpState extends State<SignUpScreen> {
                         child: Text("OK"), onPressed: () => navigateToSignUp()),
                   ],
                 );
+              } else if (state.status != null && state.status['success']) {
+                return AlertDialog(
+                  title: Text("Signup Success"),
+                  content: Text("Please verify your email first to sign in."),
+                  actions: [
+                    TextButton(
+                        child: Text("OK"), onPressed: () => navigateToLogin()),
+                  ],
+                );
               } else {
                 return SingleChildScrollView(
                     child: Container(
@@ -368,7 +377,7 @@ class _SignUpState extends State<SignUpScreen> {
                                         BlocProvider.of<SignUpBloc>(context)
                                             .onSignUpWithEmail(
                                                 _name,
-                                                _selectedDate,
+                                                '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
                                                 _email,
                                                 _password);
                                       }

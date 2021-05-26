@@ -176,21 +176,6 @@ class _LoginEmailState extends State<LoginEmailScreen> {
                                                       context)
                                                   .onLoginWithEmail(_email,
                                                       _password, context);
-                                              // bool _isFirstUser =
-                                              //     UserRepo().isFirstUser();
-                                              // bool _isEmailVerified =
-                                              //     UserRepo().isEmailVerified();
-                                              //
-                                              // if (_isFirstUser ||
-                                              //     !_isEmailVerified) {
-                                              //   NavigationHelper
-                                              //       .navigateToWelcome(context,
-                                              //           addToBackStack: false);
-                                              // } else {
-                                              //   NavigationHelper.navigateToMain(
-                                              //       context,
-                                              //       addToBackStack: false);
-                                              // }
                                             }
                                           },
                                           child: Text("Log in",

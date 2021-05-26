@@ -14,8 +14,8 @@ class Deserializer {
   }
 
   static User deserializeUser(DocumentSnapshot doc) {
-    return User(doc.get('uid'), doc.get('name'), doc.get('imgURL'),
-        doc.get('fcmToken'), doc.get('tenantId'));
+    return User(doc.get('uid'), doc.get('name'), doc.get('email'),
+        doc.get('imgURL'), doc.get('fcmToken'), doc.get('tenantId'));
   }
 
   static List<Chatroom> deserializeChatrooms(

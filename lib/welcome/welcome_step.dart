@@ -29,7 +29,6 @@ class _WelcomeStepState extends State<WelcomeStepScreen>
     _controller = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 150));
     Timer(Duration(milliseconds: 200), () => _controller.forward());
-    _isEmailVerified = UserRepo().isEmailVerified();
   }
 
   @override
@@ -37,6 +36,7 @@ class _WelcomeStepState extends State<WelcomeStepScreen>
     return BlocWidget<WelcomeEvent, WelcomeState, WelcomeBloc>(
         builder: (BuildContext context, WelcomeState state) => Scaffold(
               body: Builder(builder: (BuildContext context) {
+                _isEmailVerified = UserRepo().isEmailVerified();
                 Widget content;
                 if (state.loading) {
                   content = Center(

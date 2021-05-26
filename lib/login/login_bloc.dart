@@ -54,7 +54,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       if (_isFirstUser || !_isEmailVerified) {
         NavigationHelper.navigateToWelcome(context, addToBackStack: false);
       } else {
-        NavigationHelper.navigateToMain(context, addToBackStack: false);
+        NavigationHelper.navigateToIndex(context, addToBackStack: false);
       }
       add(LoginWithEmailEvent());
     } on FirebaseAuthException catch (ex) {

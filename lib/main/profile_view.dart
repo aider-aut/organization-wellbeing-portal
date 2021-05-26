@@ -9,13 +9,7 @@ import 'package:flutter/material.dart';
 class ProfileScreen extends StatefulWidget {
   ProfileScreen({
     Key key,
-    @required this.displayName,
-    @required this.profileImage,
-    @required this.imageUrls,
   }) : super(key: key);
-  final String displayName;
-  final Map<String, String> imageUrls;
-  final String profileImage;
   @override
   _ProfileState createState() => _ProfileState();
 }
@@ -24,11 +18,13 @@ class _ProfileState extends State<ProfileScreen> {
   String currentEmotion;
   var _options;
   String emotion;
+  String displayName;
   String happyUrl, sadUrl, confusedUrl, angryUrl;
   @override
   void initState() {
     super.initState();
     emotion = UserRepo().getEmotion();
+    displayName = UserRepo().getUserName();
     _options = [true, false, false];
     happyUrl =
         'assets/icons/emotions/${emotion == "Happy" ? "happy-active.png" : "happy.png"}';
@@ -82,9 +78,7 @@ class _ProfileState extends State<ProfileScreen> {
                           ),
                           CircleAvatar(
                             child: new Image.network(
-                              widget.profileImage != null
-                                  ? widget.profileImage
-                                  : widget.imageUrls['profile'],
+                              state.imageUrls['profile'],
                               height: 70,
                               width: 70,
                             ),
@@ -92,9 +86,7 @@ class _ProfileState extends State<ProfileScreen> {
                             backgroundColor: Colors.transparent,
                           ),
                           Center(
-                            child: Text(widget.displayName == null
-                                ? ''
-                                : widget.displayName),
+                            child: Text(displayName == null ? '' : displayName),
                           ),
                           SizedBox(height: 50),
                           Row(
@@ -214,7 +206,7 @@ class _ProfileState extends State<ProfileScreen> {
                                 margin: EdgeInsets.all(5),
                                 padding: EdgeInsets.all(15),
                                 child:
-                                    new Image.network(widget.imageUrls['mood']),
+                                    new Image.network(state.imageUrls['mood']),
                               ),
                               Text("My Mood")
                             ],
@@ -279,7 +271,7 @@ class _ProfileState extends State<ProfileScreen> {
                                 margin: EdgeInsets.all(5),
                                 padding: EdgeInsets.all(15),
                                 child: new Image.network(
-                                    widget.imageUrls['barrier']),
+                                    state.imageUrls['barrier']),
                               ),
                               Text("My Challenges")
                             ],

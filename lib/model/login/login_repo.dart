@@ -25,16 +25,13 @@ class LoginRepo {
 
   Future<LoginResponse> _signIn(firebase.AuthCredential credentials) async {
     final authResult = await _auth.signInWithCredential(credentials);
-    if (!authResult.additionalUserInfo.isNewUser) {
-      UserRepo().setFirstUser(false);
-    }
     if (authResult != null && authResult.user != null) {
       final user = authResult.user;
       UserRepo().setCurrentUser(User.fromFirebaseUser(user));
       User serializedUser = UserRepo().getCurrentUser();
       await _firestore
           .collection(FirestorePaths.USERS_COLLECTION)
-          .doc(user.uid)
+          .doc(serializedUser.uid)
           .set(serializedUser.map, SetOptions(merge: true));
       return serializedUser;
     } else {
@@ -55,9 +52,6 @@ class LoginRepo {
     final authResult = await _auth.signInWithEmailAndPassword(
         email: email, password: password);
     if (authResult != null && authResult.user != null) {
-      if (authResult.additionalUserInfo.isNewUser) {
-        UserRepo().setFirstUser(false);
-      }
       final user = authResult.user;
       UserRepo().setCurrentUser(User.fromFirebaseUser(user));
       User serializedUser = UserRepo().getCurrentUser();
@@ -70,7 +64,7 @@ class LoginRepo {
       }
       await _firestore
           .collection(FirestorePaths.USERS_COLLECTION)
-          .doc(user.uid)
+          .doc(serializedUser.uid)
           .set(serializedUser.map, SetOptions(merge: true));
       return serializedUser;
     } else {
