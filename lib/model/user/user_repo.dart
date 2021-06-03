@@ -1,5 +1,9 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:chatapp/model/user/user.dart';
 import 'package:chatapp/util/constants.dart';
+import 'package:chatapp/util/serialization_util.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,76 +16,10 @@ class UserRepo {
   final firebase.FirebaseAuth _auth = firebase.FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   static SharedPreferences _prefs;
-
-  // UserRepo._internal();
-
-  // factory UserRepo() {
-  //   if (_instance == null) {
-  //     _instance = UserRepo._internal();
-  //   }
-  //   return _instance;
-  // }
+  List<User> _employees;
 
   void _initialize() async {
     _prefs = await SharedPreferences.getInstance();
-  }
-
-  void fetchCurrentUser(userId) {
-    if (userId == null) {
-      _firestore
-          .collection(FirestorePaths.USERS_COLLECTION)
-          .doc(userId)
-          .get()
-          .then((value) => {
-                value.data().forEach((key, value) {
-                  if (value is bool) {
-                    if (key == "isEmailVerified") {
-                      _prefs.setBool(StorageKeys.IS_EMAIL_VERIFIED, value);
-                    } else if (key == 'isFirstUser') {
-                      _prefs.setBool(StorageKeys.IS_EMAIL_VERIFIED, value);
-                    }
-                  } else if (value is String) {
-                    switch (key) {
-                      case 'name':
-                        {
-                          _prefs.setString(StorageKeys.USER_NAME_KEY, value);
-                        }
-                        break;
-
-                      case 'email':
-                        {
-                          _prefs.setString(StorageKeys.USER_EMAIL, value);
-                        }
-                        break;
-
-                      case 'emotion':
-                        {
-                          _prefs.setString(StorageKeys.EMOTION, value);
-                        }
-                        break;
-
-                      case 'fcmToken':
-                        {
-                          _prefs.setString(StorageKeys.FCM_TOKEN, value);
-                        }
-                        break;
-
-                      case 'tenantId':
-                        {
-                          _prefs.setString(StorageKeys.TENANT_ID, value);
-                        }
-                        break;
-
-                      case 'imgURL':
-                        {
-                          _prefs.setString(StorageKeys.USER_IMG_URL_KEY, value);
-                        }
-                        break;
-                    }
-                  }
-                })
-              });
-    }
   }
 
   User getCurrentUser() {
@@ -95,68 +33,138 @@ class UserRepo {
     String birthday = _prefs.getString(StorageKeys.USER_BIRTHDAY);
     bool isFirstUser = _prefs.getBool(StorageKeys.IS_FIRST_USER);
     bool isEmailVerified = _prefs.getBool(StorageKeys.IS_EMAIL_VERIFIED);
-    if (userId == null) {
-      _auth.userChanges();
-      firebase.User user = _auth.currentUser;
-
-      if (user.uid == null) {
-        return null;
-      } else {
-        User serializedUser = User(
-            user.uid,
-            user.displayName != null ? user.displayName : userName,
-            user.email,
-            user.photoURL,
-            fcmToken,
-            tenantId != null ? tenantId : user.tenantId,
-            emotion: emotion,
-            isFirstUser: isFirstUser,
-            isEmailVerified: isEmailVerified,
-            birthday: birthday);
-        return serializedUser;
-      }
-    }
+    String business = _prefs.getString(StorageKeys.USER_BUSINESS);
     return User(userId, userName, userEmail, userImgUrl, fcmToken, tenantId,
         emotion: emotion,
         isFirstUser: isFirstUser,
         isEmailVerified: isEmailVerified,
-        birthday: birthday);
+        birthday: birthday,
+        business: business);
   }
 
-  void setCurrentUser(User firebaseUser) {
-    User user = getAdditionalUserDetails(firebaseUser);
-    _prefs.setString(StorageKeys.USER_ID_KEY, user.uid);
-    if (user.name != null) {
-      _prefs.setString(StorageKeys.USER_NAME_KEY, user.name);
-    }
-    if (user.email != null) {
-      _prefs.setString(StorageKeys.USER_EMAIL, user.email);
-    }
-    if (user.imgURL != null) {
-      _prefs.setString(StorageKeys.USER_IMG_URL_KEY, user.imgURL);
-    }
-    if (user.fcmToken != null) {
-      _prefs.setString(StorageKeys.FCM_TOKEN, user.fcmToken);
-    }
-    if (user.tenantId != null) {
-      _prefs.setString(StorageKeys.TENANT_ID, user.tenantId);
-    }
-    if (user.isEmailVerified != null) {
-      _prefs.setBool(StorageKeys.IS_EMAIL_VERIFIED, user.isEmailVerified);
-    }
-    if (user.isFirstUser != null) {
-      _prefs.setBool(StorageKeys.IS_FIRST_USER, user.isFirstUser);
-    }
-    if (user.birthday != null) {
-      _prefs.setString(StorageKeys.USER_BIRTHDAY, user.birthday);
-    }
-    if (user.emotion != null) {
-      _prefs.setString(StorageKeys.EMOTION, user.emotion);
-    }
+  Future<void> setCurrentUser(User firebaseUser) async {
+    String id = firebaseUser.uid;
+    _prefs.setString(StorageKeys.USER_ID_KEY, id);
+    await _firestore
+        .collection(FirestorePaths.USERS_COLLECTION)
+        .doc(id)
+        .get()
+        .then((DocumentSnapshot documentSnapshot) {
+      if (documentSnapshot.data() != null) {
+        if (documentSnapshot.get("name") != null) {
+          _prefs.setString(
+              StorageKeys.USER_NAME_KEY, documentSnapshot.get("name"));
+        }
+        if (documentSnapshot.get("imgURL") != null) {
+          _prefs.setString(
+              StorageKeys.USER_IMG_URL_KEY, documentSnapshot.get("imgURL"));
+        }
+        if (documentSnapshot.get("fcmToken") != null) {
+          _prefs.setString(
+              StorageKeys.FCM_TOKEN, documentSnapshot.get("fcmToken"));
+        }
+        if (documentSnapshot.get("email") != null) {
+          _prefs.setString(
+              StorageKeys.USER_EMAIL, documentSnapshot.get("email"));
+        }
+        if (documentSnapshot.get('emotion') != null) {
+          _prefs.setString(
+              StorageKeys.EMOTION, documentSnapshot.get('emotion'));
+        }
+        if (documentSnapshot.get("birthday") != null) {
+          _prefs.setString(
+              StorageKeys.USER_BIRTHDAY, documentSnapshot.get('birthday'));
+        }
+        if (documentSnapshot.get("isFirstUser") != null) {
+          _prefs.setBool(
+              StorageKeys.IS_FIRST_USER, documentSnapshot.get('isFirstUser'));
+        }
+        if (documentSnapshot.get("isEmailVerified") != null) {
+          _prefs.setBool(StorageKeys.IS_EMAIL_VERIFIED,
+              documentSnapshot.get('isEmailVerified'));
+        }
+        if (documentSnapshot.get("tenantId") != null) {
+          _prefs.setString(
+              StorageKeys.TENANT_ID, documentSnapshot.get("tenantId"));
+        }
+        if (documentSnapshot.get("business") != null) {
+          _prefs.setString(
+              StorageKeys.USER_BUSINESS, documentSnapshot.get("business"));
+        }
+      }
+    });
   }
 
-  void setUpDatabase(UserId) {
-    _firestore.collection(FirestorePaths.USERS_COLLECTION).doc(UserId).set({
+  List<String> getMyChallenges() {
+    String id = _prefs.getString(StorageKeys.USER_ID_KEY);
+    List<String> challenges = [];
+    _firestore
+        .collection(FirestorePaths.WELLBEING_COLLECTION)
+        .doc(id)
+        .get()
+        .then((DocumentSnapshot snapshot) {
+      if (snapshot.data() != null) {
+        try {
+          if (snapshot.get('area_of_life') != null) {
+            challenges.add(snapshot.get('area_of_life'));
+          }
+          if (snapshot.get('coping_strategy') != null) {
+            challenges.add(snapshot.get('coping_strategy'));
+          }
+          if (snapshot.get('unhealthy_thoughts') != null) {
+            challenges.add(snapshot.get('unhealthy_thoughts'));
+          }
+        } catch (err) {
+          print("field does not exist within the doc ${err.toString()}");
+        }
+      }
+    });
+
+    return challenges;
+  }
+
+  void fetchEmployees() {
+    String currentUserName = _prefs.getString(StorageKeys.USER_NAME_KEY);
+    String business = _prefs.getString(StorageKeys.USER_BUSINESS);
+    print("print: ${business}");
+    print('employee: ${currentUserName}');
+    _firestore
+        .collection(FirestorePaths.USERS_COLLECTION)
+        .orderBy("name")
+        .snapshots()
+        .map((data) => Deserializer.deserializeUsers(data.docs))
+        .listen((users) {
+      _employees = users;
+      print("Employees: ${_employees.length}");
+      List<User> employees = new List<User>.empty(growable: true);
+      users.forEach((user) {
+        if (user.name != currentUserName && user.business == business) {
+          employees.add(user);
+        }
+      });
+      List<String> stringifiedEmployees =
+          new List<String>.empty(growable: true);
+      employees.forEach((user) {
+        stringifiedEmployees.add(json.encode(user.toJson()));
+      });
+      _prefs.setStringList(StorageKeys.EMPLOYEES, stringifiedEmployees);
+    });
+  }
+
+  List<User> getEmployees() {
+    List<User> employees = new List<User>.empty(growable: true);
+    List<String> stringifiedEmployees =
+        _prefs.getStringList(StorageKeys.EMPLOYEES);
+    stringifiedEmployees.forEach((stringVal) {
+      User user = new User.fromJson(json.decode(stringVal));
+      employees.add(user);
+    });
+    return employees;
+  }
+
+  void setUpDatabase(id) {
+    _firestore.collection(FirestorePaths.USERS_COLLECTION).doc(id).set({
+      'uid': id,
       'name': '',
       'email': '',
       'imgURL': '',
@@ -166,11 +174,12 @@ class UserRepo {
       'isFirstUser': true,
       'birthday': '',
       'emotion': '',
+      'business': '',
     });
     _firestore
         .collection(FirestorePaths.WELLBEING_COLLECTION)
-        .doc(UserId)
-        .set({'source': null, 'business': null, 'emotion': null});
+        .doc(id)
+        .set({'source': null, 'emotion': null});
   }
 
   void clearCurrentUser() async {
@@ -181,14 +190,71 @@ class UserRepo {
     if (userId == null) {
       userId = _prefs.getString(StorageKeys.USER_ID_KEY);
     }
-    return _prefs.getBool(StorageKeys.IS_FIRST_USER);
+    bool isFirstUser = _prefs.getBool(StorageKeys.IS_FIRST_USER);
+    if (isFirstUser == null) {
+      _firestore
+          .collection(FirestorePaths.USERS_COLLECTION)
+          .doc(userId)
+          .get()
+          .then((DocumentSnapshot snapshot) {
+        if (snapshot.data() != null) {
+          if (snapshot.get("isFirstUser") != null) {
+            return snapshot.get('isFirstUser');
+          }
+        } else {
+          return true;
+        }
+      });
+    }
+    return isFirstUser;
   }
 
   bool isEmailVerified({userId}) {
     if (userId == null) {
       userId = _prefs.getString(StorageKeys.USER_ID_KEY);
     }
-    return _prefs.getBool(StorageKeys.IS_EMAIL_VERIFIED);
+    bool isEmailVerified = _prefs.getBool(StorageKeys.IS_EMAIL_VERIFIED);
+    if (isEmailVerified == null) {
+      _firestore
+          .collection(FirestorePaths.USERS_COLLECTION)
+          .doc(userId)
+          .get()
+          .then((DocumentSnapshot snapshot) {
+        if (snapshot.data() != null) {
+          if (snapshot.get("isEmailVerified") != null) {
+            isEmailVerified = snapshot.get('isEmailVerified');
+
+            _prefs.setBool(StorageKeys.IS_EMAIL_VERIFIED, isEmailVerified);
+            return isEmailVerified;
+          }
+        } else {
+          return false;
+        }
+      });
+    }
+    return isEmailVerified;
+  }
+
+  String getBusiness({userId}) {
+    if (userId == null) {
+      userId = _prefs.getString(StorageKeys.USER_ID_KEY);
+    }
+    String business = _prefs.getString(StorageKeys.USER_BUSINESS);
+    if (business == null || business.isEmpty) {
+      _firestore
+          .collection(FirestorePaths.USERS_COLLECTION)
+          .doc(userId)
+          .get()
+          .then((DocumentSnapshot snapshot) {
+        if (snapshot.data() != null) {
+          if (snapshot.get("business") != null) {
+            return snapshot.get('business');
+          }
+        }
+        return "";
+      });
+    }
+    return business;
   }
 
   String getUserName({userId}) {
@@ -207,8 +273,10 @@ class UserRepo {
             return snapshot.get('name');
           }
         }
+        return "";
       });
     }
+
     return userName;
   }
 
@@ -262,6 +330,7 @@ class UserRepo {
             return snapshot.get('birthday');
           }
         }
+        return '';
       });
     }
     return birthday;
@@ -285,6 +354,7 @@ class UserRepo {
             return emotion;
           }
         }
+        return 'Happy';
       });
     }
     return emotion;
@@ -297,6 +367,15 @@ class UserRepo {
     }, SetOptions(merge: true));
   }
 
+  void setBusiness(String business) {
+    String userId = _prefs.getString(StorageKeys.USER_ID_KEY);
+    _prefs.setString(StorageKeys.USER_BUSINESS, business);
+    _firestore
+        .collection(FirestorePaths.USERS_COLLECTION)
+        .doc(userId)
+        .set({'business': business}, SetOptions(merge: true));
+  }
+
   void setUserName(String name) {
     String userId = _prefs.getString(StorageKeys.USER_ID_KEY);
     _prefs.setString(StorageKeys.USER_NAME_KEY, name);
@@ -304,28 +383,6 @@ class UserRepo {
         .collection(FirestorePaths.USERS_COLLECTION)
         .doc(userId)
         .set({'name': name}, SetOptions(merge: true));
-  }
-
-  User getAdditionalUserDetails(User user) {
-    String emotion = getEmotion(userId: user.uid);
-    String birthday = getBirthday(userId: user.uid);
-    bool firstUser = isFirstUser(userId: user.uid);
-    bool emailVerified = isEmailVerified(userId: user.uid);
-    String id = user.uid;
-    String tenant = user.tenantId;
-    String userName = user.name;
-
-    if (userName == null || userName.isEmpty) {
-      userName = getUserName(userId: user.uid);
-    }
-    if (tenant == null || tenant.isEmpty) {
-      tenant = getTenant(userId: user.uid);
-    }
-    return User(id, userName, user.email, user.imgURL, user.fcmToken, tenant,
-        birthday: birthday,
-        emotion: emotion,
-        isFirstUser: firstUser,
-        isEmailVerified: emailVerified);
   }
 
   void setUserId(String uid) {
@@ -373,7 +430,7 @@ class UserRepo {
     _firestore
         .collection(FirestorePaths.USERS_COLLECTION)
         .doc(userId)
-        .set({'isEmailVerified': isVerified}, SetOptions(merge: true));
+        .update({'isEmailVerified': isVerified});
     _prefs.setBool(StorageKeys.IS_EMAIL_VERIFIED, isVerified);
   }
 
@@ -384,6 +441,19 @@ class UserRepo {
         .doc(userId)
         .set({'isFirstUser': isFirstUser}, SetOptions(merge: true));
     _prefs.setBool(StorageKeys.IS_FIRST_USER, isFirstUser);
+  }
+
+  Stream<QuerySnapshot> getSnapshotsOfUsers() {
+    return _firestore
+        .collection(FirestorePaths.USERS_COLLECTION)
+        .orderBy("name")
+        .snapshots();
+  }
+
+  Stream<QuerySnapshot> getSnapshotsOfWellbeingData() {
+    return _firestore
+        .collection(FirestorePaths.WELLBEING_COLLECTION)
+        .snapshots();
   }
 
   void setEmotion(String emotion) {

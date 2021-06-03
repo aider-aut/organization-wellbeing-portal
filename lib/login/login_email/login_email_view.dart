@@ -15,6 +15,7 @@ class LoginEmailScreen extends StatefulWidget {
 
 class _LoginEmailState extends State<LoginEmailScreen> {
   final _formKey = new GlobalKey<FormState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   String _email, _password;
   bool _obscureText = true;
 
@@ -28,6 +29,7 @@ class _LoginEmailState extends State<LoginEmailScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
+        key: _scaffoldKey,
         child: Scaffold(
             appBar: AppBar(
               iconTheme: IconThemeData(
@@ -112,7 +114,9 @@ class _LoginEmailState extends State<LoginEmailScreen> {
                                             : "Please enter valid email";
                                       },
                                       onSaved: (String value) {
-                                        _email = value;
+                                        setState(() {
+                                          _email = value.toLowerCase();
+                                        });
                                       },
                                       decoration: const InputDecoration(
                                         border: InputBorder.none,
@@ -143,7 +147,9 @@ class _LoginEmailState extends State<LoginEmailScreen> {
                                           ? 'Password too short (it has to be longer than 6 characters).'
                                           : null,
                                       onSaved: (String value) {
-                                        _password = value;
+                                        setState(() {
+                                          _password = value;
+                                        });
                                       },
                                       obscureText: _obscureText,
                                       decoration: const InputDecoration(
@@ -174,8 +180,11 @@ class _LoginEmailState extends State<LoginEmailScreen> {
                                               form.save();
                                               BlocProvider.of<LoginBloc>(
                                                       context)
-                                                  .onLoginWithEmail(_email,
-                                                      _password, context);
+                                                  .onLoginWithEmail(
+                                                      _email.trim(),
+                                                      _password,
+                                                      _scaffoldKey
+                                                          .currentContext);
                                             }
                                           },
                                           child: Text("Log in",

@@ -172,7 +172,9 @@ class _EditAccountState extends State<EditAccountScreen> {
                                         : "Please enter valid ${widget.info}";
                                   },
                                   onSaved: (String value) {
-                                    _value = value;
+                                    setState(() {
+                                      _value = value;
+                                    });
                                   },
                                   decoration: InputDecoration(
                                     hintText: widget.info,
@@ -185,6 +187,7 @@ class _EditAccountState extends State<EditAccountScreen> {
                                 children: [
                                   InkWell(
                                       onTap: () => showMaterialDatePicker(
+                                            title: 'Birthday',
                                             context: context,
                                             firstDate: DateTime(1900),
                                             lastDate: DateTime.now(),
@@ -223,6 +226,7 @@ class _EditAccountState extends State<EditAccountScreen> {
                                   SizedBox(width: 15),
                                   InkWell(
                                       onTap: () => showMaterialDatePicker(
+                                            title: 'Birthday',
                                             context: context,
                                             firstDate: DateTime(1900),
                                             lastDate: DateTime.now(),
@@ -261,6 +265,7 @@ class _EditAccountState extends State<EditAccountScreen> {
                                   SizedBox(width: 15),
                                   InkWell(
                                       onTap: () => showMaterialDatePicker(
+                                            title: 'Birthday',
                                             context: context,
                                             firstDate: DateTime(1900),
                                             lastDate: DateTime.now(),

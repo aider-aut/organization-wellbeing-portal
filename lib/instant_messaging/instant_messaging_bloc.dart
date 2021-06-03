@@ -18,11 +18,13 @@ class InstantMessagingBloc
     _retrieveMessagesForThisChatroom();
   }
 
-  final String chatroomId;
+  String chatroomId;
+  User _currentUser;
+  SelectedChatroom _chatroom;
   StreamSubscription<Chatroom> chatroomSubscription;
 
   void _retrieveMessagesForThisChatroom() async {
-    final User user = UserRepo().getCurrentUser();
+    _currentUser = UserRepo().getCurrentUser();
     chatroomSubscription = ChatRepo.getInstance()
         .getMessagesForChatroom(chatroomId)
         .listen((chatroom) async {
@@ -36,10 +38,11 @@ class InstantMessagingBloc
             return Message(
                 message.author, message.timestamp, "_uri:$downloadUri",
                 option: message.option,
-                outgoing: message.author.uid == user.uid);
+                outgoing: message.author.uid == _currentUser.uid);
           }
           return Message(message.author, message.timestamp, message.value,
-              option: message.option, outgoing: message.author.uid == user.uid);
+              option: message.option,
+              outgoing: message.author.uid == _currentUser.uid);
         });
         final List<Message> processedMessages =
             await processedMessagesStream.toList();
@@ -49,7 +52,6 @@ class InstantMessagingBloc
   }
 
   void send(String text) async {
-    final User user = UserRepo().getCurrentUser();
     final isChatBot = ChatRepo.getInstance().isOtherUserChatBot();
     bool success = false;
     if (isChatBot) {
@@ -57,7 +59,7 @@ class InstantMessagingBloc
           await ChatRepo.getInstance().sendMessageToChatbot(chatroomId, text);
     } else {
       success = await ChatRepo.getInstance()
-          .sendMessageToChatroom(chatroomId, user, text);
+          .sendMessageToChatroom(chatroomId, _currentUser, text);
     }
     if (!success) {
       add(MessageSendErrorEvent());

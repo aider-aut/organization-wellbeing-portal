@@ -16,7 +16,6 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
       final credential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
       UserRepo().setUpDatabase(credential.user.uid);
-      UserRepo().setUserId(credential.user.uid);
       UserRepo().setEmail(email);
       UserRepo().setUserName(name);
       UserRepo().setFirstUser(true);

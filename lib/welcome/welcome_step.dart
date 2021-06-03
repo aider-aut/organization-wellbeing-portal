@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:chatapp/base/bloc_widget.dart';
-import 'package:chatapp/model/user/user_repo.dart';
 import 'package:chatapp/navigation_helper.dart';
 import 'package:chatapp/welcome/welcome_bloc.dart';
 import 'package:chatapp/welcome/welcome_event.dart';
@@ -12,7 +11,6 @@ import 'package:swipedetector/swipedetector.dart';
 
 class WelcomeStepScreen extends StatefulWidget {
   WelcomeStepScreen({Key key}) : super(key: key);
-
   @override
   State<StatefulWidget> createState() => _WelcomeStepState();
 }
@@ -21,7 +19,6 @@ class _WelcomeStepState extends State<WelcomeStepScreen>
     with SingleTickerProviderStateMixin {
   AnimationController _controller;
   double _currentIndex = 0;
-  bool _isEmailVerified = false;
 
   @override
   void initState() {
@@ -36,23 +33,12 @@ class _WelcomeStepState extends State<WelcomeStepScreen>
     return BlocWidget<WelcomeEvent, WelcomeState, WelcomeBloc>(
         builder: (BuildContext context, WelcomeState state) => Scaffold(
               body: Builder(builder: (BuildContext context) {
-                _isEmailVerified = UserRepo().isEmailVerified();
                 Widget content;
                 if (state.loading) {
                   content = Center(
                     child: CircularProgressIndicator(
                       strokeWidth: 4.0,
                     ),
-                  );
-                } else if (!_isEmailVerified) {
-                  content = AlertDialog(
-                    title: Text("Verify Email"),
-                    content: Text("Please Verify your email before continuing"),
-                    actions: [
-                      TextButton(
-                          child: Text("OK"),
-                          onPressed: () => navigateToLogin()),
-                    ],
                   );
                 } else if (_currentIndex == 0) {
                   content = SwipeDetector(
@@ -61,10 +47,11 @@ class _WelcomeStepState extends State<WelcomeStepScreen>
                           _currentIndex += 1;
                         });
                       },
-                      child: SingleChildScrollView(
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: Theme.of(context).backgroundColor),
+                      child: Container(
+                        height: MediaQuery.of(context).size.height,
+                        decoration: BoxDecoration(
+                            color: Theme.of(context).backgroundColor),
+                        child: SingleChildScrollView(
                           child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: <Widget>[
@@ -135,54 +122,56 @@ class _WelcomeStepState extends State<WelcomeStepScreen>
                           _currentIndex -= 1;
                         });
                       },
-                      child: SingleChildScrollView(
-                          child: Container(
-                        decoration: BoxDecoration(color: Color(0x5cC4C4C4)),
-                        child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Padding(
-                                padding: EdgeInsets.only(top: 60, right: 20),
-                                child: Align(
-                                  alignment: Alignment.topRight,
-                                  child: Text(
-                                    'Skip intro',
-                                    style: TextStyle(fontSize: 12),
-                                  ),
-                                ),
-                              ),
-                              Padding(padding: EdgeInsets.only(top: 120)),
-                              SlideTransition(
-                                  position: Tween<Offset>(
-                                    begin: Offset(-1, 0),
-                                    end: Offset.zero,
-                                  ).animate(_controller),
-                                  child: FadeTransition(
-                                      opacity: _controller,
-                                      child: Container(
-                                          width: 300,
-                                          height: 300,
-                                          padding: EdgeInsets.all(16.0),
-                                          alignment: Alignment.center,
-                                          child: Image.asset(
-                                              'assets/welcome-step-2-image.png')))),
-                              SizedBox(height: 40),
-                              SlideTransition(
-                                  position: Tween<Offset>(
-                                    begin: Offset(-1, 0),
-                                    end: Offset.zero,
-                                  ).animate(_controller),
-                                  child: FadeTransition(
-                                      opacity: _controller,
+                      child: Container(
+                          height: MediaQuery.of(context).size.height,
+                          decoration: BoxDecoration(color: Color(0x5cC4C4C4)),
+                          child: SingleChildScrollView(
+                            child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  Padding(
+                                    padding:
+                                        EdgeInsets.only(top: 60, right: 20),
+                                    child: Align(
+                                      alignment: Alignment.topRight,
                                       child: Text(
-                                        "It is easy to forget to take care of yourself\nwhile working. AWA will not only remind you\nto do so, but also keep track of your habits?",
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold),
-                                        textAlign: TextAlign.center,
-                                      ))),
-                            ]),
-                      )));
+                                        'Skip intro',
+                                        style: TextStyle(fontSize: 12),
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(padding: EdgeInsets.only(top: 120)),
+                                  SlideTransition(
+                                      position: Tween<Offset>(
+                                        begin: Offset(-1, 0),
+                                        end: Offset.zero,
+                                      ).animate(_controller),
+                                      child: FadeTransition(
+                                          opacity: _controller,
+                                          child: Container(
+                                              width: 300,
+                                              height: 300,
+                                              padding: EdgeInsets.all(16.0),
+                                              alignment: Alignment.center,
+                                              child: Image.asset(
+                                                  'assets/welcome-step-2-image.png')))),
+                                  SizedBox(height: 40),
+                                  SlideTransition(
+                                      position: Tween<Offset>(
+                                        begin: Offset(-1, 0),
+                                        end: Offset.zero,
+                                      ).animate(_controller),
+                                      child: FadeTransition(
+                                          opacity: _controller,
+                                          child: Text(
+                                            "It is easy to forget to take care of yourself\nwhile working. AWA will not only remind you\nto do so, but also keep track of your habits?",
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold),
+                                            textAlign: TextAlign.center,
+                                          ))),
+                                ]),
+                          )));
                 } else if (_currentIndex == 2) {
                   content = SwipeDetector(
                       onSwipeLeft: () {
@@ -195,54 +184,56 @@ class _WelcomeStepState extends State<WelcomeStepScreen>
                           _currentIndex -= 1;
                         });
                       },
-                      child: SingleChildScrollView(
-                          child: Container(
-                        decoration: BoxDecoration(color: Color(0x5cC4C4C4)),
-                        child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Padding(
-                                padding: EdgeInsets.only(top: 60, right: 20),
-                                child: Align(
-                                  alignment: Alignment.topRight,
-                                  child: Text(
-                                    'Skip intro',
-                                    style: TextStyle(fontSize: 12),
-                                  ),
-                                ),
-                              ),
-                              Padding(padding: EdgeInsets.only(top: 120)),
-                              SlideTransition(
-                                  position: Tween<Offset>(
-                                    begin: Offset(-1, 0),
-                                    end: Offset.zero,
-                                  ).animate(_controller),
-                                  child: FadeTransition(
-                                      opacity: _controller,
-                                      child: Container(
-                                          width: 300,
-                                          height: 300,
-                                          padding: EdgeInsets.all(16.0),
-                                          alignment: Alignment.center,
-                                          child: Image.asset(
-                                              'assets/welcome-step-3-image.png')))),
-                              SizedBox(height: 40),
-                              SlideTransition(
-                                  position: Tween<Offset>(
-                                    begin: Offset(-1, 0),
-                                    end: Offset.zero,
-                                  ).animate(_controller),
-                                  child: FadeTransition(
-                                      opacity: _controller,
+                      child: Container(
+                          height: MediaQuery.of(context).size.height,
+                          decoration: BoxDecoration(color: Color(0x5cC4C4C4)),
+                          child: SingleChildScrollView(
+                            child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  Padding(
+                                    padding:
+                                        EdgeInsets.only(top: 60, right: 20),
+                                    child: Align(
+                                      alignment: Alignment.topRight,
                                       child: Text(
-                                        "Your work life has a big impact on your\npersonal life. Monitor your stress levels\nin and out of work to uncover why and take\nback control!",
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold),
-                                        textAlign: TextAlign.center,
-                                      ))),
-                            ]),
-                      )));
+                                        'Skip intro',
+                                        style: TextStyle(fontSize: 12),
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(padding: EdgeInsets.only(top: 120)),
+                                  SlideTransition(
+                                      position: Tween<Offset>(
+                                        begin: Offset(-1, 0),
+                                        end: Offset.zero,
+                                      ).animate(_controller),
+                                      child: FadeTransition(
+                                          opacity: _controller,
+                                          child: Container(
+                                              width: 300,
+                                              height: 300,
+                                              padding: EdgeInsets.all(16.0),
+                                              alignment: Alignment.center,
+                                              child: Image.asset(
+                                                  'assets/welcome-step-3-image.png')))),
+                                  SizedBox(height: 40),
+                                  SlideTransition(
+                                      position: Tween<Offset>(
+                                        begin: Offset(-1, 0),
+                                        end: Offset.zero,
+                                      ).animate(_controller),
+                                      child: FadeTransition(
+                                          opacity: _controller,
+                                          child: Text(
+                                            "Your work life has a big impact on your\npersonal life. Monitor your stress levels\nin and out of work to uncover why and take\nback control!",
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold),
+                                            textAlign: TextAlign.center,
+                                          ))),
+                                ]),
+                          )));
                 } else if (_currentIndex == 3) {
                   content = SwipeDetector(
                       onSwipeLeft: () {
@@ -253,74 +244,76 @@ class _WelcomeStepState extends State<WelcomeStepScreen>
                           _currentIndex -= 1;
                         });
                       },
-                      child: SingleChildScrollView(
-                          child: Container(
-                        decoration: BoxDecoration(color: Color(0x5cC4C4C4)),
-                        child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Padding(
-                                padding: EdgeInsets.only(top: 60, right: 20),
-                                child: Align(
-                                  alignment: Alignment.topRight,
-                                  child: Text(
-                                    'Skip intro',
-                                    style: TextStyle(fontSize: 12),
-                                  ),
-                                ),
-                              ),
-                              Padding(padding: EdgeInsets.only(top: 120)),
-                              SlideTransition(
-                                  position: Tween<Offset>(
-                                    begin: Offset(-1, 0),
-                                    end: Offset.zero,
-                                  ).animate(_controller),
-                                  child: FadeTransition(
-                                      opacity: _controller,
-                                      child: Container(
-                                          width: 300,
-                                          height: 300,
-                                          padding: EdgeInsets.all(16.0),
-                                          alignment: Alignment.center,
-                                          child: Image.asset(
-                                              'assets/welcome-get-started-image.png')))),
-                              SizedBox(height: 40),
-                              SlideTransition(
-                                  position: Tween<Offset>(
-                                    begin: Offset(-1, 0),
-                                    end: Offset.zero,
-                                  ).animate(_controller),
-                                  child: FadeTransition(
-                                      opacity: _controller,
+                      child: Container(
+                          height: MediaQuery.of(context).size.height,
+                          decoration: BoxDecoration(color: Color(0x5cC4C4C4)),
+                          child: SingleChildScrollView(
+                            child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  Padding(
+                                    padding:
+                                        EdgeInsets.only(top: 60, right: 20),
+                                    child: Align(
+                                      alignment: Alignment.topRight,
                                       child: Text(
-                                        "Get an overview of how you’re doing and set\ngoals to acheive even more. ",
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold),
-                                        textAlign: TextAlign.center,
-                                      ))),
-                              SizedBox(height: 40),
-                              SlideTransition(
-                                  position: Tween<Offset>(
-                                    begin: Offset(-1, 0),
-                                    end: Offset.zero,
-                                  ).animate(_controller),
-                                  child: FadeTransition(
-                                      opacity: _controller,
-                                      child: ElevatedButton(
-                                          child: Text("Get started"),
-                                          onPressed: () {
-                                            navigateToDemographics();
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                              primary: Color(
-                                                  0xff5DB075), // background
-                                              shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          15)))))),
-                            ]),
-                      )));
+                                        'Skip intro',
+                                        style: TextStyle(fontSize: 12),
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(padding: EdgeInsets.only(top: 120)),
+                                  SlideTransition(
+                                      position: Tween<Offset>(
+                                        begin: Offset(-1, 0),
+                                        end: Offset.zero,
+                                      ).animate(_controller),
+                                      child: FadeTransition(
+                                          opacity: _controller,
+                                          child: Container(
+                                              width: 300,
+                                              height: 300,
+                                              padding: EdgeInsets.all(16.0),
+                                              alignment: Alignment.center,
+                                              child: Image.asset(
+                                                  'assets/welcome-get-started-image.png')))),
+                                  SizedBox(height: 40),
+                                  SlideTransition(
+                                      position: Tween<Offset>(
+                                        begin: Offset(-1, 0),
+                                        end: Offset.zero,
+                                      ).animate(_controller),
+                                      child: FadeTransition(
+                                          opacity: _controller,
+                                          child: Text(
+                                            "Get an overview of how you’re doing and set\ngoals to acheive even more. ",
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold),
+                                            textAlign: TextAlign.center,
+                                          ))),
+                                  SizedBox(height: 40),
+                                  SlideTransition(
+                                      position: Tween<Offset>(
+                                        begin: Offset(-1, 0),
+                                        end: Offset.zero,
+                                      ).animate(_controller),
+                                      child: FadeTransition(
+                                          opacity: _controller,
+                                          child: ElevatedButton(
+                                              child: Text("Get started"),
+                                              onPressed: () {
+                                                navigateToDemographics();
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                  primary: Color(
+                                                      0xff5DB075), // background
+                                                  shape: RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              15)))))),
+                                ]),
+                          )));
                 }
                 return content;
               }),

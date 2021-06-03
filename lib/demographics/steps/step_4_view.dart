@@ -139,7 +139,9 @@ class _Step4State extends State<Step4Screen>
                     child: Padding(
                         padding: EdgeInsets.only(top: 120),
                         child: ElevatedButton(
-                            child: Text("Next"),
+                            child: Text("Next",
+                                style:
+                                TextStyle(color: Colors.white)),
                             onPressed: () {
                               final newData = {'emotion': _emotion};
                               BlocProvider.of<DemographicsBloc>(context)
@@ -147,10 +149,12 @@ class _Step4State extends State<Step4Screen>
                               widget.onNext();
                             },
                             style: ElevatedButton.styleFrom(
-                                primary: Colors.blue, // background
+                                primary: Colors.black,
+                                // background
                                 shape: RoundedRectangleBorder(
                                     borderRadius:
-                                        BorderRadius.circular(15)))))))),
+                                    BorderRadius.circular(
+                                        15)))))))),
       ]),
     );
   }

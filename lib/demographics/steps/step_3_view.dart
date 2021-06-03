@@ -75,13 +75,9 @@ class _Step3State extends State<Step3Screen>
                             ),
                             Row(
                               children: [
-                                Text("Not well"),
-                                Padding(
-                                    padding: EdgeInsets.only(left: 60),
-                                    child: Text("Mediocre")),
-                                Padding(
-                                    padding: EdgeInsets.only(left: 70),
-                                    child: Text("Great"))
+                                Expanded(flex: 3, child: Text("Not well")),
+                                Expanded(flex: 3, child: Text("Mediocre")),
+                                Expanded(child: Text("Great"))
                               ],
                             )
                           ],
@@ -99,7 +95,8 @@ class _Step3State extends State<Step3Screen>
                             child: Padding(
                                 padding: EdgeInsets.only(top: 130),
                                 child: ElevatedButton(
-                                    child: Text("Next"),
+                                    child: Text("Next",
+                                        style: TextStyle(color: Colors.white)),
                                     onPressed: () {
                                       final data = {
                                         "wellbeing": _currentSliderValue
@@ -109,7 +106,8 @@ class _Step3State extends State<Step3Screen>
                                       widget.onNext();
                                     },
                                     style: ElevatedButton.styleFrom(
-                                        primary: Colors.blue, // background
+                                        primary: Colors.black,
+                                        // background
                                         shape: RoundedRectangleBorder(
                                             borderRadius: BorderRadius.circular(
                                                 15)))))))),

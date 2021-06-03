@@ -12,6 +12,7 @@ class User extends LoginResponse {
   final bool isFirstUser;
   final bool isEmailVerified;
   final String birthday;
+  final String business;
 
   User(
     this.uid,
@@ -24,6 +25,7 @@ class User extends LoginResponse {
     this.isFirstUser = true,
     this.isEmailVerified = false,
     this.birthday = "",
+    this.business = '',
   });
 
   User.fromFirebaseUser(auth.User firebaseUser)
@@ -35,18 +37,25 @@ class User extends LoginResponse {
           "",
           firebaseUser.tenantId,
         );
-  Map<String, dynamic> get map {
-    return {
-      "uid": uid,
-      "name": name,
-      "email": email,
-      'imgURL': imgURL,
-      'fcmToken': fcmToken,
-      'tenantId': tenantId,
-      'emotion': emotion,
-      'isFirstUser': isFirstUser,
-      'isEmailVerified': isEmailVerified,
-      'birthday': birthday,
-    };
-  }
+  User.fromJson(Map<String, dynamic> json)
+      : this(json['uid'], json['name'], json['email'], json['imgURL'],
+            json['fcmToken'], json['tenantId'],
+            emotion: json['emotion'],
+            isFirstUser: json['isFirstUser'],
+            isEmailVerified: json['isEmailVerified'],
+            birthday: json['birthday'],
+            business: json['business']);
+  Map<String, dynamic> toJson() => ({
+        "uid": uid,
+        "name": name,
+        "email": email,
+        'imgURL': imgURL,
+        'fcmToken': fcmToken,
+        'tenantId': tenantId,
+        'emotion': emotion,
+        'isFirstUser': isFirstUser,
+        'isEmailVerified': isEmailVerified,
+        'birthday': birthday,
+        'business': business,
+      });
 }

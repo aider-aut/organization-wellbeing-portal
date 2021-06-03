@@ -14,9 +14,12 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginState extends State<LoginScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       body: BlocWidget<LoginEvent, LoginState, LoginBloc>(
           builder: (BuildContext context, LoginState state) {
         if (state.loading) {
@@ -63,7 +66,7 @@ class _LoginState extends State<LoginScreen> {
                                       bottom: 10.0)),
                               onPressed: () =>
                                   BlocProvider.of<LoginBloc>(context)
-                                      .onLoginGoogle(),
+                                      .onLoginGoogle(_scaffoldKey),
                               child: Text(
                                 "Continue with Google",
                                 style: TextStyle(color: Colors.white),
@@ -82,7 +85,7 @@ class _LoginState extends State<LoginScreen> {
                                       bottom: 10.0)),
                               onPressed: () =>
                                   BlocProvider.of<LoginBloc>(context)
-                                      .onLoginFacebook(),
+                                      .onLoginFacebook(_scaffoldKey),
                               child: Text(
                                 "Continue with Facebook",
                                 style: TextStyle(color: Colors.white),

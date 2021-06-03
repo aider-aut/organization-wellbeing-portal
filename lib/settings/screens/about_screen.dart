@@ -112,7 +112,8 @@ class _AboutState extends State<AboutScreen> {
                                       Text(
                                         'AWA was designed with New Zealand’s Small Businesses in mind. We aim to deliver a simple yet effective tool of navigating the stress and monotony of daily life.',
                                         textAlign: TextAlign.left,
-                                        style: TextStyle(fontSize: 14),
+                                        style: TextStyle(
+                                            fontSize: 14, height: 1.5),
                                       ),
                                       SizedBox(
                                         height: 5,
@@ -120,7 +121,8 @@ class _AboutState extends State<AboutScreen> {
                                       Text(
                                         'Small Business Owners and Employees do not get to experience the same facilities a bigger company does. AWA is here to bridge that gap.',
                                         textAlign: TextAlign.left,
-                                        style: TextStyle(fontSize: 14),
+                                        style: TextStyle(
+                                            fontSize: 14, height: 1.5),
                                       ),
                                       SizedBox(
                                         height: 5,
@@ -128,7 +130,8 @@ class _AboutState extends State<AboutScreen> {
                                       Text(
                                         'We also aim to encourage conversations regarding mental health and wellbeing in the work culture. It is important to keep in mind that our managers, employees and co-workers get stressed out just the same way we do, and just checking in can make all the difference!',
                                         textAlign: TextAlign.left,
-                                        style: TextStyle(fontSize: 14),
+                                        style: TextStyle(
+                                            fontSize: 14, height: 1.5),
                                       ),
                                       SizedBox(
                                         height: 5,
@@ -156,8 +159,12 @@ class _AboutState extends State<AboutScreen> {
                                       )),
                                       Image.asset(
                                         'assets/about.png',
-                                        width: 200,
-                                        height: 200,
+                                        width:
+                                            MediaQuery.of(context).size.width -
+                                                40,
+                                        height:
+                                            MediaQuery.of(context).size.height /
+                                                2,
                                       )
                                     ],
                                   ),

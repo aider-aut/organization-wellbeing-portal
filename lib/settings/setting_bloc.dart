@@ -14,6 +14,7 @@ class SettingBloc extends Bloc<SettingEvent, SettingState> {
   User _currentUser;
   void _initialize() {
     _currentUser = UserRepo().getCurrentUser();
+    print("CURENT: ${_currentUser.toJson().toString()}");
   }
 
   String getUserName() {

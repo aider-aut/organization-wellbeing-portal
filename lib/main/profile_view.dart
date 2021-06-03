@@ -1,10 +1,17 @@
+import 'dart:async';
+
 import 'package:chatapp/base/bloc_widget.dart';
 import 'package:chatapp/main/main_bloc.dart';
 import 'package:chatapp/main/main_event.dart';
 import 'package:chatapp/main/main_state.dart';
+import 'package:chatapp/main/screens/business_view.dart';
+import 'package:chatapp/main/screens/employees_view.dart';
+import 'package:chatapp/main/screens/wellbeing_view.dart';
+import 'package:chatapp/model/user/user.dart';
 import 'package:chatapp/model/user/user_repo.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProfileScreen extends StatefulWidget {
   ProfileScreen({
@@ -14,48 +21,44 @@ class ProfileScreen extends StatefulWidget {
   _ProfileState createState() => _ProfileState();
 }
 
-class _ProfileState extends State<ProfileScreen> {
-  String currentEmotion;
-  var _options;
-  String emotion;
+class _ProfileState extends State<ProfileScreen>
+    with SingleTickerProviderStateMixin {
+  AnimationController _controller;
+  List<User> _employees;
+  String _business;
+  List<String> _challenges;
+  Map<String, bool> _options;
   String displayName;
-  String happyUrl, sadUrl, confusedUrl, angryUrl;
+  bool isEmployer = false;
   @override
   void initState() {
     super.initState();
-    emotion = UserRepo().getEmotion();
+    _controller = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 150));
+    Timer(Duration(milliseconds: 200), () => _controller.forward());
     displayName = UserRepo().getUserName();
-    _options = [true, false, false];
-    happyUrl =
-        'assets/icons/emotions/${emotion == "Happy" ? "happy-active.png" : "happy.png"}';
-    sadUrl =
-        'assets/icons/emotions/${emotion == "Sad" ? "sad-active.png" : "sad.png"}';
-    confusedUrl =
-        'assets/icons/emotions/${emotion == "Confused" ? "confused-active.png" : "confused.png"}';
-    angryUrl =
-        'assets/icons/emotions/${emotion == "Angry" ? "angry-active.png" : "angry.png"}';
+    _options = {'history': true, 'employees': false, 'business': false};
   }
 
   @override
   Widget build(BuildContext context) {
-    void updateEmotions(String value) {
-      setState(() {
-        UserRepo().setEmotion(value);
-        happyUrl =
-            'assets/icons/emotions/${value == "Happy" ? "happy-active.png" : "happy.png"}';
-        sadUrl =
-            'assets/icons/emotions/${value == "Sad" ? "sad-active.png" : "sad.png"}';
-        confusedUrl =
-            'assets/icons/emotions/${value == "Confused" ? "confused-active.png" : "confused.png"}';
-        angryUrl =
-            'assets/icons/emotions/${value == "Angry" ? "angry-active.png" : "angry.png"}';
-      });
-    }
-
     return Scaffold(
         body: BlocWidget<MainEvent, MainState, MainBloc>(
             builder: (BuildContext context, MainState state) =>
-                Scaffold(body: Builder(builder: (BuildContext context) {
+                Scaffold(body: Builder(
+                    // stream: UserRepo().getEmployees(),
+                    builder: (BuildContext context) {
+                  _challenges =
+                      BlocProvider.of<MainBloc>(context).getMyChallenges();
+                  isEmployer =
+                      BlocProvider.of<MainBloc>(context).isUserEmployer();
+                  if (isEmployer) {
+                    _employees =
+                        BlocProvider.of<MainBloc>(context).getEmployees();
+                    _business =
+                        BlocProvider.of<MainBloc>(context).getBusiness();
+                  }
+
                   Widget content;
                   if (state.isLoading) {
                     content = Container(
@@ -67,11 +70,41 @@ class _ProfileState extends State<ProfileScreen> {
                           ),
                         ));
                   } else {
+                    Widget _currentOption;
+                    if (_options['history']) {
+                      _currentOption = SlideTransition(
+                          position: Tween<Offset>(
+                            begin: Offset(-1, 0),
+                            end: Offset.zero,
+                          ).animate(_controller),
+                          child: FadeTransition(
+                              opacity: _controller,
+                              child: WellbeingScreen(
+                                  challenges: _challenges,
+                                  imgUrls: state.imageUrls)));
+                    } else if (_options['employees']) {
+                      _currentOption = SlideTransition(
+                          position: Tween<Offset>(
+                            begin: Offset(-1, 0),
+                            end: Offset.zero,
+                          ).animate(_controller),
+                          child: FadeTransition(
+                              opacity: _controller,
+                              child: EmployeeScreen(business: _business)));
+                    } else {
+                      _currentOption = SlideTransition(
+                          position: Tween<Offset>(
+                            begin: Offset(-1, 0),
+                            end: Offset.zero,
+                          ).animate(_controller),
+                          child: FadeTransition(
+                              opacity: _controller,
+                              child: BusinessScreen(business: _business)));
+                    }
                     content = Container(
-                      decoration: BoxDecoration(
-                          color: Theme.of(context).backgroundColor),
-                      child: ListView(
-                        children: [
+                        decoration: BoxDecoration(
+                            color: Theme.of(context).backgroundColor),
+                        child: ListView(children: [
                           Container(
                             child: null,
                             height: 20,
@@ -102,48 +135,52 @@ class _ProfileState extends State<ProfileScreen> {
                                                   color: Colors.black),
                                             ),
                                             onTap: () => setState(() {
-                                                  _options = [
-                                                    true,
-                                                    false,
-                                                    false
-                                                  ];
+                                                  _options['history'] = true;
+                                                  _options['employees'] = false;
+                                                  _options['business'] = false;
                                                 })))),
                               ),
-                              Expanded(
-                                child: Container(
-                                    height: 20,
-                                    child: Center(
-                                        child: InkWell(
-                                            child: Text(
-                                              "My Employees",
-                                              style: TextStyle(
-                                                  color: Colors.black),
-                                            ),
-                                            onTap: () => setState(() {
-                                                  _options = [
-                                                    false,
-                                                    true,
-                                                    false
-                                                  ];
-                                                })))),
-                              ),
-                              Expanded(
-                                  child: Container(
-                                      height: 20,
-                                      child: Center(
-                                          child: InkWell(
-                                              child: Text(
-                                                "Notifications",
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              ),
-                                              onTap: () => setState(() {
-                                                    _options = [
-                                                      false,
-                                                      false,
-                                                      true
-                                                    ];
-                                                  }))))),
+                              isEmployer
+                                  ? Expanded(
+                                      child: Container(
+                                          height: 20,
+                                          child: Center(
+                                              child: InkWell(
+                                                  child: Text(
+                                                    "My Employees",
+                                                    style: TextStyle(
+                                                        color: Colors.black),
+                                                  ),
+                                                  onTap: () => setState(() {
+                                                        _options['history'] =
+                                                            false;
+                                                        _options['employees'] =
+                                                            true;
+                                                        _options['business'] =
+                                                            false;
+                                                      })))),
+                                    )
+                                  : SizedBox(),
+                              isEmployer
+                                  ? Expanded(
+                                      child: Container(
+                                          height: 20,
+                                          child: Center(
+                                              child: InkWell(
+                                                  child: Text(
+                                                    "My Business",
+                                                    style: TextStyle(
+                                                        color: Colors.black),
+                                                  ),
+                                                  onTap: () => setState(() {
+                                                        _options['history'] =
+                                                            false;
+                                                        _options['employees'] =
+                                                            false;
+                                                        _options['business'] =
+                                                            true;
+                                                      })))))
+                                  : SizedBox()
                             ],
                           ),
                           SizedBox(height: 10),
@@ -157,162 +194,62 @@ class _ProfileState extends State<ProfileScreen> {
                                     decoration: BoxDecoration(
                                         borderRadius:
                                             BorderRadius.circular(5.0),
-                                        color: _options[0]
+                                        color: _options['history']
                                             ? Colors.white
                                             : Colors.transparent),
                                   ),
                                   onTap: () => setState(() {
-                                        _options = [true, false, false];
+                                        _options['history'] = true;
+                                        _options['employees'] = false;
+                                        _options['business'] = false;
                                       })),
                             )),
-                            Expanded(
-                                child: Center(
-                              child: InkWell(
-                                  child: Container(
-                                    width: 100,
-                                    padding: EdgeInsets.all(2),
-                                    decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(5.0),
-                                        color: _options[1]
-                                            ? Colors.white
-                                            : Colors.transparent),
-                                  ),
-                                  onTap: () => setState(() {
-                                        _options = [false, true, false];
-                                      })),
-                            )),
-                            Expanded(
-                                child: Center(
-                              child: InkWell(
-                                  child: Container(
-                                    width: 100,
-                                    padding: EdgeInsets.all(2),
-                                    decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(5.0),
-                                        color: _options[2]
-                                            ? Colors.white
-                                            : Colors.transparent),
-                                  ),
-                                  onTap: () => setState(() {
-                                        _options = [false, false, true];
-                                      })),
-                            )),
+                            isEmployer
+                                ? Expanded(
+                                    child: Center(
+                                    child: InkWell(
+                                        child: Container(
+                                          width: 100,
+                                          padding: EdgeInsets.all(2),
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(5.0),
+                                              color: _options['employees']
+                                                  ? Colors.white
+                                                  : Colors.transparent),
+                                        ),
+                                        onTap: () => setState(() {
+                                              _options['history'] = false;
+                                              _options['employees'] = true;
+                                              _options['business'] = false;
+                                            })),
+                                  ))
+                                : SizedBox(),
+                            isEmployer
+                                ? Expanded(
+                                    child: Center(
+                                    child: InkWell(
+                                        child: Container(
+                                          width: 100,
+                                          padding: EdgeInsets.all(2),
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(5.0),
+                                              color: _options['business']
+                                                  ? Colors.white
+                                                  : Colors.transparent),
+                                        ),
+                                        onTap: () => setState(() {
+                                              _options['history'] = false;
+                                              _options['employees'] = false;
+                                              _options['business'] = true;
+                                            })),
+                                  ))
+                                : SizedBox(),
                           ]),
-                          Row(
-                            children: [
-                              Container(
-                                margin: EdgeInsets.all(5),
-                                padding: EdgeInsets.all(15),
-                                child:
-                                    new Image.network(state.imageUrls['mood']),
-                              ),
-                              Text("My Mood")
-                            ],
-                          ),
-                          FractionallySizedBox(
-                              widthFactor: 0.95,
-                              child: Container(
-                                height: 70,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: Colors.white,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.8),
-                                      spreadRadius: 2,
-                                      blurRadius: 5,
-                                      offset: Offset(
-                                          4, 5), // changes position of shadow
-                                    ),
-                                  ],
-                                ),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Container(
-                                        child: InkWell(
-                                            child: Image.asset(happyUrl),
-                                            onTap: () =>
-                                                {updateEmotions("Happy")}),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Container(
-                                        child: InkWell(
-                                            child: Image.asset(confusedUrl),
-                                            onTap: () =>
-                                                {updateEmotions("Confused")}),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Container(
-                                        child: InkWell(
-                                            child: Image.asset(sadUrl),
-                                            onTap: () =>
-                                                {updateEmotions("Sad")}),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Container(
-                                        child: InkWell(
-                                            child: Image.asset(angryUrl),
-                                            onTap: () =>
-                                                {updateEmotions("Angry")}),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              )),
-                          Row(
-                            children: [
-                              Container(
-                                margin: EdgeInsets.all(5),
-                                padding: EdgeInsets.all(15),
-                                child: new Image.network(
-                                    state.imageUrls['barrier']),
-                              ),
-                              Text("My Challenges")
-                            ],
-                          ),
-                          FractionallySizedBox(
-                            widthFactor: .95,
-                            child: Container(
-                              height: 70,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                color: Colors.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.8),
-                                    spreadRadius: 2,
-                                    blurRadius: 5,
-                                    offset: Offset(
-                                        4, 5), // changes position of shadow
-                                  ),
-                                ],
-                              ),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Container(
-                                      padding: EdgeInsets.only(left: 10),
-                                      child: Text("· Depression"),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Container(
-                                      child: Text("· Drug use"),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    );
+                          SizedBox(height: 20),
+                          _currentOption,
+                        ]));
                   }
                   return content;
                 }))));

@@ -37,7 +37,10 @@ class _IndexState extends State<IndexScreen> {
     return BlocWidget<MainEvent, MainState, MainBloc>(
         builder: (BuildContext context, MainState state) {
       Widget content;
+      BlocProvider.of<MainBloc>(context)
+          .retrieveChatroomForChatBotConversation();
       _chatroom = BlocProvider.of<MainBloc>(context).getChatroom();
+
       content = Scaffold(
         body: WillPopScope(
           onWillPop: () async {
@@ -86,7 +89,7 @@ class _IndexState extends State<IndexScreen> {
                 label: _currentPage == 'Home' ? 'Home' : ''),
             BottomNavigationBarItem(
                 icon: SizedBox(
-                    child: Image.asset('assets/icons/chatbot.png'), height: 30),
+                    child: Image.asset('assets/icons/chat.png'), height: 30),
                 label: _currentPage == 'AWA' ? 'AWA' : ''),
             BottomNavigationBarItem(
                 icon: SizedBox(
@@ -103,7 +106,6 @@ class _IndexState extends State<IndexScreen> {
                 _currentIndex = index;
                 _currentPage = _currentLocation[index];
               });
-              print("HERE: ${_currentLocation[index]}");
               _navigatorKey.currentState.pushNamed(_currentLocation[index]);
             })
           },

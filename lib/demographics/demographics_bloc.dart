@@ -20,13 +20,13 @@ class DemographicsBloc extends Bloc<DemographicsEvent, DemographicsState> {
   void submitData(Map<String, dynamic> newData) {
     add(DemographicsEventInProgress());
     _data.addAll(newData);
-    if (_data.keys.length == 4) {
+    if (_data.keys.length == 5) {
       UserRepo().setTenant(_data['tenant']);
+      UserRepo().setBusiness(_data['business']);
       UserRepo().setEmotion(_data['emotion']);
       UserRepo().setBusinessWellbeing(_data['wellbeing'].toString());
       UserRepo().setSource(_data['heardFrom']);
     }
-    print("data: ${_data}");
     add(DemographicsEventFinished());
   }
 

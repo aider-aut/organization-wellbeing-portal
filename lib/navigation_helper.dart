@@ -3,6 +3,7 @@ import 'package:chatapp/demographics/demographics_view.dart';
 import 'package:chatapp/instant_messaging/instant_messaging_view.dart';
 import 'package:chatapp/login/login_email/login_email_view.dart';
 import 'package:chatapp/login/login_view.dart';
+import 'package:chatapp/login/verify_email_screen.dart';
 import 'package:chatapp/main/index_view.dart';
 import 'package:chatapp/signup/signup_view.dart';
 import 'package:chatapp/welcome/welcome_step.dart';
@@ -128,6 +129,23 @@ class NavigationHelper {
     } else {
       Navigator.pushReplacement(context,
           MaterialPageRoute(builder: (context) => WelcomeStepScreen()));
+    }
+  }
+
+  static void navigateToVerifyEmailScreen(
+    BuildContext context, {
+    bool addToBackStack: false,
+    bool Function(Route<dynamic>) removeUntil,
+  }) {
+    if (addToBackStack) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => VerifyEmailScreen()),
+        removeUntil ?? _defaultRule,
+      );
+    } else {
+      Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: (context) => VerifyEmailScreen()));
     }
   }
 

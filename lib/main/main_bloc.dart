@@ -14,41 +14,59 @@ import 'package:flutter/material.dart';
 class MainBloc extends Bloc<MainEvent, MainState> {
   MainBloc(MainState initialState) : super(initialState) {
     _initialize();
-    // retrieveUserChatrooms();
   }
   User _currentUser;
   Map<String, String> imageUrls = new Map();
   final _instance = firebase_storage.FirebaseStorage.instance;
+  List<String> _challenges = [];
   String _emotion;
-  bool _isEmailVerified;
-  bool _isFirstUser;
   SelectedChatroom _chatroom;
 
   StreamSubscription<List<Chatroom>> chatroomsSubscription;
 
-  void _initialize() async {
+  void _initialize() {
     add(MainUpdateEventInProgress());
     _currentUser = UserRepo().getCurrentUser();
-    _isEmailVerified = UserRepo().isEmailVerified();
-    _isFirstUser = UserRepo().isFirstUser();
-    imageUrls = await getImages();
-    _emotion = UserRepo().getEmotion();
+    if (_currentUser.tenantId == 'Employer') {
+      UserRepo().fetchEmployees();
+    }
+    _challenges = UserRepo().getMyChallenges();
     retrieveChatroomForChatBotConversation();
-    add(MainUpdateEvent(_currentUser.name, _currentUser.imgURL, imageUrls));
+    _getAssets();
+  }
+
+  void _getAssets() async {
+    await getImages();
+  }
+
+  List<User> getEmployees() {
+    return UserRepo().getEmployees();
+  }
+
+  String getBusiness() {
+    return _currentUser.business;
   }
 
   bool isEmailVerified() {
-    return _isEmailVerified;
+    return _currentUser.isEmailVerified;
+  }
+
+  bool isUserEmployer() {
+    return _currentUser.tenantId == 'Employer';
+  }
+
+  List<String> getMyChallenges() {
+    return _challenges;
   }
 
   bool isFirstUser() {
-    return _isFirstUser;
+    return _currentUser.isFirstUser;
   }
 
-  Future<Map<String, String>> getImages() async {
-    final user = UserRepo().getCurrentUser();
-    final profileImage = user.imgURL;
-    final profileUrl = profileImage != null
+  Future<void> getImages() async {
+    add(MainUpdateEventInProgress());
+    final profileImage = _currentUser.imgURL;
+    final profileUrl = (profileImage != null && profileImage.isNotEmpty)
         ? profileImage
         : await _instance.ref('profile.png').getDownloadURL();
     final loveUrl = await _instance.ref('love.png').getDownloadURL();
@@ -59,8 +77,8 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       'barrier': barrierUrl,
       'profile': profileUrl,
     };
-
-    return imageUrls;
+    add(MainUpdateEvent(_currentUser.name, _currentUser.imgURL,
+        _currentUser.tenantId, imageUrls));
   }
 
   Map<String, String> getImageUrls() {
@@ -80,7 +98,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
   }
 
   String getEmotion() {
-    return _emotion;
+    return _currentUser.emotion;
   }
 
   // void retrieveUserChatrooms() async {
@@ -109,7 +127,6 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     ChatRepo.getInstance()
         .startConversationWithChatBot(currentUser)
         .then((chatroom) {
-      print("current chatbot: ${chatroom}");
       _chatroom = chatroom;
     });
   }
@@ -130,9 +147,12 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     if (event is MainUpdateEventInProgress) {
       yield MainState.isLoading(true, state);
     } else if (event is MainUpdateEvent) {
-      yield MainState.update(event.name, event.profileImg, event.imageUrls);
+      yield MainState.update(
+          event.name, event.profileImg, event.tenant, event.imageUrls);
     } else if (event is MainErrorEvent) {
       yield MainState.isLoading(false, state);
+    } else if (event is MainEmployeesListUpdate) {
+      yield MainState.updateEmployees(false, event.employees, state);
     }
   }
 

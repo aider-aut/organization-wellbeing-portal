@@ -14,8 +14,19 @@ class Deserializer {
   }
 
   static User deserializeUser(DocumentSnapshot doc) {
+    print('doc: ${doc.toString()}');
+    print("UID: ${doc.data().toString()}");
+    if (doc.get('name') == 'chatbot') {
+      return User(doc.get('uid'), doc.get('name'), '', doc.get('imgURL'),
+          doc.get('fcmToken'), '');
+    }
     return User(doc.get('uid'), doc.get('name'), doc.get('email'),
-        doc.get('imgURL'), doc.get('fcmToken'), doc.get('tenantId'));
+        doc.get('imgURL'), doc.get('fcmToken'), doc.get('tenantId'),
+        emotion: doc.get('emotion'),
+        isFirstUser: doc.get('isFirstUser'),
+        isEmailVerified: doc.get('isEmailVerified'),
+        birthday: doc.get('birthday'),
+        business: doc.get('business'));
   }
 
   static List<Chatroom> deserializeChatrooms(

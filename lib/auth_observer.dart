@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:chatapp/model/user/user.dart';
 import 'package:chatapp/model/user/user_repo.dart';
 import 'package:chatapp/navigation_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
@@ -21,21 +22,34 @@ class AuthObserver extends NavigatorObserver {
         if (user != null) {
           print("user: ${user.toString()}");
           final loginProvider = user.providerData.first.providerId;
-          // UserRepo().setCurrentUser(User.fromFirebaseUser(user));
-          UserRepo().fetchCurrentUser(user.uid);
+          UserRepo().setCurrentUser(User.fromFirebaseUser(user));
+          // UserRepo().fetchCurrentUser(user.uid);
           if (loginProvider == "google") {
             // TODO analytics call for google login provider
           } else {
             // TODO analytics call for facebook login provider
           }
-          //in case the email verified
-          // UserRepo().setEmailVerified(user.emailVerified);
+          bool isFirstUser = false;
+          isFirstUser = UserRepo().isFirstUser(userId: user.uid);
           if (!user.emailVerified) {
-            NavigationHelper.navigateToWelcome(navigator.context,
+            NavigationHelper.navigateToVerifyEmailScreen(navigator.context,
                 removeUntil: (_) => false);
+          } else if (isFirstUser) {
+            try {
+              NavigationHelper.navigateToWelcome(navigator.context,
+                  removeUntil: (_) => false);
+            } catch (error) {
+              print(
+                  "[navigateToWelcome] error happened on auth observer ${error.toString()}");
+            }
           } else {
-            NavigationHelper.navigateToIndex(navigator.context,
-                removeUntil: (_) => false);
+            try {
+              NavigationHelper.navigateToIndex(navigator.context,
+                  removeUntil: (_) => false);
+            } catch (error) {
+              print(
+                  "[navigateToIndex] error happened on auth observer ${error.toString()}");
+            }
           }
         } else {
           NavigationHelper.navigateToLogin(navigator.context,

@@ -5,11 +5,7 @@ import 'package:chatapp/welcome/welcome_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class WelcomeBloc extends Bloc<WelcomeEvent, WelcomeState> {
-  WelcomeBloc(WelcomeState initialState) : super(initialState) {
-    _initialize();
-  }
-
-  void _initialize() {}
+  WelcomeBloc(WelcomeState initialState) : super(initialState);
 
   @override
   Stream<WelcomeState> mapEventToState(WelcomeEvent event) async* {

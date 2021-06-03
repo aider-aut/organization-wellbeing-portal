@@ -1,16 +1,16 @@
 import 'dart:io';
 
+import 'package:bubble/bubble.dart';
+import 'package:chatapp/base/bloc_widget.dart';
+import 'package:chatapp/instant_messaging/instant_messaging_bloc.dart';
+import 'package:chatapp/instant_messaging/instant_messaging_event.dart';
+import 'package:chatapp/instant_messaging/instant_messaging_state.dart';
 import 'package:chatapp/model/chat/chat_repo.dart';
+import 'package:chatapp/model/message/message.dart';
+import 'package:chatapp/util/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-
-import 'package:chatapp/base/bloc_widget.dart';
-import 'package:chatapp/instant_messaging/instant_messaging_event.dart';
-import 'package:chatapp/util/constants.dart';
-import 'package:chatapp/model/message/message.dart';
-import 'package:chatapp/instant_messaging/instant_messaging_bloc.dart';
-import 'package:chatapp/instant_messaging/instant_messaging_state.dart';
 
 class InstantMessagingScreen extends StatefulWidget {
   InstantMessagingScreen(
@@ -34,7 +34,6 @@ class _InstantMessagingState extends State<InstantMessagingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.displayName)),
       body: BlocWidget<InstantMessagingEvent, InstantMessagingState,
           InstantMessagingBloc>(
         builder: (context, InstantMessagingState state) {
@@ -96,12 +95,15 @@ class _InstantMessagingState extends State<InstantMessagingScreen> {
                 ),
                 Expanded(
                   child: Container(
+                    padding: EdgeInsets.only(top: 50),
+                    decoration: BoxDecoration(color: Color(0XCC2A9D8F)),
                     child: ListView.builder(
                       padding: EdgeInsets.symmetric(
                         horizontal: UIConstants.SMALL_PADDING,
                         vertical: UIConstants.SMALL_PADDING,
                       ),
-                      itemBuilder: (context, index) => _buildMessageItem(context,
+                      itemBuilder: (context, index) => _buildMessageItem(
+                          context,
                           state.messages[state.messages.length - 1 - index]),
                       itemCount: state.messages.length,
                       reverse: true,
@@ -118,6 +120,24 @@ class _InstantMessagingState extends State<InstantMessagingScreen> {
   }
 
   Widget _buildMessageItem(BuildContext context, Message message) {
+    final styleSomebody = BubbleStyle(
+      nip: BubbleNip.leftTop,
+      color: Colors.lightBlueAccent,
+      borderWidth: 1,
+      elevation: 4,
+      margin: BubbleEdges.only(top: 15, right: 50),
+      alignment: Alignment.topLeft,
+    );
+
+    final styleMe = BubbleStyle(
+      nip: BubbleNip.rightTop,
+      color: Color.fromARGB(255, 225, 255, 199),
+      borderWidth: 1,
+      elevation: 4,
+      margin: BubbleEdges.only(top: 8, left: 50),
+      alignment: Alignment.topRight,
+    );
+
     if (message.value.startsWith("_uri:")) {
       final String url = message.value.substring("_uri:".length);
       if (message.outgoing) {
@@ -141,21 +161,34 @@ class _InstantMessagingState extends State<InstantMessagingScreen> {
       }
     }
     if (message.outgoing) {
-      return Container(
-        child: Text(
-          message.value,
-          style: TextStyle(color: Colors.white),
-          textAlign: TextAlign.end,
-        ),
-        decoration: BoxDecoration(
-            color: Colors.lightBlueAccent,
-            borderRadius: BorderRadius.all(Radius.circular(6.0))),
-        padding: EdgeInsets.all(UIConstants.SMALL_PADDING),
-        margin: EdgeInsets.only(
-          top: UIConstants.SMALL_PADDING,
-          left: UIConstants.LARGE_PADDING,
-        ),
-      );
+      if (message.author.imgURL != null && message.author.imgURL.length > 0) {
+        return Container(
+            width: MediaQuery.of(context).size.width,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                    width: MediaQuery.of(context).size.width - 100,
+                    child: Bubble(
+                        style: styleMe,
+                        child: Text(
+                          message.value,
+                          style: TextStyle(color: Colors.black),
+                          textAlign: TextAlign.end,
+                        ))),
+                SizedBox(width: 5),
+                Image.network(message.author.imgURL, width: 35, height: 40),
+              ],
+            ));
+      } else {
+        return Bubble(
+            style: styleMe,
+            child: Text(
+              message.value,
+              style: TextStyle(color: Colors.black),
+              textAlign: TextAlign.end,
+            ));
+      }
     } else {
       if (message.option) {
         return Container(
@@ -166,7 +199,9 @@ class _InstantMessagingState extends State<InstantMessagingScreen> {
                   onPrimary: Colors.white, // foreground
                   padding: EdgeInsets.all(UIConstants.SMALL_PADDING)),
               onPressed: () {
-                ChatRepo.getInstance().deleteMessageAfterSelected(message).whenComplete(() => _send(context, message.value));
+                ChatRepo.getInstance()
+                    .deleteMessageAfterSelected(message)
+                    .whenComplete(() => _send(context, message.value));
               },
               child: Text(
                 message.value,
@@ -180,20 +215,67 @@ class _InstantMessagingState extends State<InstantMessagingScreen> {
           ),
         );
       }
-      return Container(
-        child: Text(
-          message.value,
-          style: TextStyle(color: Colors.white),
-        ),
-        decoration: BoxDecoration(
-            color: Colors.blueAccent,
-            borderRadius: BorderRadius.all(Radius.circular(6.0))),
-        padding: EdgeInsets.all(UIConstants.SMALL_PADDING),
-        margin: EdgeInsets.only(
-          top: UIConstants.SMALL_PADDING,
-          right: UIConstants.LARGE_PADDING,
-        ),
-      );
+      if (message.author.name == 'chatbot') {
+        return Container(
+            width: MediaQuery.of(context).size.width,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Image.asset('assets/icons/chatbot.png', width: 35, height: 40),
+                SizedBox(width: 5),
+                Container(
+                    width: MediaQuery.of(context).size.width - 100,
+                    child: Bubble(
+                        style: styleSomebody,
+                        child: Text(
+                          message.value,
+                          style: TextStyle(color: Colors.white),
+                          textAlign: TextAlign.end,
+                        )))
+              ],
+            ));
+      } else if (message.author.imgURL != null) {
+        return Container(
+            width: MediaQuery.of(context).size.width,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Image.network(message.author.imgURL, width: 35, height: 40),
+                SizedBox(width: 5),
+                Container(
+                    width: MediaQuery.of(context).size.width - 100,
+                    child: Bubble(
+                        style: styleSomebody,
+                        child: Text(
+                          message.value,
+                          style: TextStyle(color: Colors.white),
+                          textAlign: TextAlign.end,
+                        )))
+              ],
+            ));
+      } else {
+        return Bubble(
+            style: styleSomebody,
+            child: Text(
+              message.value,
+              style: TextStyle(color: Colors.white),
+              textAlign: TextAlign.end,
+            ));
+      }
+      // return Container(
+      //   child: Text(
+      //     message.value,
+      //     style: TextStyle(color: Colors.white),
+      //   ),
+      //   decoration: BoxDecoration(
+      //       color: Colors.blueAccent,
+      //       borderRadius: BorderRadius.all(Radius.circular(6.0))),
+      //   padding: EdgeInsets.all(UIConstants.SMALL_PADDING),
+      //   margin: EdgeInsets.only(
+      //     top: UIConstants.SMALL_PADDING,
+      //     right: UIConstants.LARGE_PADDING,
+      //   ),
+      // );
     }
   }
 

@@ -5,3 +5,9 @@ class LoginFailedResponse extends LoginResponse {
 
   LoginFailedResponse(this.err);
 }
+
+class LoginSuccessResponse extends LoginResponse {
+  final String message;
+
+  LoginSuccessResponse(this.message);
+}

@@ -15,7 +15,8 @@ class StorageKeys {
   static const String EMOTION = 'emotion';
   static const String IS_FIRST_USER = 'isFirstUser';
   static const String IS_EMAIL_VERIFIED = 'isEmailVerified';
-  static const String USER_PHONE_NUMBER = 'phoneNumber';
+  static const String USER_BUSINESS = 'business';
+  static const String EMPLOYEES = 'employees';
 }
 
 class UIConstants {

@@ -14,9 +14,12 @@ class SettingScreen extends StatefulWidget {
 }
 
 class _SettingState extends State<SettingScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
+        key: _scaffoldKey,
         child: Scaffold(
             appBar: AppBar(
               iconTheme: IconThemeData(
@@ -120,47 +123,6 @@ class _SettingState extends State<SettingScreen> {
                         ),
                         Container(
                           height: 50,
-                          child: Row(
-                            children: [
-                              Expanded(
-                                  flex: 1,
-                                  child: Image.asset('assets/icons/edit.png')),
-                              Expanded(
-                                flex: 4,
-                                child: Text("Theme",
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold)),
-                              ),
-                              Expanded(
-                                  flex: 2,
-                                  child: Image.asset(
-                                      'assets/icons/chevron-right.png')),
-                            ],
-                          ),
-                        ),
-                        Container(
-                            height: 50,
-                            child: Row(
-                              children: [
-                                Expanded(
-                                    flex: 1,
-                                    child: Image.asset(
-                                        'assets/icons/notifications.png')),
-                                Expanded(
-                                    flex: 4,
-                                    child: Text("Notifications",
-                                        style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold))),
-                                Expanded(
-                                    flex: 2,
-                                    child: Image.asset(
-                                        'assets/icons/chevron-right.png')),
-                              ],
-                            )),
-                        Container(
-                          height: 50,
                           child: InkWell(
                             child: Row(
                               children: [
@@ -191,18 +153,19 @@ class _SettingState extends State<SettingScreen> {
   }
 
   void navigateToLogin() {
-    NavigationHelper.navigateToLogInWithEmail(context);
+    NavigationHelper.navigateToLogInWithEmail(_scaffoldKey.currentContext,
+        addToBackStack: false);
   }
 
   void navigateToAccount() {
-    NavigationHelper.navigateToAccount(context);
+    NavigationHelper.navigateToAccount(_scaffoldKey.currentContext);
   }
 
   void navigateToAbout() {
-    NavigationHelper.navigateToAbout(context);
+    NavigationHelper.navigateToAbout(_scaffoldKey.currentContext);
   }
 
   void navigateToSignUp() {
-    NavigationHelper.navigateToSignUp(context);
+    NavigationHelper.navigateToSignUp(_scaffoldKey.currentContext);
   }
 }

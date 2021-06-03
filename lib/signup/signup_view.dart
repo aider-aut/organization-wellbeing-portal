@@ -118,13 +118,15 @@ class _SignUpState extends State<SignUpScreen> {
                                         validator: (String value) {
                                           bool validName = value.isNotEmpty &&
                                               value.trim().isNotEmpty &&
-                                              value.length > 2;
+                                              value.trim().length > 2;
                                           return (validName)
                                               ? null
                                               : "Please enter valid name (must be longer than 2 characters)";
                                         },
                                         onSaved: (String value) {
-                                          _name = value;
+                                          setState(() {
+                                            _name = value;
+                                          });
                                         },
                                         decoration: const InputDecoration(
                                           border: InputBorder.none,
@@ -159,7 +161,9 @@ class _SignUpState extends State<SignUpScreen> {
                                             : "Please enter valid email";
                                       },
                                       onSaved: (String value) {
-                                        _email = value;
+                                        setState(() {
+                                          _email = value.toLowerCase();
+                                        });
                                       },
                                       decoration: const InputDecoration(
                                         border: InputBorder.none,
@@ -189,7 +193,9 @@ class _SignUpState extends State<SignUpScreen> {
                                             ? 'Password too short.'
                                             : null,
                                         onChanged: (String value) {
-                                          _password = value;
+                                          setState(() {
+                                            _password = value;
+                                          });
                                         },
                                         obscureText: _obscureText,
                                         decoration: const InputDecoration(
@@ -252,6 +258,7 @@ class _SignUpState extends State<SignUpScreen> {
                                 children: [
                                   InkWell(
                                       onTap: () => showMaterialDatePicker(
+                                            title: 'Birthday',
                                             context: context,
                                             firstDate: DateTime(1900),
                                             lastDate: DateTime.now(),
@@ -290,6 +297,7 @@ class _SignUpState extends State<SignUpScreen> {
                                   SizedBox(width: 15),
                                   InkWell(
                                       onTap: () => showMaterialDatePicker(
+                                            title: 'Birthday',
                                             context: context,
                                             firstDate: DateTime(1900),
                                             lastDate: DateTime.now(),
@@ -328,6 +336,7 @@ class _SignUpState extends State<SignUpScreen> {
                                   SizedBox(width: 15),
                                   InkWell(
                                       onTap: () => showMaterialDatePicker(
+                                            title: 'Birthday',
                                             context: context,
                                             firstDate: DateTime(1900),
                                             lastDate: DateTime.now(),
@@ -376,9 +385,9 @@ class _SignUpState extends State<SignUpScreen> {
                                         form.save();
                                         BlocProvider.of<SignUpBloc>(context)
                                             .onSignUpWithEmail(
-                                                _name,
+                                                _name.trim(),
                                                 '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
-                                                _email,
+                                                _email.trim(),
                                                 _password);
                                       }
                                     },

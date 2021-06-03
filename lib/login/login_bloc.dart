@@ -4,8 +4,6 @@ import 'package:bloc/bloc.dart';
 import 'package:chatapp/login/login_event.dart';
 import 'package:chatapp/login/login_state.dart';
 import 'package:chatapp/model/login/login_repo.dart';
-import 'package:chatapp/model/user/user_repo.dart';
-import 'package:chatapp/navigation_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
@@ -14,14 +12,15 @@ import 'package:google_sign_in/google_sign_in.dart';
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   LoginBloc(LoginState initialState) : super(initialState);
 
-  void onLoginGoogle() async {
+  void onLoginGoogle(GlobalKey scaffoldKey) async {
     add(LoginEventInProgress());
     final googleSignInRepo = GoogleSignIn(
         signInOption: SignInOption.standard, scopes: ["profile", "email"]);
     final account = await googleSignInRepo.signIn();
     if (account != null) {
       try {
-        LoginRepo.getInstance().signInWithGoogle(account);
+        LoginRepo.getInstance()
+            .signInWithGoogle(account, scaffoldKey.currentContext);
         add(LoginWithGoogleEvent());
       } on Exception catch (ex) {
         add(LoginErrorEvent("Could not log in with Google: ${ex.toString()}"));
@@ -31,12 +30,13 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     }
   }
 
-  void onLoginFacebook() async {
+  void onLoginFacebook(GlobalKey scaffoldKey) async {
     add(LoginEventInProgress());
     final facebookSignInRepo = FacebookAuth.instance;
     try {
       final signInResult = await facebookSignInRepo.login();
-      LoginRepo.getInstance().signInWithFacebook(signInResult);
+      LoginRepo.getInstance()
+          .signInWithFacebook(signInResult, scaffoldKey.currentContext);
       add(LoginWithFacebookEvent());
     } on Exception catch (ex) {
       add(LoginErrorEvent("An error occurred. ${ex.toString()}"));
@@ -47,15 +47,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       String email, String password, BuildContext context) async {
     add(LoginEventInProgress());
     try {
-      await LoginRepo.getInstance().signInWithEmail(email, password);
-      bool _isFirstUser = UserRepo().isFirstUser();
-      bool _isEmailVerified = UserRepo().isEmailVerified();
-
-      if (_isFirstUser || !_isEmailVerified) {
-        NavigationHelper.navigateToWelcome(context, addToBackStack: false);
-      } else {
-        NavigationHelper.navigateToIndex(context, addToBackStack: false);
-      }
+      await LoginRepo.getInstance().signInWithEmail(email, password, context);
       add(LoginWithEmailEvent());
     } on FirebaseAuthException catch (ex) {
       if (ex.code == "user-not-found") {
@@ -67,7 +59,6 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       } else {
         add(LoginErrorEvent({'code': ex.code, 'message': "ERR: ${ex.code}"}));
       }
-
       print("Failed with error code: ${ex.code}");
       print(ex.message);
     }

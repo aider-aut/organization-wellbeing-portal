@@ -38,7 +38,7 @@ class _Step1State extends State<Step1Screen>
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: double.infinity,
+        height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(color: Theme.of(context).backgroundColor),
         child: SingleChildScrollView(
           child: Padding(
@@ -238,7 +238,9 @@ class _Step1State extends State<Step1Screen>
                                                     : "This field cannot be empty";
                                               },
                                               onSaved: (String value) {
-                                                _otherSource = value;
+                                                setState(() {
+                                                  _otherSource = value;
+                                                });
                                               },
                                             ))
                                         : SizedBox()
@@ -256,7 +258,9 @@ class _Step1State extends State<Step1Screen>
                                   padding: EdgeInsets.all(16.0),
                                   alignment: Alignment.center,
                                   child: ElevatedButton(
-                                      child: Text("Next"),
+                                      child: Text("Next",
+                                          style:
+                                              TextStyle(color: Colors.white)),
                                       onPressed: () {
                                         if (this
                                             ._sources
@@ -280,7 +284,8 @@ class _Step1State extends State<Step1Screen>
                                         }
                                       },
                                       style: ElevatedButton.styleFrom(
-                                          primary: Colors.blue, // background
+                                          primary: Colors.black,
+                                          // background
                                           shape: RoundedRectangleBorder(
                                               borderRadius:
                                                   BorderRadius.circular(

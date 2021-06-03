@@ -17,12 +17,6 @@ class AccountScreen extends StatefulWidget {
 class _AccountState extends State<AccountScreen> {
   String _userName, _birthday, _email;
 
-  // @override
-  // void initState(){
-  //   super.initState();
-  //   _userName =
-  // }
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
